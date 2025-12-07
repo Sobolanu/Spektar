@@ -39,7 +39,8 @@ object Home
 object Hobbies
 
 @Serializable
-object Details // turning this to a data class fucks it up
+object Details // turning this to a data class fucks it up, find good solution for
+// being able to click on an image on the Hobbies screen to open a Details window.
 
 @Serializable
 object Settings
