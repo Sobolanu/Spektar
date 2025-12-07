@@ -10,7 +10,6 @@ import androidx.compose.material.icons.outlined.AddBox
 import androidx.compose.material.icons.outlined.Home
 import androidx.compose.material.icons.outlined.Settings
 import androidx.compose.ui.graphics.vector.ImageVector
-import kotlin.reflect.KClass
 
 private val books : Hobby = Hobby("Books")
 private val movies : Hobby = Hobby("Movies")
