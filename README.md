@@ -1,0 +1,1 @@
+Spektar is a work in progress Android app made for the M:Tel App Competition that will be hosted next year. The premise is to recommend pieces of media to users based off of their interests and general user recommendations.
