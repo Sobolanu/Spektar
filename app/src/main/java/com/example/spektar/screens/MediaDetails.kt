@@ -1,0 +1,110 @@
+package com.example.spektar.screens
+
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
+import androidx.compose.material3.Button
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBar
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.dp
+import coil.compose.AsyncImage
+import com.example.spektar.models.topBackArrowIcon
+import com.example.spektar.models.topProfileIcon
+
+/*
+    - Figure out a good layout for this screen
+*/
+@Composable
+fun MediaDetailsScreen(
+    onBackClick: () -> Unit = {},
+    modifier : Modifier = Modifier,
+) {
+    DetailsScreenContent(onBackClick)
+}
+
+@Composable
+fun DetailsScreenContent(
+    onBackClick: () -> Unit = {},
+    modifier : Modifier = Modifier
+) {
+    Scaffold(
+        topBar = { DetailsPageTopBar(onBackClick) },
+    ) {
+        Column(
+            modifier = Modifier
+                .padding(0.dp, 90.dp, 0.dp, 0.dp)
+                .fillMaxSize(),
+        ) {
+            Row(
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                AsyncImage(
+                    modifier = Modifier
+                        .size(200.dp),
+
+                    model = "https://static.jojowiki.com/images/e/e2/latest/20200423212900/Joseph_Joestar_Infobox_Manga.png",
+                    contentDescription = null
+                )
+            }
+        }
+    }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+
+fun DetailsPageTopBar(
+    onBackClick: () -> Unit = {},
+    modifier : Modifier = Modifier
+) {
+    var backButtonPressed : Boolean = false
+    var profileIconPressed : Boolean = false
+
+    TopAppBar(
+        modifier = modifier,
+        title = {Text("test")},
+
+        navigationIcon = {
+            IconButton(onClick = onBackClick) {
+                Icon(
+                    imageVector = if(backButtonPressed) {
+                        topBackArrowIcon.selectedIcon
+                    } else {
+                        topBackArrowIcon.unselectedIcon
+                    },
+
+                    contentDescription = topBackArrowIcon.title
+                )
+            }
+        },
+
+        actions = {
+            IconButton(
+                onClick = {profileIconPressed = true} // figure out navigation to profile page
+            ) {
+                Icon(
+                    imageVector = if(profileIconPressed) {
+                        topProfileIcon.selectedIcon
+                    } else {
+                        topProfileIcon.unselectedIcon
+                    },
+
+                    contentDescription = topProfileIcon.title
+                )
+            }
+        }
+    )
+}
