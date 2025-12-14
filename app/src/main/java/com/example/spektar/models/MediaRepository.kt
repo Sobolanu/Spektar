@@ -9,7 +9,7 @@ class MediaRepository {
         "Anime",
         "Jojo's Bizarre Adventure",
         "https://static.jojowiki.com/images/a/a1/Josuke_DU_Infobox_Manga.png",
-        "fun thing about fate and being a good human",
+        "slice of life thingamajig",
         "Hirohiko Araki",
         "1/1/2012 or some shit",
     )
@@ -18,7 +18,7 @@ class MediaRepository {
         "Anime",
         "Jojo's Bizarre Adventure",
         "https://static.jojowiki.com/images/e/e2/latest/20200423212900/Joseph_Joestar_Infobox_Manga.png",
-        "fun thing about fate and being a good human",
+        "haha joseph joestar said your next line is",
         "Hirohiko Araki",
         "1/1/2012 or some shit",
     )
@@ -27,7 +27,7 @@ class MediaRepository {
         "Anime",
         "Jojo's Bizarre Adventure",
         "https://www.pngmart.com/files/13/Giorno-Giovanna-PNG-Clipart.png",
-        "fun thing about fate and being a good human",
+        "bro is NOT martin luther king",
         "Hirohiko Araki",
         "1/1/2012 or some shit",
     )
@@ -36,7 +36,7 @@ class MediaRepository {
         "Anime",
         "Jojo's Bizarre Adventure",
         "https://img.favpng.com/18/24/23/jotaro-kujo-josuke-higashikata-jojo-s-bizarre-adventure-all-star-battle-jolyne-cujoh-yoshikage-kira-png-favpng-D8MncfnMA6pURtugyD2pDLyCW.jpg",
-        "fun thing about fate and being a good human",
+        "my glorious queen",
         "Hirohiko Araki",
         "1/1/2012 or some shit",
     )

@@ -2,13 +2,17 @@ package com.example.spektar.screens
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.text.TextAutoSize
 import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -17,48 +21,90 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import coil.compose.AsyncImage
 import com.example.spektar.models.topBackArrowIcon
 import com.example.spektar.models.topProfileIcon
+import com.example.spektar.viewmodels.MediaUiState
+import com.example.spektar.viewmodels.MediaViewModel
 
-/*
-    - Figure out a good layout for this screen
-*/
 @Composable
 fun MediaDetailsScreen(
     onBackClick: () -> Unit = {},
+    mediaID : Int,
+    viewModel : MediaViewModel = viewModel(),
     modifier : Modifier = Modifier,
 ) {
-    DetailsScreenContent(onBackClick)
+    val medias by viewModel.uiState.observeAsState()
+    DetailsScreenContent(
+        onBackClick,
+        medias!!.media[mediaID].specificMediaName,
+        medias!!.mediaImageURLs[mediaID],
+        medias!!.mediaDescriptions[mediaID]
+    )
 }
 
 @Composable
 fun DetailsScreenContent(
     onBackClick: () -> Unit = {},
+    mediaName : String,
+    mediaImageURL : String,
+    mediaDescription : String,
     modifier : Modifier = Modifier
 ) {
     Scaffold(
         topBar = { DetailsPageTopBar(onBackClick) },
-    ) {
-        Column(
+    ) { paddingValues ->
+        LazyColumn(
             modifier = Modifier
-                .padding(0.dp, 90.dp, 0.dp, 0.dp)
-                .fillMaxSize(),
+                .fillMaxSize()
+                .padding(paddingValues),
+
+            verticalArrangement = Arrangement.Top,
+            horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            Row(
-                modifier = Modifier.fillMaxWidth()
-            ) {
+            item {
                 AsyncImage(
                     modifier = Modifier
                         .size(200.dp),
 
-                    model = "https://static.jojowiki.com/images/e/e2/latest/20200423212900/Joseph_Joestar_Infobox_Manga.png",
+                    model = mediaImageURL,
                     contentDescription = null
                 )
             }
+
+            // review thingamajig
+
+            item {
+                Text(
+                    modifier = Modifier
+                        .padding(vertical = 24.dp),
+                    text = mediaName,
+                    autoSize = TextAutoSize.StepBased(
+                        16.sp,
+                        38.sp,
+                        2.sp
+                    ),
+
+                    lineHeight = 46.sp,
+                    textAlign = TextAlign.Center
+                )
+            }
+
+            item {
+                Text(
+                    mediaDescription
+                )
+            }
+
+            // add notes item (item that leads to a notes page for THIS SPECIFIC PIECE of media)
         }
     }
 }

@@ -41,7 +41,7 @@ import com.example.spektar.viewmodels.MediaViewModel
 @Composable
 
 fun CategoryScreen(
-    onImageClick: () -> Unit = {},
+    onImageClick: (Int) -> Unit = {},
     viewModel : MediaViewModel = viewModel(),
     modifier : Modifier = Modifier
 ) {
@@ -64,7 +64,7 @@ fun CategoryScreen(
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun CategoryScreenContent(
-    onImageClick: () -> Unit = {},
+    onImageClick: (Int) -> Unit = {},
     categories: List<String>,
     listOfUrls: List<String>,
     modifier: Modifier = Modifier,
@@ -86,12 +86,12 @@ fun CategoryScreenContent(
 
 @Composable
 fun LoadCategory(
-    onImageClick: () -> Unit = {},
+    onImageClick: (Int) -> Unit = {},
     category: String,
     urls: List<String>,
 ) {
-   LoadCategoryText(category)
-   LoadCategoryImages(onImageClick = onImageClick, listOfUrls = urls)
+    LoadCategoryText(category)
+    LoadCategoryImages(onImageClick = onImageClick, listOfUrls = urls)
 }
 
 @Composable
@@ -115,7 +115,7 @@ fun LoadCategoryText(
 
 @Composable
 fun LoadCategoryImages(
-    onImageClick: () -> Unit = {},
+    onImageClick: (Int) -> Unit = {},
     listOfUrls: List<String>,
 ) {
     LazyRow( // image row, similar principle to LazyColumn
@@ -123,16 +123,17 @@ fun LoadCategoryImages(
             .fillMaxWidth()
             .padding(horizontal = 8.dp)
     ) {
-        var imageModifier: Modifier = Modifier
-            .size(100.dp)
-            .clickable(true, onClick = onImageClick)
 
-        items(listOfUrls) { it ->
-            AsyncImage(
-                model = it, // add an image with a + icon for like "more" i guess?
-                contentDescription = null,
-                modifier = imageModifier
-            )
+        item() {
+            listOfUrls.forEachIndexed{index, url ->
+                AsyncImage(
+                    model = url, // add an image with a + icon for like "more" i guess?
+                    contentDescription = null,
+                    modifier = Modifier
+                        .size(100.dp)
+                        .clickable{onImageClick(index)}
+                )
+            }
         }
     }
 
