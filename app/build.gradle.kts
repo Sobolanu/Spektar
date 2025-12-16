@@ -3,6 +3,12 @@ plugins {
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.compose)
     alias(libs.plugins.kotlin.serialization)
+
+    // Firebase:
+    id("com.google.gms.google-services")
+
+    // Hilt:
+
 }
 
 android {
@@ -62,12 +68,19 @@ dependencies {
     implementation(libs.navigation.compose)
     implementation(libs.kotlinx.serialization.json)
 
+    // Coil:
     implementation("io.coil-kt:coil-compose:2.4.0")
+    // Material3 Icons:
     implementation("androidx.compose.material:material-icons-extended-android:${compose_ui_version}")
 
+    // ViewModels:
     implementation("androidx.lifecycle:lifecycle-viewmodel-compose:${view_model_version}")
     implementation("androidx.lifecycle:lifecycle-livedata-ktx:${view_model_version}")
     implementation("androidx.lifecycle:lifecycle-runtime-ktx:${view_model_version}")
-
     implementation("androidx.compose.runtime:runtime-livedata:${compose_ui_version}")
+
+    // Firebase imports:
+    implementation(platform("com.google.firebase:firebase-bom:34.7.0"))
+    implementation("com.google.firebase:firebase-analytics")
+    implementation("com.google.firebase:firebase-firestore")
 }

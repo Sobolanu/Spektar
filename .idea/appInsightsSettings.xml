@@ -8,10 +8,10 @@
             <InsightsFilterSettings>
               <option name="connection">
                 <ConnectionSetting>
-                  <option name="appId" value="PLACEHOLDER" />
-                  <option name="mobileSdkAppId" value="" />
-                  <option name="projectId" value="" />
-                  <option name="projectNumber" value="" />
+                  <option name="appId" value="com.example.spektar" />
+                  <option name="mobileSdkAppId" value="1:775407270766:android:778c8f5135b610c54f9f7f" />
+                  <option name="projectId" value="spektar-media-hosting" />
+                  <option name="projectNumber" value="775407270766" />
                 </ConnectionSetting>
               </option>
               <option name="signal" value="SIGNAL_UNSPECIFIED" />

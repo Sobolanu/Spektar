@@ -42,13 +42,14 @@ fun MediaDetailsScreen(
     viewModel : MediaViewModel = viewModel(),
     modifier : Modifier = Modifier,
 ) {
-    val medias by viewModel.uiState.observeAsState()
+    val medias by viewModel.uiState.observeAsState() // figure out a better name for this val
+
     DetailsScreenContent(
-        onBackClick,
-        medias!!.media[mediaID].specificMediaName,
-        medias!!.mediaImageURLs[mediaID],
-        medias!!.mediaDescriptions[mediaID]
-    )
+         onBackClick,
+         medias!!.medias[mediaID].name,
+         medias!!.medias[mediaID].imageUrl,
+         medias!!.medias[mediaID].description
+     )
 }
 
 @Composable
@@ -100,11 +101,13 @@ fun DetailsScreenContent(
 
             item {
                 Text(
-                    mediaDescription
+                    mediaDescription,
+                    textAlign = TextAlign.Center
                 )
             }
 
             // add notes item (item that leads to a notes page for THIS SPECIFIC PIECE of media)
+            // notes item should be a local database!!!
         }
     }
 }
@@ -139,7 +142,7 @@ fun DetailsPageTopBar(
 
         actions = {
             IconButton(
-                onClick = {profileIconPressed = true} // figure out navigation to profile page
+                onClick = { profileIconPressed = true } // figure out navigation to profile page
             ) {
                 Icon(
                     imageVector = if(profileIconPressed) {

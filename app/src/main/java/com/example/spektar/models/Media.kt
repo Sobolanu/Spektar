@@ -8,11 +8,9 @@ and a class SpecificMedia (used to refer to a specific piece of media, i.e "Avat
 open class Category (val mediaCategory : String)
 
 data class SpecificMedia(
-    val category : String,
-    val specificMediaName: String,
-    val mediaImageURL : String,
-    val specificMediaDescription : String, // would also contain tags like "Horror, Action"
-    val credits : String, // eventually make this into a list
-    val releaseDate : String
-) : Category(category) {
-}
+    val credits : String = "",
+    val description : String = "",
+    val imageUrl : String = "",
+    val name : String = "",
+    val releaseDate : String = ""
+)

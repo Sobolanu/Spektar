@@ -10,7 +10,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
-import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -32,10 +31,11 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import coil.compose.AsyncImage
+import com.example.spektar.models.Category
+import com.example.spektar.models.SpecificMedia
 import com.example.spektar.models.bottomIcons
 import com.example.spektar.models.topProfileIcon
 import com.example.spektar.viewmodels.MediaViewModel
-
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -45,17 +45,17 @@ fun CategoryScreen(
     viewModel : MediaViewModel = viewModel(),
     modifier : Modifier = Modifier
 ) {
-    val media by viewModel.uiState.observeAsState()
+    val medias by viewModel.uiState.observeAsState()
 
     Scaffold(
         modifier = modifier,
-        topBar = {CategoryPageTopBar()},
-        bottomBar = {BottomBar()}
+        topBar = { CategoryPageTopBar() },
+        bottomBar = { BottomBar() }
     ) { paddingValues ->
         CategoryScreenContent(
             onImageClick = onImageClick,
-            categories = media!!.categoryNames,
-            media!!.mediaImageURLs,
+            categories = medias!!.categories,
+            medias = medias!!.medias,
             modifier = Modifier.padding(paddingValues),
         )
     }
@@ -65,8 +65,8 @@ fun CategoryScreen(
 @Composable
 fun CategoryScreenContent(
     onImageClick: (Int) -> Unit = {},
-    categories: List<String>,
-    listOfUrls: List<String>,
+    categories : List<Category>,
+    medias : List<SpecificMedia>,
     modifier: Modifier = Modifier,
 ) {
     LazyColumn( // LazyColumn loads only what is visible, scrollable is on by default
@@ -74,12 +74,14 @@ fun CategoryScreenContent(
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
 
-        items(categories) { category ->
-            LoadCategory(
-                onImageClick = onImageClick,
-                category = category,
-                urls = listOfUrls,
-            )
+        item(categories) {
+            categories.forEachIndexed { index, category ->
+                LoadCategory(
+                    onImageClick = onImageClick,
+                    category = category.mediaCategory,
+                    urls = medias.map{ it.imageUrl }
+                )
+            }
         }
     }
 }
@@ -125,15 +127,18 @@ fun LoadCategoryImages(
     ) {
 
         item() {
-            listOfUrls.forEachIndexed{index, url ->
+            for(i in 0..3) {
                 AsyncImage(
-                    model = url, // add an image with a + icon for like "more" i guess?
+                    model = listOfUrls[i],
                     contentDescription = null,
                     modifier = Modifier
                         .size(100.dp)
-                        .clickable{onImageClick(index)}
+                        .clickable{ onImageClick(i) }
                 )
             }
+
+            // add "more" image that matches size and that
+            // redirects to grid of images (as in, to more media)
         }
     }
 

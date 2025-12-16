@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "775407270766",
+    "project_id": "spektar-media-hosting",
+    "storage_bucket": "spektar-media-hosting.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:775407270766:android:778c8f5135b610c54f9f7f",
+        "android_client_info": {
+          "package_name": "com.example.spektar"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDO3K-RFPTgn5fhfkP18tTYH2xgKf-UokU"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
