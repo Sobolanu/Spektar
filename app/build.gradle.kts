@@ -7,8 +7,11 @@ plugins {
     // Firebase:
     id("com.google.gms.google-services")
 
-    // Hilt:
+    // KSP:
+    id("com.google.devtools.ksp")
 
+    // Hilt:
+    id("com.google.dagger.hilt.android")
 }
 
 android {
@@ -83,4 +86,8 @@ dependencies {
     implementation(platform("com.google.firebase:firebase-bom:34.7.0"))
     implementation("com.google.firebase:firebase-analytics")
     implementation("com.google.firebase:firebase-firestore")
+
+    // Hilt:
+    implementation("com.google.dagger:hilt-android:2.57.1")
+    ksp("com.google.dagger:hilt-android-compiler:2.57.1")
 }

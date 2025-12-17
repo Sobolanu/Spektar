@@ -19,8 +19,8 @@ import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
@@ -45,7 +45,7 @@ fun CategoryScreen(
     viewModel : MediaViewModel = viewModel(),
     modifier : Modifier = Modifier
 ) {
-    val medias by viewModel.uiState.observeAsState()
+    val medias by viewModel.uiState.collectAsState()
 
     Scaffold(
         modifier = modifier,
@@ -54,8 +54,8 @@ fun CategoryScreen(
     ) { paddingValues ->
         CategoryScreenContent(
             onImageClick = onImageClick,
-            categories = medias!!.categories,
-            medias = medias!!.medias,
+            categories = medias.categories,
+            medias = medias.medias,
             modifier = Modifier.padding(paddingValues),
         )
     }
@@ -75,7 +75,7 @@ fun CategoryScreenContent(
     ) {
 
         item(categories) {
-            categories.forEachIndexed { index, category ->
+            categories.forEachIndexed { _, category ->
                 LoadCategory(
                     onImageClick = onImageClick,
                     category = category.mediaCategory,
@@ -126,7 +126,7 @@ fun LoadCategoryImages(
             .padding(horizontal = 8.dp)
     ) {
 
-        item() {
+        item {
             for(i in 0..3) {
                 AsyncImage(
                     model = listOfUrls[i],
@@ -134,6 +134,8 @@ fun LoadCategoryImages(
                     modifier = Modifier
                         .size(100.dp)
                         .clickable{ onImageClick(i) }
+                    // find a better way to implement this .clickable, maybe via. the firebase
+                    // assigned ID?
                 )
             }
 
@@ -150,7 +152,7 @@ fun LoadCategoryImages(
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun CategoryPageTopBar(modifier : Modifier = Modifier) { // defines a topbar at top of screen
-    var iconButtonPressed : Boolean = false
+    var iconButtonPressed = false
 
     CenterAlignedTopAppBar(
         modifier = modifier,
@@ -160,7 +162,7 @@ fun CategoryPageTopBar(modifier : Modifier = Modifier) { // defines a topbar at 
 
         actions = {
             IconButton(
-                onClick = {iconButtonPressed = true} // figure out navigation to profile page
+                onClick = {} // figure out navigation to profile page
             ) {
                 Icon(
                     imageVector = if(iconButtonPressed) {

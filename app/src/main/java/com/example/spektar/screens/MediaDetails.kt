@@ -1,19 +1,11 @@
 package com.example.spektar.screens
 
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.text.TextAutoSize
-import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -21,8 +13,8 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
@@ -32,7 +24,6 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import coil.compose.AsyncImage
 import com.example.spektar.models.topBackArrowIcon
 import com.example.spektar.models.topProfileIcon
-import com.example.spektar.viewmodels.MediaUiState
 import com.example.spektar.viewmodels.MediaViewModel
 
 @Composable
@@ -42,13 +33,13 @@ fun MediaDetailsScreen(
     viewModel : MediaViewModel = viewModel(),
     modifier : Modifier = Modifier,
 ) {
-    val medias by viewModel.uiState.observeAsState() // figure out a better name for this val
+    val medias by viewModel.uiState.collectAsState() // figure out a better name for this val
 
     DetailsScreenContent(
          onBackClick,
-         medias!!.medias[mediaID].name,
-         medias!!.medias[mediaID].imageUrl,
-         medias!!.medias[mediaID].description
+         medias.medias[mediaID].name,
+         medias.medias[mediaID].imageUrl,
+         medias.medias[mediaID].description
      )
 }
 
