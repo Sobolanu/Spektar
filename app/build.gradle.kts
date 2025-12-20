@@ -6,12 +6,7 @@ plugins {
 
     // Firebase:
     id("com.google.gms.google-services")
-
-    // KSP:
-    id("com.google.devtools.ksp")
-
-    // Hilt:
-    id("com.google.dagger.hilt.android")
+    id("kotlin-parcelize")
 }
 
 android {
@@ -54,40 +49,34 @@ android {
 }
 
 dependencies {
-    val nav_version = "2.9.6"
-    val compose_ui_version = "1.7.8"
-    val view_model_version = "2.8.6"
-
-    implementation(libs.androidx.material3)
+    val composeUiVersion = "1.7.8"
+    val viewModelVersion = "2.10.0"
+    
+    implementation(libs.androidx.compose.ui.text.google.fonts)
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
     implementation(libs.androidx.activity.compose)
     implementation(platform(libs.androidx.compose.bom))
+    implementation(libs.androidx.material3)
     implementation(libs.androidx.compose.ui)
     implementation(libs.androidx.compose.ui.graphics)
     implementation(libs.androidx.compose.ui.tooling.preview)
-    implementation(libs.androidx.compose.material3)
-
-    implementation(libs.navigation.compose)
+    implementation(libs.androidx.navigation.compose)
     implementation(libs.kotlinx.serialization.json)
 
     // Coil:
-    implementation("io.coil-kt:coil-compose:2.4.0")
-    // Material3 Icons:
-    implementation("androidx.compose.material:material-icons-extended-android:${compose_ui_version}")
+    implementation("io.coil-kt:coil-compose:2.7.0")
+    // Material3 and Icons:
+    implementation("androidx.compose.material:material-icons-extended-android:${composeUiVersion}")
 
     // ViewModels:
-    implementation("androidx.lifecycle:lifecycle-viewmodel-compose:${view_model_version}")
-    implementation("androidx.lifecycle:lifecycle-livedata-ktx:${view_model_version}")
-    implementation("androidx.lifecycle:lifecycle-runtime-ktx:${view_model_version}")
-    implementation("androidx.compose.runtime:runtime-livedata:${compose_ui_version}")
+    implementation("androidx.lifecycle:lifecycle-viewmodel-compose:${viewModelVersion}")
+    implementation("androidx.lifecycle:lifecycle-livedata-ktx:${viewModelVersion}")
+    implementation("androidx.lifecycle:lifecycle-runtime-ktx:${viewModelVersion}")
+    implementation("androidx.compose.runtime:runtime-livedata:${composeUiVersion}")
 
     // Firebase imports:
     implementation(platform("com.google.firebase:firebase-bom:34.7.0"))
     implementation("com.google.firebase:firebase-analytics")
     implementation("com.google.firebase:firebase-firestore")
-
-    // Hilt:
-    implementation("com.google.dagger:hilt-android:2.57.1")
-    ksp("com.google.dagger:hilt-android-compiler:2.57.1")
 }

@@ -1,5 +1,6 @@
 package com.example.spektar.screens
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -14,6 +15,7 @@ import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.Scaffold
@@ -31,21 +33,32 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import coil.compose.AsyncImage
+import com.example.spektar.MediaDetails
 import com.example.spektar.models.Category
 import com.example.spektar.models.SpecificMedia
 import com.example.spektar.models.bottomIcons
 import com.example.spektar.models.topProfileIcon
 import com.example.spektar.viewmodels.MediaViewModel
 
+/*
+Follow this layout:
+    Books - red
+    Shows - green
+    Movies - blue
+    Games - yellow
+
+Implement your material3 style to this
+*/
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 
 fun CategoryScreen(
-    onImageClick: (Int) -> Unit = {},
+    onImageClick: (MediaDetails) -> Unit = {},
     viewModel : MediaViewModel = viewModel(),
     modifier : Modifier = Modifier
 ) {
-    val medias by viewModel.uiState.collectAsState()
+    val uiState by viewModel.uiState.collectAsState()
 
     Scaffold(
         modifier = modifier,
@@ -54,8 +67,8 @@ fun CategoryScreen(
     ) { paddingValues ->
         CategoryScreenContent(
             onImageClick = onImageClick,
-            categories = medias.categories,
-            medias = medias.medias,
+            categories = uiState.categories,
+            medias = uiState.medias,
             modifier = Modifier.padding(paddingValues),
         )
     }
@@ -64,9 +77,9 @@ fun CategoryScreen(
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun CategoryScreenContent(
-    onImageClick: (Int) -> Unit = {},
+    onImageClick: (MediaDetails) -> Unit = {},
     categories : List<Category>,
-    medias : List<SpecificMedia>,
+    medias : List<List<SpecificMedia>>,
     modifier: Modifier = Modifier,
 ) {
     LazyColumn( // LazyColumn loads only what is visible, scrollable is on by default
@@ -75,11 +88,12 @@ fun CategoryScreenContent(
     ) {
 
         item(categories) {
-            categories.forEachIndexed { _, category ->
+            categories.forEachIndexed {index, category ->
                 LoadCategory(
                     onImageClick = onImageClick,
-                    category = category.mediaCategory,
-                    urls = medias.map{ it.imageUrl }
+                    category = category,
+                    indexOfCategory = index,
+                    urls = medias[index].map { it.imageUrl },
                 )
             }
         }
@@ -88,17 +102,22 @@ fun CategoryScreenContent(
 
 @Composable
 fun LoadCategory(
-    onImageClick: (Int) -> Unit = {},
-    category: String,
+    onImageClick: (MediaDetails) -> Unit = {},
+    category: Category,
+    indexOfCategory: Int,
     urls: List<String>,
 ) {
     LoadCategoryText(category)
-    LoadCategoryImages(onImageClick = onImageClick, listOfUrls = urls)
+    LoadCategoryImages(
+        onImageClick = onImageClick,
+        indexOfCategory = indexOfCategory,
+        listOfUrls = urls
+    )
 }
 
 @Composable
 fun LoadCategoryText(
-    category : String?
+    category : Category
 ) {
     Row( // spacing row for text alignment
         modifier = Modifier
@@ -106,7 +125,7 @@ fun LoadCategoryText(
             .padding(horizontal = 16.dp)
     ) {
         Text(
-            text = category ?: "DNE", // when we figure out color palette, make this look better
+            text = category.mediaCategory, // when we figure out color palette, make this look better
             fontSize = 32.sp,
             modifier = Modifier
                 .padding(bottom = 16.dp)
@@ -117,7 +136,8 @@ fun LoadCategoryText(
 
 @Composable
 fun LoadCategoryImages(
-    onImageClick: (Int) -> Unit = {},
+    onImageClick: (MediaDetails) -> Unit = {},
+    indexOfCategory: Int,
     listOfUrls: List<String>,
 ) {
     LazyRow( // image row, similar principle to LazyColumn
@@ -125,39 +145,39 @@ fun LoadCategoryImages(
             .fillMaxWidth()
             .padding(horizontal = 8.dp)
     ) {
-
         item {
-            for(i in 0..3) {
+            for(i in 0..<listOfUrls.size) {
                 AsyncImage(
                     model = listOfUrls[i],
                     contentDescription = null,
                     modifier = Modifier
-                        .size(100.dp)
-                        .clickable{ onImageClick(i) }
-                    // find a better way to implement this .clickable, maybe via. the firebase
-                    // assigned ID?
+                        .size(150.dp)
+                        .clickable{ onImageClick(MediaDetails(indexOfCategory, i))}
                 )
             }
-
             // add "more" image that matches size and that
             // redirects to grid of images (as in, to more media)
         }
     }
 
     Spacer(
-        modifier = Modifier.height(98.dp)
+        modifier = Modifier.height(92.dp)
     )
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun CategoryPageTopBar(modifier : Modifier = Modifier) { // defines a topbar at top of screen
-    var iconButtonPressed = false
+    val iconButtonPressed = false
 
     CenterAlignedTopAppBar(
-        modifier = modifier,
+        modifier = modifier
+            .background(MaterialTheme.colorScheme.background),
+
         title = { // you can add colors
-            Text(text = "Search")
+            Text(
+                text = "Search"
+            )
         },
 
         actions = {
@@ -180,9 +200,7 @@ fun CategoryPageTopBar(modifier : Modifier = Modifier) { // defines a topbar at 
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun BottomBar(
-    modifier : Modifier = Modifier,
-) {
+fun BottomBar() {
     var selectedItemIndex by rememberSaveable {
         mutableStateOf(0)
     }

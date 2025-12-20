@@ -1,16 +1,22 @@
+@file:Suppress("unused")
+
 package com.example.spektar
 
+import android.net.Uri
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.viewModels
+import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.toRoute
-import com.example.spektar.models.AnimeRepository
+import com.example.spektar.models.BookRepository
 import com.example.spektar.models.CategoryRepository
+import com.example.spektar.models.GameRepository
+import com.example.spektar.models.ShowRepository
 import com.example.spektar.screens.CategoryScreen
 import com.example.spektar.screens.MediaDetailsScreen
 import com.example.spektar.ui.theme.SpektarTheme
@@ -20,14 +26,13 @@ import com.google.firebase.Firebase
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.firestore
 import kotlinx.serialization.Serializable
+import kotlinx.serialization.encodeToString
+import kotlinx.serialization.json.Json
+import kotlin.reflect.typeOf
 
 object FirestoreManager {
     val db: FirebaseFirestore by lazy { Firebase.firestore }
 }
-
-/*
-TODO: Implement Hilt for good dependency injections
- */
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -40,32 +45,43 @@ class MainActivity : ComponentActivity() {
                     composable<CategoryScreen> {
                         val viewModel: MediaViewModel by viewModels {
                             MediaViewModelFactory(
-                                AnimeRepository(FirebaseFirestore.getInstance()),
-                                CategoryRepository()
+                                CategoryRepository(),
+
+                                ShowRepository(FirebaseFirestore.getInstance()),
+                                BookRepository(FirebaseFirestore.getInstance()),
+                                GameRepository(FirebaseFirestore.getInstance())
                             )
                         }
 
                         CategoryScreen(
-                            onImageClick = { id ->
-                                navController.navigate(MediaDetails(mediaID = id))
+                            onImageClick = { position ->
+                                navController.navigate(MediaDetails(
+                                    position.indexCategory,
+                                    position.mediaIndexInsideOfCategory
+                                ))
                             },
                             viewModel = viewModel
                         )
                     }
 
-                    composable<MediaDetails> {
+                    composable<MediaDetails>(
+                        typeMap = mapOf(typeOf<MediaDetails>() to navTypeOf<MediaDetails>())
+                    ) { backStackEntry ->
+                        val args = backStackEntry.toRoute<MediaDetails>()
+
                         val viewModel: MediaViewModel by viewModels {
                             MediaViewModelFactory(
-                                AnimeRepository(FirebaseFirestore.getInstance()),
-                                CategoryRepository()
+                                CategoryRepository(),
+
+                                ShowRepository(FirebaseFirestore.getInstance()),
+                                BookRepository(FirebaseFirestore.getInstance()),
+                                GameRepository(FirebaseFirestore.getInstance())
                             )
                         }
 
-                        val args = it.toRoute<MediaDetails>()
-
                         MediaDetailsScreen(
                             onBackClick = { navController.popBackStack() },
-                            mediaID = args.mediaID,
+                            mediaPosition = Pair(args.indexCategory, args.mediaIndexInsideOfCategory),
                             viewModel = viewModel
                         )
                     }
@@ -77,8 +93,23 @@ class MainActivity : ComponentActivity() {
 
 @Serializable
 object CategoryScreen
-
 @Serializable
 data class MediaDetails(
-    val mediaID : Int
+    val indexCategory: Int,
+    val mediaIndexInsideOfCategory: Int
 )
+
+inline fun <reified T> navTypeOf(
+    isNullableAllowed: Boolean = false,
+    json: Json = Json,
+) = object : NavType<T>(isNullableAllowed = isNullableAllowed) {
+    override fun get(bundle: Bundle, key: String): T? =
+        bundle.getString(key)?.let(json::decodeFromString)
+
+    override fun parseValue(value: String): T = json.decodeFromString(Uri.decode(value))
+
+    override fun serializeAsValue(value: T): String = Uri.encode(json.encodeToString(value))
+
+    override fun put(bundle: Bundle, key: String, value: T) =
+        bundle.putString(key, json.encodeToString(value))
+}

@@ -29,18 +29,17 @@ import com.example.spektar.viewmodels.MediaViewModel
 @Composable
 fun MediaDetailsScreen(
     onBackClick: () -> Unit = {},
-    mediaID : Int,
+    mediaPosition: Pair<Int, Int>,
     viewModel : MediaViewModel = viewModel(),
-    modifier : Modifier = Modifier,
 ) {
-    val medias by viewModel.uiState.collectAsState() // figure out a better name for this val
+    val uiState by viewModel.uiState.collectAsState()
 
     DetailsScreenContent(
-         onBackClick,
-         medias.medias[mediaID].name,
-         medias.medias[mediaID].imageUrl,
-         medias.medias[mediaID].description
-     )
+        onBackClick,
+        mediaName = uiState.medias[mediaPosition.first][mediaPosition.second].name,
+        mediaImageURL = uiState.medias[mediaPosition.first][mediaPosition.second].imageUrl,
+        mediaDescription = uiState.medias[mediaPosition.first][mediaPosition.second].description,
+    )
 }
 
 @Composable
@@ -49,7 +48,6 @@ fun DetailsScreenContent(
     mediaName : String,
     mediaImageURL : String,
     mediaDescription : String,
-    modifier : Modifier = Modifier
 ) {
     Scaffold(
         topBar = { DetailsPageTopBar(onBackClick) },
@@ -110,8 +108,8 @@ fun DetailsPageTopBar(
     onBackClick: () -> Unit = {},
     modifier : Modifier = Modifier
 ) {
-    var backButtonPressed : Boolean = false
-    var profileIconPressed : Boolean = false
+    val backButtonPressed = false
+    val profileIconPressed = false
 
     TopAppBar(
         modifier = modifier,
@@ -133,7 +131,7 @@ fun DetailsPageTopBar(
 
         actions = {
             IconButton(
-                onClick = { profileIconPressed = true } // figure out navigation to profile page
+                onClick = {} // figure out navigation to profile page
             ) {
                 Icon(
                     imageVector = if(profileIconPressed) {
