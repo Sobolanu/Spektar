@@ -15,6 +15,8 @@ import androidx.compose.ui.graphics.vector.ImageVector
 
 /*
 contains the data for icons that are rendered in the app
+
+please move all hard-coded strings into strings.xml :)
 */
 
 internal data class NavigationItem(
@@ -43,7 +45,7 @@ internal val bottomIcons = listOf(
     ),
 
     NavigationItem(
-        title = "Repeat Questionnaire",
+        title = "Questionnaire",
         selectedIcon = Icons.Filled.AddBox,
         unselectedIcon = Icons.Outlined.AddBox
     ),

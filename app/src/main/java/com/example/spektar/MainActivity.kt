@@ -13,13 +13,14 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.toRoute
+import coil.ImageLoader
+import com.example.compose.SpektarTheme
 import com.example.spektar.models.BookRepository
 import com.example.spektar.models.CategoryRepository
 import com.example.spektar.models.GameRepository
 import com.example.spektar.models.ShowRepository
 import com.example.spektar.screens.CategoryScreen
 import com.example.spektar.screens.MediaDetailsScreen
-import com.example.spektar.ui.theme.SpektarTheme
 import com.example.spektar.viewmodels.MediaViewModel
 import com.example.spektar.viewmodels.MediaViewModelFactory
 import com.google.firebase.Firebase
@@ -39,7 +40,9 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContent {
-            SpektarTheme {
+            SpektarTheme(
+                dynamicColor = false
+            ){
                 val navController = rememberNavController()
                 NavHost(navController = navController, startDestination = CategoryScreen) {
                     composable<CategoryScreen> {

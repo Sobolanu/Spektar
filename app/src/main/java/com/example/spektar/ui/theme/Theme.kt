@@ -1,6 +1,4 @@
-package com.example.spektar.ui.theme
-
-import android.R
+package com.example.compose
 import android.app.Activity
 import android.os.Build
 import androidx.compose.foundation.isSystemInDarkTheme
@@ -15,14 +13,7 @@ import androidx.compose.runtime.Immutable
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.platform.LocalContext
-
-@Immutable
-data class ExtendedColorScheme(
-    val sangria: ColorFamily,
-    val ochre: ColorFamily,
-    val hunterGreen: ColorFamily,
-    val blueSapphire: ColorFamily,
-)
+import com.example.ui.theme.AppTypography
 
 private val lightScheme = lightColorScheme(
     primary = primaryLight,
@@ -252,168 +243,6 @@ private val highContrastDarkColorScheme = darkColorScheme(
     surfaceContainerHighest = surfaceContainerHighestDarkHighContrast,
 )
 
-val extendedLight = ExtendedColorScheme(
-  sangria = ColorFamily(
-  sangriaLight,
-  onSangriaLight,
-  sangriaContainerLight,
-  onSangriaContainerLight,
-  ),
-  ochre = ColorFamily(
-  ochreLight,
-  onOchreLight,
-  ochreContainerLight,
-  onOchreContainerLight,
-  ),
-  hunterGreen = ColorFamily(
-  hunterGreenLight,
-  onHunterGreenLight,
-  hunterGreenContainerLight,
-  onHunterGreenContainerLight,
-  ),
-  blueSapphire = ColorFamily(
-  blueSapphireLight,
-  onBlueSapphireLight,
-  blueSapphireContainerLight,
-  onBlueSapphireContainerLight,
-  ),
-)
-
-val extendedDark = ExtendedColorScheme(
-  sangria = ColorFamily(
-  sangriaDark,
-  onSangriaDark,
-  sangriaContainerDark,
-  onSangriaContainerDark,
-  ),
-  ochre = ColorFamily(
-  ochreDark,
-  onOchreDark,
-  ochreContainerDark,
-  onOchreContainerDark,
-  ),
-  hunterGreen = ColorFamily(
-  hunterGreenDark,
-  onHunterGreenDark,
-  hunterGreenContainerDark,
-  onHunterGreenContainerDark,
-  ),
-  blueSapphire = ColorFamily(
-  blueSapphireDark,
-  onBlueSapphireDark,
-  blueSapphireContainerDark,
-  onBlueSapphireContainerDark,
-  ),
-)
-
-val extendedLightMediumContrast = ExtendedColorScheme(
-  sangria = ColorFamily(
-  sangriaLightMediumContrast,
-  onSangriaLightMediumContrast,
-  sangriaContainerLightMediumContrast,
-  onSangriaContainerLightMediumContrast,
-  ),
-  ochre = ColorFamily(
-  ochreLightMediumContrast,
-  onOchreLightMediumContrast,
-  ochreContainerLightMediumContrast,
-  onOchreContainerLightMediumContrast,
-  ),
-  hunterGreen = ColorFamily(
-  hunterGreenLightMediumContrast,
-  onHunterGreenLightMediumContrast,
-  hunterGreenContainerLightMediumContrast,
-  onHunterGreenContainerLightMediumContrast,
-  ),
-  blueSapphire = ColorFamily(
-  blueSapphireLightMediumContrast,
-  onBlueSapphireLightMediumContrast,
-  blueSapphireContainerLightMediumContrast,
-  onBlueSapphireContainerLightMediumContrast,
-  ),
-)
-
-val extendedLightHighContrast = ExtendedColorScheme(
-  sangria = ColorFamily(
-  sangriaLightHighContrast,
-  onSangriaLightHighContrast,
-  sangriaContainerLightHighContrast,
-  onSangriaContainerLightHighContrast,
-  ),
-  ochre = ColorFamily(
-  ochreLightHighContrast,
-  onOchreLightHighContrast,
-  ochreContainerLightHighContrast,
-  onOchreContainerLightHighContrast,
-  ),
-  hunterGreen = ColorFamily(
-  hunterGreenLightHighContrast,
-  onHunterGreenLightHighContrast,
-  hunterGreenContainerLightHighContrast,
-  onHunterGreenContainerLightHighContrast,
-  ),
-  blueSapphire = ColorFamily(
-  blueSapphireLightHighContrast,
-  onBlueSapphireLightHighContrast,
-  blueSapphireContainerLightHighContrast,
-  onBlueSapphireContainerLightHighContrast,
-  ),
-)
-
-val extendedDarkMediumContrast = ExtendedColorScheme(
-  sangria = ColorFamily(
-  sangriaDarkMediumContrast,
-  onSangriaDarkMediumContrast,
-  sangriaContainerDarkMediumContrast,
-  onSangriaContainerDarkMediumContrast,
-  ),
-  ochre = ColorFamily(
-  ochreDarkMediumContrast,
-  onOchreDarkMediumContrast,
-  ochreContainerDarkMediumContrast,
-  onOchreContainerDarkMediumContrast,
-  ),
-  hunterGreen = ColorFamily(
-  hunterGreenDarkMediumContrast,
-  onHunterGreenDarkMediumContrast,
-  hunterGreenContainerDarkMediumContrast,
-  onHunterGreenContainerDarkMediumContrast,
-  ),
-  blueSapphire = ColorFamily(
-  blueSapphireDarkMediumContrast,
-  onBlueSapphireDarkMediumContrast,
-  blueSapphireContainerDarkMediumContrast,
-  onBlueSapphireContainerDarkMediumContrast,
-  ),
-)
-
-val extendedDarkHighContrast = ExtendedColorScheme(
-  sangria = ColorFamily(
-  sangriaDarkHighContrast,
-  onSangriaDarkHighContrast,
-  sangriaContainerDarkHighContrast,
-  onSangriaContainerDarkHighContrast,
-  ),
-  ochre = ColorFamily(
-  ochreDarkHighContrast,
-  onOchreDarkHighContrast,
-  ochreContainerDarkHighContrast,
-  onOchreContainerDarkHighContrast,
-  ),
-  hunterGreen = ColorFamily(
-  hunterGreenDarkHighContrast,
-  onHunterGreenDarkHighContrast,
-  hunterGreenContainerDarkHighContrast,
-  onHunterGreenContainerDarkHighContrast,
-  ),
-  blueSapphire = ColorFamily(
-  blueSapphireDarkHighContrast,
-  onBlueSapphireDarkHighContrast,
-  blueSapphireContainerDarkHighContrast,
-  onBlueSapphireContainerDarkHighContrast,
-  ),
-)
-
 @Immutable
 data class ColorFamily(
     val color: Color,
@@ -433,20 +262,20 @@ fun SpektarTheme(
     dynamicColor: Boolean = true,
     content: @Composable() () -> Unit
 ) {
-  val colorScheme = when {
-      dynamicColor && Build.VERSION.SDK_INT >= Build.VERSION_CODES.S -> {
-          val context = LocalContext.current
-          if (darkTheme) dynamicDarkColorScheme(context) else dynamicLightColorScheme(context)
-      }
-      
-      darkTheme -> darkScheme
-      else -> lightScheme
-  }
+    val colorScheme = when {
+        dynamicColor && Build.VERSION.SDK_INT >= Build.VERSION_CODES.S -> {
+            val context = LocalContext.current
+            if (darkTheme) dynamicDarkColorScheme(context) else dynamicLightColorScheme(context)
+        }
 
-  MaterialTheme(
-    colorScheme = colorScheme,
-    typography = AppTypography,
-    content = content
-  )
+        darkTheme -> darkScheme
+        else -> lightScheme
+    }
+
+    MaterialTheme(
+        colorScheme = colorScheme,
+        typography = AppTypography,
+        content = content
+    )
 }
 

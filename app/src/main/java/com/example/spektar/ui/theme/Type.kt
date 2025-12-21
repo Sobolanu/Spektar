@@ -1,4 +1,4 @@
-package com.example.spektar.ui.theme
+package com.example.ui.theme
 
 import androidx.compose.material3.Typography
 import androidx.compose.ui.text.TextStyle
@@ -18,7 +18,7 @@ val provider = GoogleFont.Provider(
 
 val bodyFontFamily = FontFamily(
     Font(
-        googleFont = GoogleFont("Amaranth"),
+        googleFont = GoogleFont("Abyssinica SIL"),
         fontProvider = provider,
     )
 )
