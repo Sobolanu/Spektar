@@ -1,7 +1,6 @@
 package com.example.spektar.screens
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -12,21 +11,18 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardColors
-import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.NavigationBar
-import androidx.compose.material3.NavigationBarDefaults
 import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBar
-import androidx.compose.material3.TopAppBarColors
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.TopAppBarDefaults.enterAlwaysScrollBehavior
 import androidx.compose.material3.TopAppBarScrollBehavior
@@ -38,10 +34,13 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.dropShadow
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.shadow.Shadow
 import androidx.compose.ui.input.nestedscroll.nestedScroll
-import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -67,7 +66,7 @@ Implement your material3 style to this
 @Composable
 
 fun CategoryScreen(
-    onImageClick: (MediaDetails) -> Unit = {},
+    onImageClick: (MediaDetails) -> Unit,
     viewModel : MediaViewModel = viewModel(),
     modifier : Modifier = Modifier
 ) {
@@ -93,13 +92,14 @@ fun CategoryScreen(
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun CategoryScreenContent(
-    onImageClick: (MediaDetails) -> Unit = {},
+    onImageClick: (MediaDetails) -> Unit,
     categories : List<Category>,
     medias : List<List<SpecificMedia>>,
     modifier: Modifier = Modifier,
 ) {
     LazyColumn( // LazyColumn loads only what is visible, scrollable is on by default
-        modifier = modifier.fillMaxSize(),
+        modifier = modifier.fillMaxSize()
+                            .background(Color(0xFF110205)),
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
 
@@ -118,7 +118,7 @@ fun CategoryScreenContent(
 
 @Composable
 fun LoadCategory(
-    onImageClick: (MediaDetails) -> Unit = {},
+    onImageClick: (MediaDetails) -> Unit,
     category: Category,
     indexOfCategory: Int,
     urls: List<String>,
@@ -155,7 +155,7 @@ fun LoadCategoryText(
 
 @Composable
 fun LoadCategoryImages(
-    onImageClick: (MediaDetails) -> Unit = {},
+    onImageClick: (MediaDetails) -> Unit,
     indexOfCategory: Int,
     listOfUrls: List<String>,
 ) {
@@ -163,26 +163,31 @@ fun LoadCategoryImages(
         modifier = Modifier
             .fillMaxWidth()
             .padding(horizontal = 8.dp)
-            .background(MaterialTheme.colorScheme.inversePrimary)
+            .clip(shape = RoundedCornerShape(15.dp))
+            .background(Color(0xFFFF5D60))
     ) {
         item {
             for(i in 0..<listOfUrls.size) {
                 Card(
                     onClick = { onImageClick(MediaDetails(indexOfCategory, i)) },
 
-                    colors = CardColors(
-                        containerColor = MaterialTheme.colorScheme.inverseSurface,
-                        contentColor = MaterialTheme.colorScheme.inverseOnSurface,
-                        disabledContainerColor = MaterialTheme.colorScheme.surfaceContainer,
-                        disabledContentColor = MaterialTheme.colorScheme.onSurface
+                    colors = CardColors( // sort card colors by category
+                        containerColor = MaterialTheme.colorScheme.secondaryFixedDim,
+                        contentColor = MaterialTheme.colorScheme.onSecondaryContainer,
+                        disabledContainerColor = MaterialTheme.colorScheme.secondaryContainer,
+                        disabledContentColor = MaterialTheme.colorScheme.onSecondaryContainer
                     ),
 
-                    shape = CardDefaults.elevatedShape,
-                    elevation = CardDefaults.cardElevation(
-                        defaultElevation = 48.dp,
-                        pressedElevation = 16.dp
-                    ),
                     modifier = Modifier.padding(16.dp)
+                        .dropShadow(
+                            shape = RoundedCornerShape(20.dp),
+                            shadow = Shadow( // visible but background dark
+                                radius = 10.dp,
+                                spread = 3.dp,
+                                color = Color(0x95000000),
+                                offset = DpOffset(x = 2.dp, 2.dp)
+                            )
+                        )
                 ) {
                     AsyncImage(
                         model = listOfUrls[i],
@@ -207,21 +212,23 @@ fun LoadCategoryImages(
 @Composable
 fun CategoryPageTopBar(
     scrollBehavior: TopAppBarScrollBehavior
-) { // defines a topbar at top of screen
+) {
     val iconButtonPressed = false
 
     CenterAlignedTopAppBar(
         colors = TopAppBarDefaults.topAppBarColors(
-            containerColor = MaterialTheme.colorScheme.primaryContainer,
+            containerColor = Color(0xFF7E0101), // secondary
             titleContentColor = MaterialTheme.colorScheme.onPrimaryContainer,
             actionIconContentColor = MaterialTheme.colorScheme.onPrimaryContainer
         ),
 
         title = { // you can add colors
-            Text(
-                text = "Search",
-                style = MaterialTheme.typography.titleLarge
-            )
+            Box() { // wrap a rounded corner rectangle around the "Search" text
+                Text(
+                    text = "Search",
+                    style = MaterialTheme.typography.titleLarge
+                )
+            }
         },
 
         scrollBehavior = scrollBehavior,
@@ -252,7 +259,7 @@ fun BottomBar() {
     }
 
     NavigationBar(
-        containerColor = MaterialTheme.colorScheme.primaryContainer,
+        containerColor = Color(0xF610000), // tertiary
         contentColor = MaterialTheme.colorScheme.onPrimaryContainer
     ) {
         bottomIcons.forEachIndexed{ index, item ->

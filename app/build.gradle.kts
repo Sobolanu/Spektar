@@ -7,6 +7,7 @@ plugins {
     // Firebase:
     id("com.google.gms.google-services")
     id("kotlin-parcelize")
+    id("com.google.devtools.ksp")
 }
 
 android {
@@ -51,7 +52,7 @@ android {
 dependencies {
     val composeUiVersion = "1.7.8"
     val viewModelVersion = "2.10.0"
-    
+    val roomVersion = "2.8.4"
     implementation(libs.androidx.compose.ui.text.google.fonts)
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
@@ -79,4 +80,8 @@ dependencies {
     implementation(platform("com.google.firebase:firebase-bom:34.7.0"))
     implementation("com.google.firebase:firebase-analytics")
     implementation("com.google.firebase:firebase-firestore")
+
+    // ROOM database:
+    implementation("androidx.room:room-ktx:${roomVersion}")
+    ksp("androidx.room:room-compiler:${roomVersion}")
 }
