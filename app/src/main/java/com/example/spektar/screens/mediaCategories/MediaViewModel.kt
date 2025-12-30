@@ -1,4 +1,4 @@
-package com.example.spektar.viewmodels
+package com.example.spektar.screens.mediaCategories
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope

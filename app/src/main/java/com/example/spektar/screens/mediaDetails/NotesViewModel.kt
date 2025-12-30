@@ -1,9 +1,7 @@
-package com.example.spektar.viewmodels
+package com.example.spektar.screens.mediaDetails
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import androidx.room.util.copy
-import com.example.spektar.models.notes.room.database.Note
 import com.example.spektar.models.notes.room.database.NoteDao
 import com.example.spektar.models.notes.room.database.NoteEvent
 import com.example.spektar.models.notes.room.database.NoteState
@@ -12,7 +10,6 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.flatMapConcat
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
@@ -30,7 +27,7 @@ class NotesViewModel(
                 SortType.NOTE_CONTENT -> dao.getAllNotes() // placeholder right now
             }
         }
-        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(), emptyList())
+        .stateIn(viewModelScope, SharingStarted.Companion.WhileSubscribed(), emptyList())
 
     private val _state = MutableStateFlow(NoteState())
     val state = combine(_state, _sortType, _notes) { state, sortType, notes ->

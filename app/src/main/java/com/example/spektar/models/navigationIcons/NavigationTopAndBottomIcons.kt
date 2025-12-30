@@ -1,4 +1,4 @@
-package com.example.spektar.models
+package com.example.spektar.models.navigationIcons
 
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack

@@ -1,4 +1,4 @@
-package com.example.spektar.screens
+package com.example.spektar.screens.mediaCategories
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
@@ -48,9 +48,8 @@ import coil.compose.AsyncImage
 import com.example.spektar.MediaDetails
 import com.example.spektar.models.Category
 import com.example.spektar.models.SpecificMedia
-import com.example.spektar.models.bottomIcons
-import com.example.spektar.models.topProfileIcon
-import com.example.spektar.viewmodels.MediaViewModel
+import com.example.spektar.models.navigationIcons.bottomIcons
+import com.example.spektar.models.navigationIcons.topProfileIcon
 
 /*
 Follow this layout:

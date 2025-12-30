@@ -1,4 +1,4 @@
-package com.example.spektar.screens
+package com.example.spektar.screens.homeScreen
 
 import androidx.compose.runtime.Composable
 

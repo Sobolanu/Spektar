@@ -1,6 +1,5 @@
 package com.example.spektar
 
-import android.content.Context
 import android.net.Uri
 import android.os.Bundle
 import androidx.compose.runtime.Composable
@@ -10,10 +9,12 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.toRoute
-import com.example.spektar.screens.CategoryScreen
-import com.example.spektar.screens.CreateUserScreen
-import com.example.spektar.screens.MediaDetailsScreen
-import com.example.spektar.viewmodels.MediaViewModel
+import com.example.spektar.screens.mediaCategories.CategoryScreen
+import com.example.spektar.screens.userScreens.CreateUserScreen
+import com.example.spektar.screens.mediaDetails.MediaDetailsScreen
+import com.example.spektar.screens.userScreens.UserRegistrationScreen
+import com.example.spektar.screens.mediaCategories.MediaViewModel
+import com.example.spektar.screens.userScreens.SignInViewModel
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
@@ -21,10 +22,11 @@ import kotlin.reflect.typeOf
 
 @Composable
 fun SpektarNavigation(
-    viewModel : MediaViewModel = viewModel(),
+    mediaViewModel : MediaViewModel = viewModel(),
+    signInViewModel : SignInViewModel = viewModel(), // fix cause you get a funky error from it lmaooooooooo
 ) {
     val navController = rememberNavController()
-    NavHost(navController = navController, startDestination = UserCreateScreen) {
+    NavHost(navController = navController, startDestination = UserLoginScreen) {
         composable<CategoryScreen> {
             CategoryScreen(
                 onImageClick = { position ->
@@ -33,7 +35,7 @@ fun SpektarNavigation(
                         position.mediaIndexInsideOfCategory
                     ))
                 },
-                viewModel = viewModel
+                viewModel = mediaViewModel
             )
         }
 
@@ -45,13 +47,20 @@ fun SpektarNavigation(
             MediaDetailsScreen(
                 onBackClick = { navController.popBackStack() },
                 mediaPosition = Pair(args.indexCategory, args.mediaIndexInsideOfCategory),
-                viewModel = viewModel
+                viewModel = mediaViewModel
             )
         }
 
-        composable<UserCreateScreen> {
+        composable<UserLoginScreen> {
             CreateUserScreen(
-                onTextClick = { navController.navigate(CategoryScreen) }
+                onTextClick = { navController.navigate(UserRegistrationScreen) },
+                // viewModel = signInViewModel
+            )
+        }
+
+        composable<UserRegistrationScreen> {
+            UserRegistrationScreen(
+
             )
         }
     }
@@ -68,7 +77,10 @@ data class MediaDetails(
 )
 
 @Serializable
-object UserCreateScreen
+object UserLoginScreen
+
+@Serializable
+object UserRegistrationScreen
 
 // Function that turns a certain type T into a NavType for use in the navigation
 inline fun <reified T> navTypeOf(

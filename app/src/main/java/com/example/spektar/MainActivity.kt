@@ -13,8 +13,9 @@ import com.example.spektar.models.repositories.CategoryRepository
 import com.example.spektar.models.repositories.GameRepository
 import com.example.spektar.models.repositories.MovieRepository
 import com.example.spektar.models.repositories.ShowRepository
-import com.example.spektar.viewmodels.MediaViewModel
-import com.example.spektar.viewmodels.MediaViewModelFactory
+import com.example.spektar.screens.mediaCategories.MediaViewModel
+import com.example.spektar.screens.mediaCategories.MediaViewModelFactory
+import com.example.spektar.screens.userScreens.SignInViewModel
 import com.google.firebase.Firebase
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.firestore
@@ -22,6 +23,12 @@ import com.google.firebase.firestore.firestore
 object FirestoreManager {
     val db: FirebaseFirestore by lazy { Firebase.firestore }
 }
+
+/*
+    TODO:
+        - apparently ViewModels may/may not contain the bones for navigation so sort that shit out
+        - clean up the app a bit cause damn this project is MESSY.
+*/
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -31,7 +38,7 @@ class MainActivity : ComponentActivity() {
             SpektarTheme(
                 dynamicColor = false
             ) {
-                val viewModel: MediaViewModel by viewModels {
+                val mediaViewModel: MediaViewModel by viewModels {
                     MediaViewModelFactory(
                         CategoryRepository(),
 
@@ -42,7 +49,12 @@ class MainActivity : ComponentActivity() {
                     )
                 }
 
-                SpektarNavigation(viewModel)
+                val signInViewModel: SignInViewModel by viewModels()
+
+                SpektarNavigation(
+                    mediaViewModel,
+                    signInViewModel
+                )
             }
         }
     }
