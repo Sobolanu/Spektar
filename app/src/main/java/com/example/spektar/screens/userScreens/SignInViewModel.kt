@@ -10,7 +10,7 @@ import kotlinx.coroutines.launch
 /*
 big dawg future me your code doesn't work here
 because you need to define a good init {} block for your ViewModel
-check your logcat just in case cause i might be dumb and may have misinterpreted the actual issue
+check your logcat just in case cause i might be dumb and may have misinterpreted the actual issue or smthn
  */
 class SignInViewModel(
     private val accountService: AccountService
