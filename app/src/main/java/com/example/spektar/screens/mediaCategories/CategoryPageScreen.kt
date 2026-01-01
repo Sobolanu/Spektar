@@ -143,7 +143,7 @@ fun LoadCategoryText(
             )
     ) {
         Text(
-            text = category.mediaCategory, // when we figure out color palette, make this look better
+            text = category.mediaCategory,
             fontSize = 32.sp,
             modifier = Modifier
                 .padding(bottom = 16.dp)
@@ -163,7 +163,7 @@ fun LoadCategoryImages(
             .fillMaxWidth()
             .padding(horizontal = 8.dp)
             .clip(shape = RoundedCornerShape(15.dp))
-            .background(Color(0xFFFF5D60))
+            .background(Color(0xFFFF5D60)) // different colors based on different categories
     ) {
         item {
             for(i in 0..<listOfUrls.size) {
@@ -180,7 +180,7 @@ fun LoadCategoryImages(
                     modifier = Modifier.padding(16.dp)
                         .dropShadow(
                             shape = RoundedCornerShape(20.dp),
-                            shadow = Shadow( // visible but background dark
+                            shadow = Shadow(
                                 radius = 10.dp,
                                 spread = 3.dp,
                                 color = Color(0x95000000),

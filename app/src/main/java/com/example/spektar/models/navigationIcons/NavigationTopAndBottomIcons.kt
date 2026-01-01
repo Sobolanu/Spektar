@@ -17,6 +17,7 @@ import androidx.compose.ui.graphics.vector.ImageVector
 contains the data for icons that are rendered in the app
 
 please move all hard-coded strings into strings.xml :)
+well, if you can that is
 */
 
 internal data class NavigationItem(

@@ -15,18 +15,25 @@ import com.example.spektar.screens.mediaDetails.MediaDetailsScreen
 import com.example.spektar.screens.userScreens.UserRegistrationScreen
 import com.example.spektar.screens.mediaCategories.MediaViewModel
 import com.example.spektar.screens.userScreens.SignInViewModel
+import com.example.spektar.screens.userScreens.SignUpViewModel
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import kotlin.reflect.typeOf
 
+/*
+Navigation uses "modern" (used to be modern, however Navigation3 came out but i'm kinda crunched on time so
+i don't have time to migrate to Navigation3) type-safe navigation, which is also quite easy to work with.
+ */
 @Composable
 fun SpektarNavigation(
     mediaViewModel : MediaViewModel = viewModel(),
-    signInViewModel : SignInViewModel = viewModel(), // fix cause you get a funky error from it lmaooooooooo
+    signInViewModel : SignInViewModel = viewModel(),
+    signUpViewModel : SignUpViewModel = viewModel()
 ) {
+
     val navController = rememberNavController()
-    NavHost(navController = navController, startDestination = UserLoginScreen) {
+    NavHost(navController = navController, startDestination = CategoryScreen) {
         composable<CategoryScreen> {
             CategoryScreen(
                 onImageClick = { position ->
@@ -53,14 +60,16 @@ fun SpektarNavigation(
 
         composable<UserLoginScreen> {
             CreateUserScreen(
+                onSignInClick = { navController.navigate(CategoryScreen) }, // placeholder route until i make home screen
                 onTextClick = { navController.navigate(UserRegistrationScreen) },
-                // viewModel = signInViewModel
+                viewModel = signInViewModel
             )
         }
 
         composable<UserRegistrationScreen> {
             UserRegistrationScreen(
-
+                viewModel = signUpViewModel,
+                onSignUp = { navController.navigate(CategoryScreen) } // read comment above
             )
         }
     }

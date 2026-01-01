@@ -1,6 +1,5 @@
 package com.example.spektar.screens.userScreens
 
-import androidx.activity.viewModels
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.expandHorizontally
 import androidx.compose.animation.fadeIn
@@ -16,9 +15,8 @@ import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.text.input.rememberTextFieldState
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.AccountCircle
+import androidx.compose.material.icons.filled.Email
 import androidx.compose.material.icons.filled.Key
 import androidx.compose.material3.Button
 import androidx.compose.material3.Icon
@@ -37,21 +35,18 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.spektar.R
 import kotlinx.coroutines.delay
-import androidx.lifecycle.viewmodel.compose.viewModel
 
-// make registration screen
 @Composable
 fun CreateUserScreen(
+    onSignInClick: () -> Unit,
     onTextClick: () -> Unit,
-    // viewModel: SignInViewModel = viewModel()
+    viewModel: SignInViewModel = viewModel()
 ) {
-    val usernameState = rememberTextFieldState()
-    val emailState = rememberTextFieldState()
-    val passwordState = rememberTextFieldState()
-
     var visible by remember {mutableStateOf(false)}
+    val signInState by viewModel.signInState.collectAsState()
 
     LaunchedEffect(Unit) {
         delay(100) // hardcoded 100ms delay
@@ -101,19 +96,12 @@ fun CreateUserScreen(
             )
 
             TextField(
-                state = usernameState,
+                value = signInState.email,
+                onValueChange = { newValue ->
+                    viewModel.updateEmail(newValue)
+                },
                 leadingIcon = { Icon(
-                    Icons.Filled.AccountCircle,
-                    contentDescription = "Username",
-                ) },
-                placeholder = { Text("Username") },
-                modifier = Modifier.padding(bottom = 12.dp)
-            )
-
-            TextField(
-                state = emailState,
-                leadingIcon = { Icon(
-                    Icons.Filled.Key,
+                    Icons.Filled.Email,
                     contentDescription = "Email",
                 ) },
                 placeholder = { Text("Email") },
@@ -121,7 +109,11 @@ fun CreateUserScreen(
             )
 
             TextField(
-                state = passwordState,
+                value = signInState.password,
+                onValueChange = { newValue ->
+                    viewModel.updatePassword(newValue)
+                },
+
                 leadingIcon = { Icon(
                     Icons.Filled.Key,
                     contentDescription = "Password",
@@ -132,7 +124,8 @@ fun CreateUserScreen(
 
             Button(
                 onClick = {
-
+                    viewModel.onSignInClick()
+                    onSignInClick()
                 }
             ) {
                 Text(

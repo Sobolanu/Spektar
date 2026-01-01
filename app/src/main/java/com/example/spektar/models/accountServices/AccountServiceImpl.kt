@@ -1,23 +1,35 @@
 package com.example.spektar.models.accountServices
 
 import com.google.firebase.Firebase
+import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.auth
+import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
 import kotlinx.coroutines.tasks.await
+
+/*
+     refer to firebase tutorial video, because as of now your app will lead to the login screen
+     even if you have an account, forcing you to login AGAIN.
+*/
 
 class AccountServiceImpl : AccountService {
 
     override val currentUser: Flow<User?>
         get() = callbackFlow {
-            TODO()
+            val listener = FirebaseAuth.AuthStateListener { auth ->
+                this.trySend(auth.currentUser?.let {User(it.uid)})
+            }
+
+            Firebase.auth.addAuthStateListener(listener)
+            awaitClose {Firebase.auth.removeAuthStateListener {listener}}
         }
 
     override val currentUserId: String
         get() = Firebase.auth.currentUser?.uid.orEmpty()
 
     override fun hasUser(): Boolean {
-        TODO("Not yet implemented")
+        return Firebase.auth.currentUser != null
     }
 
     // i gotta learn more about asynchronous functions cause what the hell does .await() even do
@@ -34,7 +46,6 @@ class AccountServiceImpl : AccountService {
     }
 
     override suspend fun deleteAccount() {
-        TODO("Not yet implemented")
+        Firebase.auth.currentUser!!.delete()
     }
-
 }

@@ -33,6 +33,9 @@ import com.example.spektar.models.navigationIcons.topBackArrowIcon
 import com.example.spektar.models.navigationIcons.topProfileIcon
 import com.example.spektar.screens.mediaCategories.MediaViewModel
 
+/*
+TODO: implement screen for notes and notes functionality
+ */
 @Composable
 fun MediaDetailsScreen(
     onBackClick: () -> Unit,
