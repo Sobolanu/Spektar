@@ -9,16 +9,19 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.toRoute
+import com.example.spektar.errorHandling.AppErrorScreen
 import com.example.spektar.screens.mediaCategories.CategoryScreen
 import com.example.spektar.screens.userScreens.CreateUserScreen
 import com.example.spektar.screens.mediaDetails.MediaDetailsScreen
 import com.example.spektar.screens.userScreens.UserRegistrationScreen
 import com.example.spektar.screens.mediaCategories.MediaViewModel
+import com.example.spektar.screens.settingsScreen.SettingsScreen
 import com.example.spektar.screens.userScreens.SignInViewModel
 import com.example.spektar.screens.userScreens.SignUpViewModel
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
+import java.io.Serial
 import kotlin.reflect.typeOf
 
 /*
@@ -27,11 +30,10 @@ i don't have time to migrate to Navigation3) type-safe navigation, which is also
  */
 @Composable
 fun SpektarNavigation(
-    mediaViewModel : MediaViewModel = viewModel(),
-    signInViewModel : SignInViewModel = viewModel(),
-    signUpViewModel : SignUpViewModel = viewModel()
+    mediaViewModel : MediaViewModel,
+    signInViewModel : SignInViewModel,
+    signUpViewModel : SignUpViewModel,
 ) {
-
     val navController = rememberNavController()
     NavHost(navController = navController, startDestination = CategoryScreen) {
         composable<CategoryScreen> {
@@ -39,8 +41,17 @@ fun SpektarNavigation(
                 onImageClick = { position ->
                     navController.navigate(MediaDetails(
                         position.indexCategory,
-                        position.mediaIndexInsideOfCategory
+                        position.mediaIndexInsideOfCategory // integrate color based off of categoryColor
                     ))
+                },
+
+                onBottomBarItemClick = { index ->
+                    navController.navigate(when (index) {
+                        0 -> SettingsScreen // all are SettingsScreen because i haven't made the rest yet
+                        1 -> SettingsScreen
+                        2 -> SettingsScreen
+                        else -> SettingsScreen
+                    })
                 },
                 viewModel = mediaViewModel
             )
@@ -72,6 +83,60 @@ fun SpektarNavigation(
                 onSignUp = { navController.navigate(CategoryScreen) } // read comment above
             )
         }
+
+        // This composable is not implemented yet on the "actually getting errors" front
+        composable<AppErrorScreen>(
+            typeMap = mapOf(typeOf<AppErrorScreen>() to navTypeOf<AppErrorScreen>())
+        ) { backStackEntry ->
+            val args = backStackEntry.toRoute<AppErrorScreen>()
+            AppErrorScreen(
+                errorMessage = args.errorMessage
+            )
+        }
+
+        composable<SettingsScreen> {
+            SettingsScreen(
+                navigateToScreen = { id ->
+                    navController.navigate(
+                        ThemeScreen
+                        /*
+                            when (id) {
+                                0 -> ThemeScreen
+                                1 -> AccessibilityScreen
+                                2 -> AppErrorScreen
+                                3 -> ProfileSettingsScreen
+                                4 -> AppErrorScreen
+                                5 -> AppErrorScreen
+                                else -> { AppErrorScreen } // implement error screen when you get around to it
+                            }
+                         */
+                    )
+                },
+
+                onBottomBarItemClick = { index ->
+                    navController.navigate(when (index) {
+                        0 -> SettingsScreen // all are SettingsScreen because i haven't made the rest yet
+                        1 -> SettingsScreen
+                        2 -> SettingsScreen
+                        else -> SettingsScreen
+                    })
+                },
+            )
+        }
+
+        composable<ThemeScreen> {
+            // PLACEHOLDER FOR NOW JUST TO SEE IF NAVIGATION WORKS
+            CategoryScreen(
+                onImageClick = { position ->
+                    navController.navigate(MediaDetails(
+                        position.indexCategory,
+                        position.mediaIndexInsideOfCategory // integrate color based off of categoryColor
+                    ))
+                },
+                onBottomBarItemClick = {},
+                viewModel = mediaViewModel
+            )
+        }
     }
 }
 
@@ -79,17 +144,43 @@ fun SpektarNavigation(
 // if the routes require data passed between them or not
 @Serializable
 object CategoryScreen
-@Serializable
-data class MediaDetails(
-    val indexCategory: Int,
-    val mediaIndexInsideOfCategory: Int
-)
 
 @Serializable
 object UserLoginScreen
 
 @Serializable
 object UserRegistrationScreen
+
+@Serializable
+object SettingsScreen
+
+@Serializable
+object ThemeScreen
+
+@Serializable
+object AccessibilityScreen
+
+@Serializable
+object LanguageScreen // useless
+
+@Serializable
+object ProfileSettingsScreen
+
+@Serializable
+object HelpSupportScreen // useless
+
+@Serializable
+object DonateScreen // is a placeholder anyway as this won't be developed
+
+@Serializable
+data class MediaDetails(
+    val indexCategory: Int,
+    val mediaIndexInsideOfCategory: Int,
+)
+@Serializable
+data class AppErrorScreen (
+    val errorMessage: String
+)
 
 // Function that turns a certain type T into a NavType for use in the navigation
 inline fun <reified T> navTypeOf(

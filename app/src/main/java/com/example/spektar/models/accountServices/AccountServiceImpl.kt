@@ -11,6 +11,8 @@ import kotlinx.coroutines.tasks.await
 /*
      refer to firebase tutorial video, because as of now your app will lead to the login screen
      even if you have an account, forcing you to login AGAIN.
+
+     well damn i'm migrating to supabase, have fun me
 */
 
 class AccountServiceImpl : AccountService {

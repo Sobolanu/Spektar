@@ -1,6 +1,8 @@
 package com.example.spektar.models
 
 import androidx.compose.ui.graphics.Color
+import kotlinx.serialization.SerialName
+import kotlinx.serialization.Serializable
 
 /*
     Defines a class Category (to describe a category of media, i.e books, movies, games...)
@@ -8,13 +10,16 @@ import androidx.compose.ui.graphics.Color
 */
 
 data class Category (
-    val mediaCategory : String
+    val mediaCategory : String,
+    val categoryColor : Color
 )
 
+@Serializable
 data class SpecificMedia(
-    val credits : String = "",
-    val description : String = "",
-    val imageUrl : String = "",
-    val name : String = "",
-    val releaseDate : String = ""
+    val id: Long = 0,
+    val name: String = "",
+    val imageUrl: String = "",
+    val description: String = "",
+    val credits: String = "",
+    val releaseDate: String = ""
 )

@@ -1,16 +1,13 @@
 package com.example.spektar.models.repositories
 
 import com.example.spektar.models.SpecificMedia
+import com.example.spektar.supabase
 import com.google.firebase.firestore.FirebaseFirestore
+import io.github.jan.supabase.postgrest.from
 import kotlinx.coroutines.tasks.await
 
-class MovieRepository(private val db: FirebaseFirestore) {
+class MovieRepository() {
     suspend fun getAllMovies(): List<SpecificMedia> {
-        return try {
-            val snapshot = db.collection("movies").get().await()
-            snapshot.toObjects(SpecificMedia::class.java)
-        } catch (_: Exception) {
-            emptyList()
-        }
+        return supabase.from("movies").select().decodeList<SpecificMedia>()
     }
 }

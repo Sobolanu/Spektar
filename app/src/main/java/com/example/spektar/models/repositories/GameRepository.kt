@@ -1,16 +1,25 @@
 package com.example.spektar.models.repositories
 
 import com.example.spektar.models.SpecificMedia
+import com.example.spektar.supabase
 import com.google.firebase.firestore.FirebaseFirestore
+import io.github.jan.supabase.postgrest.from
 import kotlinx.coroutines.tasks.await
+import kotlinx.serialization.json.Json
 
-class GameRepository(private val db: FirebaseFirestore) {
+fun testSerialization() {
+    val media = SpecificMedia( id = 1,
+    name = "Test",
+    imageUrl = "https://example.com",
+    description = "desc",
+    credits = "me",
+    releaseDate = "2025-01-01" )
+    val json =  Json.encodeToString(media)
+    println(json)
+}
+class GameRepository() {
     suspend fun getAllGames(): List<SpecificMedia> {
-        return try {
-            val snapshot = db.collection("games").get().await()
-            snapshot.toObjects(SpecificMedia::class.java)
-        } catch (_: Exception) {
-            emptyList()
-        }
+        testSerialization()
+        return supabase.from("games").select().decodeList<SpecificMedia>()
     }
 }

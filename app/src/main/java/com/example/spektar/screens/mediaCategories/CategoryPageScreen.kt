@@ -50,23 +50,20 @@ import com.example.spektar.models.Category
 import com.example.spektar.models.SpecificMedia
 import com.example.spektar.models.navigationIcons.bottomIcons
 import com.example.spektar.models.navigationIcons.topProfileIcon
-
-/*
-Follow this layout:
-    Books - red
-    Shows - green
-    Movies - blue
-    Games - yellow
-
-Implement your material3 style to this
-*/
+import com.example.spektar.screens.AppBars.BottomBar
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 
+/*
+I think, at the end of the LoadCategoryText, there should be a button with "View completed"
+where you can search up completed pieces of media (so, stuff you've watched/read)
+ */
+
 fun CategoryScreen(
     onImageClick: (MediaDetails) -> Unit,
-    viewModel : MediaViewModel = viewModel(),
+    onBottomBarItemClick: (Int) -> Unit,
+    viewModel : MediaViewModel,
     modifier : Modifier = Modifier
 ) {
     val uiState by viewModel.uiState.collectAsState()
@@ -77,7 +74,7 @@ fun CategoryScreen(
             .nestedScroll(scrollBehavior.nestedScrollConnection),
 
         topBar = { CategoryPageTopBar(scrollBehavior = scrollBehavior) },
-        bottomBar = { BottomBar() },
+        bottomBar = { BottomBar( onBottomBarItemClick ) },
     ) { paddingValues ->
         CategoryScreenContent(
             onImageClick = onImageClick,
@@ -98,7 +95,7 @@ fun CategoryScreenContent(
 ) {
     LazyColumn( // LazyColumn loads only what is visible, scrollable is on by default
         modifier = modifier.fillMaxSize()
-                            .background(Color(0xFF110205)),
+                            .background(MaterialTheme.colorScheme.surface), // surface
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
 
@@ -126,7 +123,8 @@ fun LoadCategory(
     LoadCategoryImages(
         onImageClick = onImageClick,
         indexOfCategory = indexOfCategory,
-        listOfUrls = urls
+        listOfUrls = urls,
+        categoryColor = category.categoryColor
     )
 }
 
@@ -157,13 +155,14 @@ fun LoadCategoryImages(
     onImageClick: (MediaDetails) -> Unit,
     indexOfCategory: Int,
     listOfUrls: List<String>,
+    categoryColor : Color
 ) {
     LazyRow( // image row, similar principle to LazyColumn
         modifier = Modifier
             .fillMaxWidth()
             .padding(horizontal = 8.dp)
             .clip(shape = RoundedCornerShape(15.dp))
-            .background(Color(0xFFFF5D60)) // different colors based on different categories
+            .background(categoryColor) // different colors based on different categories
     ) {
         item {
             for(i in 0..<listOfUrls.size) {
@@ -171,10 +170,10 @@ fun LoadCategoryImages(
                     onClick = { onImageClick(MediaDetails(indexOfCategory, i)) },
 
                     colors = CardColors( // sort card colors by category
-                        containerColor = MaterialTheme.colorScheme.secondaryFixedDim,
-                        contentColor = MaterialTheme.colorScheme.onSecondaryContainer,
-                        disabledContainerColor = MaterialTheme.colorScheme.secondaryContainer,
-                        disabledContentColor = MaterialTheme.colorScheme.onSecondaryContainer
+                        containerColor = MaterialTheme.colorScheme.tertiaryContainer,
+                        contentColor = MaterialTheme.colorScheme.onTertiaryContainer,
+                        disabledContainerColor = MaterialTheme.colorScheme.tertiaryFixedDim,
+                        disabledContentColor = MaterialTheme.colorScheme.onTertiaryFixed
                     ),
 
                     modifier = Modifier.padding(16.dp)
@@ -216,9 +215,9 @@ fun CategoryPageTopBar(
 
     CenterAlignedTopAppBar(
         colors = TopAppBarDefaults.topAppBarColors(
-            containerColor = Color(0xFF7E0101), // secondary
-            titleContentColor = MaterialTheme.colorScheme.onPrimaryContainer,
-            actionIconContentColor = MaterialTheme.colorScheme.onPrimaryContainer
+            containerColor = MaterialTheme.colorScheme.secondaryContainer, // secondary
+            titleContentColor = MaterialTheme.colorScheme.onSecondaryContainer,
+            actionIconContentColor = MaterialTheme.colorScheme.onSecondaryContainer
         ),
 
         title = { // you can add colors
@@ -237,7 +236,7 @@ fun CategoryPageTopBar(
                 onClick = {} // figure out navigation to profile page
             ) {
                 Icon(
-                    imageVector = if(iconButtonPressed) {
+                    imageVector = if (iconButtonPressed) {
                         topProfileIcon.selectedIcon
                     } else {
                         topProfileIcon.unselectedIcon
@@ -248,43 +247,4 @@ fun CategoryPageTopBar(
             }
         }
     )
-}
-
-@OptIn(ExperimentalMaterial3Api::class)
-@Composable
-fun BottomBar() {
-    var selectedItemIndex by rememberSaveable {
-        mutableStateOf(0)
-    }
-
-    NavigationBar(
-        containerColor = Color(0xF610000), // tertiary
-        contentColor = MaterialTheme.colorScheme.onPrimaryContainer
-    ) {
-        bottomIcons.forEachIndexed{ index, item ->
-            NavigationBarItem(
-                selected = selectedItemIndex == index,
-                onClick = {
-                    selectedItemIndex = index // figure out navigation to screens
-                },
-
-                label = {
-                    Text(
-                        text = item.title,
-                        textAlign = TextAlign.Center,
-                        style = MaterialTheme.typography.labelLarge
-                    )
-                },
-
-                icon = {
-                    Icon(
-                        imageVector = if(index == selectedItemIndex) {
-                            item.selectedIcon
-                        } else item.unselectedIcon,
-                        contentDescription = item.title
-                    )
-                }
-            )
-        }
-    }
 }

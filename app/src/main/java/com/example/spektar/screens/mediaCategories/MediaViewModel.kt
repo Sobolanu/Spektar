@@ -2,6 +2,8 @@ package com.example.spektar.screens.mediaCategories
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
+import com.example.spektar.errorHandling.FetchError
+import com.example.spektar.errorHandling.Result
 import com.example.spektar.models.repositories.BookRepository
 import com.example.spektar.models.repositories.ShowRepository
 import com.example.spektar.models.Category
@@ -15,6 +17,8 @@ import kotlinx.coroutines.launch
 
 /*
     defines some properties for a uiState variable
+
+    implement error handling when you have the energy to do so
 */
 
 data class MediaUiState (
@@ -39,6 +43,7 @@ class MediaViewModel (
     }
 
     // uiState obtains all values that are stored in the repositories.
+
     private fun loadData() {
         viewModelScope.launch {
             val categories = categoryRepository.getAllCategories()

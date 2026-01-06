@@ -40,9 +40,8 @@ TODO: implement screen for notes and notes functionality
 fun MediaDetailsScreen(
     onBackClick: () -> Unit,
     // onEvent: (NoteEvent) -> Unit, implement navigation to notes for specific media
-
     mediaPosition: Pair<Int, Int>,
-    viewModel : MediaViewModel = viewModel(),
+    viewModel : MediaViewModel
 ) {
     val uiState by viewModel.uiState.collectAsState()
 
@@ -103,12 +102,10 @@ fun MediaDetailsScreen(
             item {
                 Button(
                     onClick = {
-                        // here pass onEvent(NoteEvent.something), this would actually be navigation to notedetails screen
+                        // navigate to note of said media
                     }
                 ) { }
             }
-            // add notes item (item that leads to a notes page for THIS SPECIFIC PIECE of media)
-            // notes item should be a local database!!!
         }
     }
 }
