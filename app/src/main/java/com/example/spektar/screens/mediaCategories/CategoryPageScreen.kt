@@ -19,8 +19,6 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.NavigationBar
-import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
@@ -29,9 +27,6 @@ import androidx.compose.material3.TopAppBarScrollBehavior
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.saveable.rememberSaveable
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -39,16 +34,13 @@ import androidx.compose.ui.draw.dropShadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.shadow.Shadow
 import androidx.compose.ui.input.nestedscroll.nestedScroll
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.lifecycle.viewmodel.compose.viewModel
 import coil.compose.AsyncImage
 import com.example.spektar.MediaDetails
 import com.example.spektar.models.Category
 import com.example.spektar.models.SpecificMedia
-import com.example.spektar.models.navigationIcons.bottomIcons
 import com.example.spektar.models.navigationIcons.topProfileIcon
 import com.example.spektar.screens.AppBars.BottomBar
 
@@ -58,13 +50,16 @@ import com.example.spektar.screens.AppBars.BottomBar
 /*
 I think, at the end of the LoadCategoryText, there should be a button with "View completed"
 where you can search up completed pieces of media (so, stuff you've watched/read)
+
+modify your viewmodel you dingus
+remember, the ViewModel should be responsible for loading and rendering stuff!!!
  */
 
 fun CategoryScreen(
     onImageClick: (MediaDetails) -> Unit,
     onBottomBarItemClick: (Int) -> Unit,
-    viewModel : MediaViewModel,
-    modifier : Modifier = Modifier
+    selectedIcon: Int,
+    viewModel : MediaViewModel
 ) {
     val uiState by viewModel.uiState.collectAsState()
     val scrollBehavior = enterAlwaysScrollBehavior()
@@ -74,7 +69,10 @@ fun CategoryScreen(
             .nestedScroll(scrollBehavior.nestedScrollConnection),
 
         topBar = { CategoryPageTopBar(scrollBehavior = scrollBehavior) },
-        bottomBar = { BottomBar( onBottomBarItemClick ) },
+        bottomBar = { BottomBar(
+            onBottomBarItemClick,
+            selectedIcon
+        ) },
     ) { paddingValues ->
         CategoryScreenContent(
             onImageClick = onImageClick,
@@ -101,31 +99,16 @@ fun CategoryScreenContent(
 
         item(categories) {
             categories.forEachIndexed {index, category ->
-                LoadCategory(
+                LoadCategoryText(category)
+                LoadCategoryImages(
                     onImageClick = onImageClick,
-                    category = category,
                     indexOfCategory = index,
-                    urls = medias[index].map { it.imageUrl },
+                    listOfUrls = medias[index].map {it.imageUrl},
+                    categoryColor = category.categoryColor
                 )
             }
         }
     }
-}
-
-@Composable
-fun LoadCategory(
-    onImageClick: (MediaDetails) -> Unit,
-    category: Category,
-    indexOfCategory: Int,
-    urls: List<String>,
-) {
-    LoadCategoryText(category)
-    LoadCategoryImages(
-        onImageClick = onImageClick,
-        indexOfCategory = indexOfCategory,
-        listOfUrls = urls,
-        categoryColor = category.categoryColor
-    )
 }
 
 @Composable
@@ -196,6 +179,8 @@ fun LoadCategoryImages(
                     )
                 }
             }
+
+            // also add a sliding bar below this row
             // add "more" image that matches size and that
             // redirects to grid of images (as in, to more media)
         }

@@ -1,12 +1,8 @@
 package com.example.spektar.models.accountServices
 
-import com.google.firebase.Firebase
-import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.auth.auth
-import kotlinx.coroutines.channels.awaitClose
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.callbackFlow
-import kotlinx.coroutines.tasks.await
+import com.example.spektar.auth
+import io.github.jan.supabase.auth.providers.builtin.Email
+import io.github.jan.supabase.auth.user.UserInfo
 
 /*
      refer to firebase tutorial video, because as of now your app will lead to the login screen
@@ -17,37 +13,42 @@ import kotlinx.coroutines.tasks.await
 
 class AccountServiceImpl : AccountService {
 
-    override val currentUser: Flow<User?>
-        get() = callbackFlow {
-            val listener = FirebaseAuth.AuthStateListener { auth ->
-                this.trySend(auth.currentUser?.let {User(it.uid)})
-            }
+    /*
+    getCurrentSessionOrNull()?.user
+     */
+    override val currentUser: UserInfo? = auth.currentUserOrNull()
 
-            Firebase.auth.addAuthStateListener(listener)
-            awaitClose {Firebase.auth.removeAuthStateListener {listener}}
-        }
-
-    override val currentUserId: String
-        get() = Firebase.auth.currentUser?.uid.orEmpty()
+    override val currentUserId: String? = currentUser?.id
 
     override fun hasUser(): Boolean {
-        return Firebase.auth.currentUser != null
+        return auth.currentUserOrNull() != null
     }
 
-    // i gotta learn more about asynchronous functions cause what the hell does .await() even do
-    override suspend fun signIn(email: String, password: String) {
-        Firebase.auth.signInWithEmailAndPassword(email, password).await()
+    override suspend fun retrieveUser(): UserInfo {
+        return auth.retrieveUserForCurrentSession(updateSession = true)
     }
 
-    override suspend fun signUp(email: String, password: String) {
-        Firebase.auth.createUserWithEmailAndPassword(email, password).await()
+    override suspend fun signIn(userEmail: String, userPassword: String) {
+        auth.signInWith(Email) {
+            email = userEmail
+            password = userPassword
+        }
+    }
+
+    // reminder to go to your supabase dashboard and redirect users when they confirm their link
+    // that is, your sign up composable should also tell you that you need to confirm your address
+    override suspend fun signUp(userEmail: String, userPassword: String) {
+        auth.signUpWith(Email) {
+            email = userEmail
+            password = userPassword
+        }
     }
 
     override suspend fun signOut() {
-        Firebase.auth.signOut()
+        auth.signOut()
     }
 
     override suspend fun deleteAccount() {
-        Firebase.auth.currentUser!!.delete()
+        auth.admin.deleteUser(currentUserId!!)
     }
 }

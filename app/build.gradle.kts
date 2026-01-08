@@ -58,6 +58,7 @@ dependencies {
     val room_version = "2.8.4"
     val supabase_version = "3.3.0"
     val ktor_version = "3.3.3"
+    val datastore_version = "1.2.0"
 
     implementation(libs.androidx.compose.ui.text.google.fonts)
     implementation(libs.androidx.core.ktx)
@@ -71,7 +72,6 @@ dependencies {
     implementation(libs.androidx.navigation.compose)
     implementation(libs.kotlinx.serialization.json)
 
-
     // Coil:
     implementation("io.coil-kt:coil-compose:2.7.0")
     // Material3 and Icons:
@@ -83,12 +83,6 @@ dependencies {
     implementation("androidx.lifecycle:lifecycle-runtime-ktx:${viewModel_version}")
     implementation("androidx.compose.runtime:runtime-livedata:${composeUi_version}")
 
-    // Firebase imports:
-    implementation(platform("com.google.firebase:firebase-bom:34.7.0"))
-    implementation("com.google.firebase:firebase-analytics")
-    implementation("com.google.firebase:firebase-firestore")
-    implementation("com.firebaseui:firebase-ui-auth:9.0.0")
-
     // Supabase imports:
     implementation(platform("io.github.jan-tennert.supabase:bom:$supabase_version"))
     implementation("io.github.jan-tennert.supabase:postgrest-kt")
@@ -97,4 +91,6 @@ dependencies {
     // ROOM database:
     implementation("androidx.room:room-ktx:${room_version}")
     ksp("androidx.room:room-compiler:${room_version}")
+
+    implementation("androidx.datastore:datastore-preferences:${datastore_version}")
 }

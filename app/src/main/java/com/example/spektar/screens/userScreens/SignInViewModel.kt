@@ -4,16 +4,9 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import com.example.spektar.models.accountServices.AccountService
-import com.example.spektar.models.repositories.BookRepository
-import com.example.spektar.models.repositories.CategoryRepository
-import com.example.spektar.models.repositories.GameRepository
-import com.example.spektar.models.repositories.MovieRepository
-import com.example.spektar.models.repositories.ShowRepository
-import com.example.spektar.screens.mediaCategories.MediaViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
-import kotlin.math.sign
 
 data class SignInState(
     val email: String = "",

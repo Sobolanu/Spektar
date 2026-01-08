@@ -17,11 +17,10 @@ import com.example.spektar.models.navigationIcons.bottomIcons
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun BottomBar(
-    onBottomBarItemClick: ( Int ) -> Unit
+    onBottomBarItemClick: ( Int ) -> Unit,
+    selectedIcon: Int
 ) {
-    var selectedItemIndex by rememberSaveable {
-        mutableStateOf(1)
-    }
+    var selectedItemIndex by rememberSaveable { mutableStateOf(selectedIcon) }
 
     NavigationBar(
         containerColor = MaterialTheme.colorScheme.tertiaryContainer, // tertiary
@@ -31,10 +30,8 @@ fun BottomBar(
             NavigationBarItem(
                 selected = selectedItemIndex == index,
                 onClick = {
-                    // figure out how to maintain selected icon state from screen navigation
-                    // later, right now even if you press "Settings" Home will still be selected so yeah
                     selectedItemIndex = index
-                    onBottomBarItemClick( index )
+                    onBottomBarItemClick( selectedItemIndex )
                 },
 
                 label = {

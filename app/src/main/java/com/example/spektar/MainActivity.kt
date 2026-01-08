@@ -2,14 +2,23 @@
 
 package com.example.spektar
 
+import android.content.Context
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.viewModels
-import androidx.room.Room
+import androidx.compose.foundation.isSystemInDarkTheme
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.datastore.core.DataStore
+import androidx.datastore.preferences.core.Preferences
+import androidx.datastore.preferences.core.booleanPreferencesKey
+import androidx.datastore.preferences.preferencesDataStore
+import androidx.lifecycle.lifecycleScope
 import com.example.compose.SpektarTheme
-import com.example.spektar.models.accountServices.AccountService
+import com.example.spektar.models.DataStoreViewModel
+import com.example.spektar.models.DataStoreViewModelFactory
 import com.example.spektar.models.accountServices.AccountServiceImpl
 import com.example.spektar.models.repositories.BookRepository
 import com.example.spektar.models.repositories.CategoryRepository
@@ -22,24 +31,28 @@ import com.example.spektar.screens.userScreens.SignInViewModel
 import com.example.spektar.screens.userScreens.SignInViewModelFactory
 import com.example.spektar.screens.userScreens.SignUpViewModel
 import com.example.spektar.screens.userScreens.SignUpViewModelFactory
-import com.google.firebase.Firebase
-import com.google.firebase.firestore.FirebaseFirestore
-import com.google.firebase.firestore.firestore
+import io.github.jan.supabase.auth.Auth
+import io.github.jan.supabase.auth.auth
 import io.github.jan.supabase.createSupabaseClient
 import io.github.jan.supabase.postgrest.Postgrest
+import kotlinx.coroutines.launch
+import kotlin.properties.Delegates
 
 val supabase = createSupabaseClient(
     supabaseUrl = "https://rlyotyktmhyflfyljpmr.supabase.co",
     supabaseKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJseW90eWt0bWh5ZmxmeWxqcG1yIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjY0MTM3MDgsImV4cCI6MjA4MTk4OTcwOH0.eTwSGVag_npnTkiQtOCqBLxSidqMAM2psJEAN7h4TEQ"
 ) {
     install(Postgrest)
+    install(Auth)
 }
-// next: migrate user auth from firebase to supabase
-
+val auth = supabase.auth // add log in and sign up via google too
+val Context.dataStore by preferencesDataStore(name = "settings")
 /*
-MainActivity is the place where my firebase DB is defined, alongside where all ViewModels are defined.
+MainActivity is the place where my supabase DB is defined, alongside where all ViewModels are defined.
 The ViewModels get constructed and then are passed into Navigation.kt, where they are used depending on the screen.
  */
+
+// NOTE TO SELF: YOU CAN HAVE MULTIPLE VIEWMODELS IN ONE SCREEN, ONLY ONE CAN MODIFY THE UI THOUGH!!!
 
 /* TODO:
     ### FRONT END
@@ -51,29 +64,17 @@ The ViewModels get constructed and then are passed into Navigation.kt, where the
 
         - screen for each media's note
             - peep the bottom of this comment for elaborations (the implement per-media part)
-
         - profile screen
             - might be redundant if you can integrate into settings screen
-
         - questionnaire screen
-
         - settings screen
             - photosensitive mode, profile settings, app language, dynamic color on/off and other
             important stuff you think of
-
         - splash screen
             - app logo somehow slowly gaining color
-
         - grid screen for "More..." at the end of the image rows
-
         - make a color palette cause material3 highk sucks?
-            - Primary color is js gonna be some red, reminder that primary color is just "what color
-            do you think of when you think of this app". it serves zero purpose other than that
-            - secondary and tertiary you have written yourself in CategoryPageScreen.kt where the top
-            and bottom bars respectively are.
-            - your Surface should be the background color of CategoryPageScreen.kt, whereas your
-            SurfaceVariant (or whtv it's called in the builder) should be that one shade of red you
-            used before you had a different background color for each category
+        - create custom modifiers for ease-of-use's sake
 
     TODO: ### BACK-END (sort out after designing screen UIs else you'll just get mad and burn out)
         - after splash screen designing, have the app auto log-on if you have made an account
@@ -93,42 +94,50 @@ The ViewModels get constructed and then are passed into Navigation.kt, where the
             the content should have modifiable text size, text color, bold/underline/italic,
             hyperlinks that lead to other notes and URLs and stuff y'know
  */
-
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContent {
+            val mediaViewModel: MediaViewModel by viewModels {
+                MediaViewModelFactory(
+                    CategoryRepository(),
+
+                    ShowRepository(),
+                    BookRepository(),
+                    GameRepository(),
+                    MovieRepository()
+                )
+            }
+
+            val signInViewModel: SignInViewModel by viewModels {
+                SignInViewModelFactory(
+                    accountService = AccountServiceImpl()
+                )
+            }
+
+            val signUpViewModel: SignUpViewModel by viewModels {
+                SignUpViewModelFactory(
+                    accountService = AccountServiceImpl()
+                )
+            }
+
+            val dataStoreViewModel : DataStoreViewModel by viewModels {
+                DataStoreViewModelFactory(applicationContext.dataStore)
+            }
+
+            val dynamicColorState by dataStoreViewModel.read("dynamic_color").collectAsState(initial = false)
+            val darkThemeState by dataStoreViewModel.read("dark_scheme").collectAsState(initial = isSystemInDarkTheme())
+
             SpektarTheme(
-                dynamicColor = false
+                dynamicColor = dynamicColorState,
+                darkTheme = darkThemeState
             ) {
-                val mediaViewModel: MediaViewModel by viewModels {
-                    MediaViewModelFactory(
-                        CategoryRepository(),
-
-                        ShowRepository(),
-                        BookRepository(),
-                        GameRepository(),
-                        MovieRepository()
-                    )
-                }
-
-                val signInViewModel: SignInViewModel by viewModels {
-                    SignInViewModelFactory(
-                        accountService = AccountServiceImpl()
-                    )
-                }
-
-                val signUpViewModel: SignUpViewModel by viewModels {
-                    SignUpViewModelFactory(
-                        accountService = AccountServiceImpl()
-                    )
-                }
-
                 SpektarNavigation(
                     mediaViewModel,
                     signInViewModel,
                     signUpViewModel,
+                    dataStoreViewModel
                 )
             }
         }

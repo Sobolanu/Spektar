@@ -26,15 +26,22 @@ import com.example.spektar.screens.AppBars.BottomBar
 
 /*
 TODO: implement rest of categories and their subscreens
+
+this screen would need a ViewModel of some kind to survive config changes
+remember, the ViewModel should be responsible for preparing the data for loading stuff!
  */
 
 @Composable
 fun SettingsScreen(
     navigateToScreen: ( Int ) -> Unit,
     onBottomBarItemClick: (Int) -> Unit,
+    selectedIcon : Int
 ) {
     Scaffold(
-        bottomBar = { BottomBar(onBottomBarItemClick) },
+        bottomBar = { BottomBar(
+            onBottomBarItemClick,
+            selectedIcon
+        ) },
         topBar = { SettingsScreenTopBar() },
         contentWindowInsets = WindowInsets(left = 8.dp)
     ) { paddingValues ->
@@ -83,7 +90,13 @@ fun SettingsCategory(
                         disabledContentColor =
                     ),
                  */
-                onClick = { navigateToScreen(index.third) }
+                onClick = {
+                    if(index.third == Access.LANGUAGE_PANE.ordinal) {
+                        // open language pane here
+                    } else {
+                        navigateToScreen(index.third)
+                    }
+                }
             ) {
                 Row(
                     modifier = Modifier
@@ -91,7 +104,7 @@ fun SettingsCategory(
                         .padding(bottom = 4.dp)
                 ) {
                     Icon(
-                        imageVector = index.first, // placeholder for now
+                        imageVector = index.first,
                         contentDescription = null,
                         modifier = Modifier.padding(end = 8.dp)
                     )

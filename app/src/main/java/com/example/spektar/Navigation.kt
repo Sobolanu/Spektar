@@ -1,41 +1,52 @@
 package com.example.spektar
 
+import android.content.SharedPreferences
 import android.net.Uri
 import android.os.Bundle
 import androidx.compose.runtime.Composable
-import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.NavController
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import androidx.navigation.compose.navigation
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.toRoute
 import com.example.spektar.errorHandling.AppErrorScreen
+import com.example.spektar.models.DataStoreViewModel
+import com.example.spektar.screens.homeScreen.HomeScreen
+import com.example.spektar.screens.settingsScreen.accessibilityScreen.AccessibilityScreen
 import com.example.spektar.screens.mediaCategories.CategoryScreen
 import com.example.spektar.screens.userScreens.CreateUserScreen
 import com.example.spektar.screens.mediaDetails.MediaDetailsScreen
 import com.example.spektar.screens.userScreens.UserRegistrationScreen
 import com.example.spektar.screens.mediaCategories.MediaViewModel
+import com.example.spektar.screens.settingsScreen.Access
 import com.example.spektar.screens.settingsScreen.SettingsScreen
+import com.example.spektar.screens.settingsScreen.themeScreen.ThemeScreen
 import com.example.spektar.screens.userScreens.SignInViewModel
 import com.example.spektar.screens.userScreens.SignUpViewModel
 import kotlinx.serialization.Serializable
-import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
-import java.io.Serial
 import kotlin.reflect.typeOf
 
 /*
 Navigation uses "modern" (used to be modern, however Navigation3 came out but i'm kinda crunched on time so
 i don't have time to migrate to Navigation3) type-safe navigation, which is also quite easy to work with.
  */
+
+// TODO: SharedPreferences for maintaining state of stuff even on app close
+
 @Composable
 fun SpektarNavigation(
     mediaViewModel : MediaViewModel,
     signInViewModel : SignInViewModel,
     signUpViewModel : SignUpViewModel,
+    dataStoreViewModel : DataStoreViewModel
 ) {
     val navController = rememberNavController()
-    NavHost(navController = navController, startDestination = CategoryScreen) {
+    var selectedIcon = 0 // used to specify the currently selected icon in the app's bottom bar
+
+    NavHost(navController = navController, startDestination = UserLoginScreen) {
         composable<CategoryScreen> {
             CategoryScreen(
                 onImageClick = { position ->
@@ -46,13 +57,11 @@ fun SpektarNavigation(
                 },
 
                 onBottomBarItemClick = { index ->
-                    navController.navigate(when (index) {
-                        0 -> SettingsScreen // all are SettingsScreen because i haven't made the rest yet
-                        1 -> SettingsScreen
-                        2 -> SettingsScreen
-                        else -> SettingsScreen
-                    })
+                    selectedIcon = index
+                    bottomBarNavigation(navController, index)
                 },
+
+                selectedIcon = selectedIcon,
                 viewModel = mediaViewModel
             )
         }
@@ -94,84 +103,81 @@ fun SpektarNavigation(
             )
         }
 
-        composable<SettingsScreen> {
-            SettingsScreen(
-                navigateToScreen = { id ->
-                    navController.navigate(
-                        ThemeScreen
-                        /*
-                            when (id) {
-                                0 -> ThemeScreen
-                                1 -> AccessibilityScreen
-                                2 -> AppErrorScreen
-                                3 -> ProfileSettingsScreen
-                                4 -> AppErrorScreen
-                                5 -> AppErrorScreen
-                                else -> { AppErrorScreen } // implement error screen when you get around to it
-                            }
-                         */
-                    )
-                },
+        navigation<Settings>(startDestination = SettingsScreen) { // nested graph responsible for everything on settings page
+            composable<SettingsScreen> {
+                SettingsScreen(
+                    navigateToScreen = { id ->
+                        navController.navigate(
+                            // placeholder until i sort out error messaging
+                                when (id) {
+                                    Access.THEME_SCREEN.ordinal -> ThemeScreen
+                                    Access.ACCESSIBILITY_SCREEN.ordinal -> AccessibilityScreen
+                                    Access.PROFILE_SETTINGS_SCREEN.ordinal -> ProfileSettingsScreen
+                                    Access.HELP_SUPPORT_SCREEN.ordinal -> HelpSupportScreen
+                                    Access.DONATE_SCREEN.ordinal -> DonateScreen
+                                    else -> { AppErrorScreen } // implement error screen when you get around to it
+                                }
 
-                onBottomBarItemClick = { index ->
-                    navController.navigate(when (index) {
-                        0 -> SettingsScreen // all are SettingsScreen because i haven't made the rest yet
-                        1 -> SettingsScreen
-                        2 -> SettingsScreen
-                        else -> SettingsScreen
-                    })
-                },
-            )
-        }
+                        )
+                    },
 
-        composable<ThemeScreen> {
-            // PLACEHOLDER FOR NOW JUST TO SEE IF NAVIGATION WORKS
-            CategoryScreen(
-                onImageClick = { position ->
-                    navController.navigate(MediaDetails(
-                        position.indexCategory,
-                        position.mediaIndexInsideOfCategory // integrate color based off of categoryColor
-                    ))
-                },
-                onBottomBarItemClick = {},
-                viewModel = mediaViewModel
-            )
+                    onBottomBarItemClick = { index ->
+                        selectedIcon = index
+                        bottomBarNavigation(navController, index)
+                    },
+
+                    selectedIcon = selectedIcon
+                )
+            }
+
+            composable<ThemeScreen> {
+                ThemeScreen(
+                    onBottomBarItemClick = { index ->
+                        selectedIcon = index
+                        bottomBarNavigation(navController, index)
+                    },
+
+                    selectedIcon = selectedIcon,
+                    viewModel = dataStoreViewModel
+                )
+            }
+
+            composable<AccessibilityScreen> {
+                AccessibilityScreen(
+                    onBottomBarItemClick = { index ->
+                        selectedIcon = index
+                        bottomBarNavigation(navController, index)
+                    },
+
+                    selectedIcon = selectedIcon
+                )
+            }
+
+            composable<HelpSupportScreen> {
+                HomeScreen() // placeholder
+            }
+
+            composable<DonateScreen> {
+                HomeScreen() // placeholder
+            }
         }
     }
 }
 
+fun bottomBarNavigation( // move someplace else when you re-organize your project eventually
+    navController : NavController,
+    index : Int
+) {
+    navController.navigate(when (index) {
+        0 -> Settings // all are Settings because i haven't made the rest yet
+        1 -> Settings
+        2 -> Settings
+        else -> Settings
+    })
+}
+
 // These are the routes that the navigation uses, defined as either objects or data classes depending on
 // if the routes require data passed between them or not
-@Serializable
-object CategoryScreen
-
-@Serializable
-object UserLoginScreen
-
-@Serializable
-object UserRegistrationScreen
-
-@Serializable
-object SettingsScreen
-
-@Serializable
-object ThemeScreen
-
-@Serializable
-object AccessibilityScreen
-
-@Serializable
-object LanguageScreen // useless
-
-@Serializable
-object ProfileSettingsScreen
-
-@Serializable
-object HelpSupportScreen // useless
-
-@Serializable
-object DonateScreen // is a placeholder anyway as this won't be developed
-
 @Serializable
 data class MediaDetails(
     val indexCategory: Int,
@@ -181,6 +187,17 @@ data class MediaDetails(
 data class AppErrorScreen (
     val errorMessage: String
 )
+
+@Serializable object CategoryScreen
+@Serializable object UserLoginScreen
+@Serializable object UserRegistrationScreen
+@Serializable object SettingsScreen
+@Serializable object ThemeScreen
+@Serializable object Settings
+@Serializable object AccessibilityScreen
+@Serializable object ProfileSettingsScreen
+@Serializable object HelpSupportScreen
+@Serializable object DonateScreen
 
 // Function that turns a certain type T into a NavType for use in the navigation
 inline fun <reified T> navTypeOf(
