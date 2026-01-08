@@ -1,0 +1,59 @@
+// NOTE TO SELF: YOU CAN HAVE MULTIPLE VIEWMODELS IN ONE SCREEN, ONLY ONE CAN MODIFY THE UI THOUGH!!!
+
+/* TODO:
+    ### FRONT END
+        - home screen
+            - this home screen would contain pieces of media you're currently consuming, and they'd
+            have a progress counter (page X/Y for books and an optional daily goal for books, whereas
+            for shows, each season gets it's own "slot" in the repositories, so it'll just be of format
+            "Episode X/Y", where X means the last page/episode you watched, Y is max)
+
+        - screen for each media's note
+            - peep the bottom of this comment for elaborations (the implement per-media part)
+        - profile screen
+            - might be redundant if you can integrate into settings screen
+        - questionnaire screen
+        - settings screen
+            - photosensitive mode, profile settings, app language, dynamic color on/off and other
+            important stuff you think of
+        - splash screen
+            - app logo somehow slowly gaining color
+        - grid screen for "More..." at the end of the image rows
+        - make a color palette cause material3 highk sucks?
+        - create custom modifiers for ease-of-use's sake
+
+    TODO: ### BACK-END (sort out after designing screen UIs else you'll just get mad and burn out)
+        - after splash screen designing, have the app auto log-on if you have made an account
+
+         - figure out user content recommendation,
+         which also means i need to implement tags for the media and also implement search
+            - so basically, the shtick for user content recommendation is that you'll make an account,
+            then fill out a questionnaire a la old netflix, to deduce what you'll want to consume next
+            recommended media would be among the first images in image rows
+
+        - sort out error handling
+            - handle any potential errors from firebase realtime database and user auth
+
+        - implement per-media notes properly
+            - Each media should have a LIST of notes belonging to it
+            - each note should have a custom user-assigned title, and content that is modifiable
+            the content should have modifiable text size, text color, bold/underline/italic,
+            hyperlinks that lead to other notes and URLs and stuff y'know
+ */
+
+ launchSingleTop = true basically says that you can't mash navigation buttons and have app navigation break
+
+ UI Layer
+ Activities, Fragments, Composables, ViewModels, UI state, navigation, events
+
+ Domain Layer
+ Use cases
+ Domain models
+ Business rules
+ Repository interfaces
+
+ Data Layer
+ Repository implementations
+ Remote data sources (Supabase, Retrofit, Firebase)
+ Local data sources (Room, DataStore)
+ DTOs, mappers

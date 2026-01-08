@@ -53,6 +53,7 @@ android {
 }
 
 dependencies {
+    implementation(libs.androidx.compose.foundation.layout)
     val composeUi_version = "1.7.8"
     val viewModel_version = "2.10.0"
     val room_version = "2.8.4"
