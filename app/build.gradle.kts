@@ -4,7 +4,6 @@ plugins {
     alias(libs.plugins.kotlin.compose)
     alias(libs.plugins.kotlin.serialization)
 
-    // Firebase:
     id("com.google.gms.google-services")
     id("kotlin-parcelize")
     id("com.google.devtools.ksp")
@@ -54,13 +53,6 @@ android {
 
 dependencies {
     implementation(libs.androidx.compose.foundation.layout)
-    val composeUi_version = "1.7.8"
-    val viewModel_version = "2.10.0"
-    val room_version = "2.8.4"
-    val supabase_version = "3.3.0"
-    val ktor_version = "3.3.3"
-    val datastore_version = "1.2.0"
-
     implementation(libs.androidx.compose.ui.text.google.fonts)
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
@@ -73,25 +65,31 @@ dependencies {
     implementation(libs.androidx.navigation.compose)
     implementation(libs.kotlinx.serialization.json)
 
-    // Coil:
-    implementation("io.coil-kt:coil-compose:2.7.0")
-    // Material3 and Icons:
-    implementation("androidx.compose.material:material-icons-extended-android:${composeUi_version}")
+    // Coil
+    implementation(libs.coil.compose)
 
-    // ViewModels:
-    implementation("androidx.lifecycle:lifecycle-viewmodel-compose:${viewModel_version}")
-    implementation("androidx.lifecycle:lifecycle-livedata-ktx:${viewModel_version}")
-    implementation("androidx.lifecycle:lifecycle-runtime-ktx:${viewModel_version}")
-    implementation("androidx.compose.runtime:runtime-livedata:${composeUi_version}")
+    // Material icons
+    implementation(libs.compose.material.icons)
 
-    // Supabase imports:
-    implementation(platform("io.github.jan-tennert.supabase:bom:$supabase_version"))
-    implementation("io.github.jan-tennert.supabase:postgrest-kt")
-    implementation("io.ktor:ktor-client-android:$ktor_version")
+    implementation(libs.androidx.compose.foundation.layout)
 
-    // ROOM database:
-    implementation("androidx.room:room-ktx:${room_version}")
-    ksp("androidx.room:room-compiler:${room_version}")
+    // ViewModel stuffs
+    implementation(libs.lifecycle.viewmodel.compose)
+    implementation(libs.lifecycle.livedata.ktx)
+    implementation(libs.androidx.lifecycle.runtime.ktx)
+    implementation(libs.compose.runtime.livedata)
 
-    implementation("androidx.datastore:datastore-preferences:${datastore_version}")
+    // Supabase
+    implementation(platform(libs.supabase.bom))
+    implementation(libs.supabase.postgrest)
+
+    // Ktor
+    implementation(libs.ktor.client.android)
+
+    // Room
+    implementation(libs.androidx.room.ktx)
+    ksp(libs.androidx.room.compiler)
+
+    // Datastore
+    implementation(libs.datastore.preferences)
 }
