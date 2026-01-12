@@ -1,4 +1,4 @@
-package com.example.spektar.domain.model.errors
+package com.example.spektar.domain.usecase
 
 typealias RootError = Error
 

@@ -1,5 +1,7 @@
 package com.example.spektar.ui.navigation
 
+import androidx.compose.animation.AnimatedContentTransitionScope
+import androidx.compose.animation.core.tween
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
@@ -27,14 +29,21 @@ fun SpektarNavigation(
     mediaViewModel : MediaViewModel,
     signInViewModel : SignInViewModel,
     signUpViewModel : SignUpViewModel,
-    dataStoreViewModel : DataStoreViewModel
+    dataStoreViewModel : DataStoreViewModel,
 ) {
     val navController = rememberNavController()
     // used to specify the currently selected icon in the app's bottom bar
     var selectedIcon by remember { mutableIntStateOf(0) }
 
-    NavHost(navController = navController, startDestination = UserLoginScreen) {
-
+    // start will be UserLoginScreen(false)
+    NavHost(
+        navController = navController,
+        startDestination = UserLoginScreen(false) /* CategoryScreen */,
+        enterTransition = { slideIntoContainer(AnimatedContentTransitionScope.SlideDirection.Start, tween(500)) },
+        exitTransition = { slideOutOfContainer(AnimatedContentTransitionScope.SlideDirection.Start, tween(500)) },
+        popEnterTransition = { slideIntoContainer(AnimatedContentTransitionScope.SlideDirection.End, tween(500)) },
+        popExitTransition = { slideOutOfContainer(AnimatedContentTransitionScope.SlideDirection.End, tween(500)) }
+    ) {
         AuthGraph(
             navController = navController,
             signInViewModel = signInViewModel,
@@ -44,31 +53,24 @@ fun SpektarNavigation(
         CategoryGraph(
             navController = navController,
             mediaViewModel = mediaViewModel,
-            selectedIcon = selectedIcon,
-            onBottomBarClick = {index ->
+
+            onBottomBarClick = { index -> // where selectedIcon gets changed
                 selectedIcon = index
                 bottomBarNavigation(navController, index)
-            }
+            },
+
+            selectedIconProvider = { selectedIcon }
         )
 
         SettingsGraph(
             navController = navController,
             dataStoreViewModel = dataStoreViewModel,
-            selectedIcon = selectedIcon,
-            onBottomBarClick = {index ->
+            onBottomBarClick = { index ->
                 selectedIcon = index
                 bottomBarNavigation(navController, index)
-            }
-        )
+            },
 
-        CategoryGraph(
-            navController = navController,
-            mediaViewModel = mediaViewModel,
-            selectedIcon = selectedIcon,
-            onBottomBarClick = {index ->
-                selectedIcon = index
-                bottomBarNavigation(navController, index)
-            }
+            selectedIconProvider = { selectedIcon }
         )
     }
 }

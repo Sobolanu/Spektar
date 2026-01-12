@@ -1,3 +1,12 @@
 <resources>
     <string name="app_name"> Spektar </string>
+    <string name="dynamic_color_title">Dynamic Color</string>
+    <string name="dynamic_color_info_box_text">Dynamic color matches the color scheme of the app with your wallpaper colors. Dynamic color must be enabled in system settings. This does not override your selected light/dark scheme.</string>
+    <string name="light_dark_scheme_title">Light/Dark Scheme</string>
+    <string name="light_dark_scheme_info_box_text">The app scheme is defaulted to the light scheme but on toggle this will switch on the app\'s dark theme.</string>
+    <string name="theme_screen_top_bar_text">App Theme</string>
+    <string name="settings_screen_title">Settings</string>
+    <string name="accessibility_screen_title">Accessibility</string>
+    <string name="reduce_motion_title">Reduce Motion</string>
+    <string name="reduce_motion_info_box_text">When toggled, app animations will be removed in order to improve the user experience for individuals with motion sickness.</string>
 </resources>

@@ -82,6 +82,8 @@ dependencies {
     // Supabase
     implementation(platform(libs.supabase.bom))
     implementation(libs.supabase.postgrest)
+    // implementation(libs.supabase.storage)
+    implementation("io.github.jan-tennert.supabase:storage-kt:3.3.0")
 
     // Ktor
     implementation(libs.ktor.client.android)

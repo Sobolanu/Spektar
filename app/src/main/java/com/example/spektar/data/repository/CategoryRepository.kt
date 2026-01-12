@@ -9,6 +9,6 @@ class CategoryRepository {
     private val games = Category("Games", Color(0xFFEFD07A))
     private val movies = Category("Movies", Color(0xFF063F78))
 
-    internal val globalCategoryList = mutableListOf(shows, books, games, movies)
+    private val globalCategoryList = mutableListOf(shows, books, games, movies)
     fun getAllCategories(): List<Category> = globalCategoryList
 }

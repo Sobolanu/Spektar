@@ -1,7 +1,6 @@
 package com.example.spektar.ui
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -27,23 +26,22 @@ import androidx.compose.material3.TopAppBarScrollBehavior
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
-import androidx.compose.ui.draw.dropShadow
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.shadow.Shadow
 import androidx.compose.ui.input.nestedscroll.nestedScroll
-import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
 import com.example.spektar.domain.model.Category
-import com.example.spektar.domain.model.SpecificMedia
-import com.example.spektar.ui.viewModels.MediaViewModel
 import com.example.spektar.domain.model.navigationBarIcons.topProfileIcon
 import com.example.spektar.ui.common.components.BottomBar
+import com.example.spektar.ui.common.modifiers.cardWithShadowModifier
+import com.example.spektar.ui.common.modifiers.roundedCornerRow
 import com.example.spektar.ui.navigation.routes.MediaDetails
+import com.example.spektar.ui.viewModels.MediaViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -71,14 +69,14 @@ fun CategoryScreen(
 
         topBar = { CategoryPageTopBar(scrollBehavior = scrollBehavior) },
         bottomBar = { BottomBar(
-            onBottomBarItemClick,
-            selectedIcon
+            onBottomBarItemClick = onBottomBarItemClick,
+            selectedIcon,
         ) },
     ) { paddingValues ->
         CategoryScreenContent(
             onImageClick = onImageClick,
             categories = uiState.categories,
-            medias = uiState.medias,
+            viewModel = viewModel,
             modifier = Modifier.padding(paddingValues),
         )
     }
@@ -89,12 +87,11 @@ fun CategoryScreen(
 fun CategoryScreenContent(
     onImageClick: (MediaDetails) -> Unit,
     categories : List<Category>,
-    medias : List<List<SpecificMedia>>,
+    viewModel : MediaViewModel,
     modifier: Modifier = Modifier,
 ) {
     LazyColumn( // LazyColumn loads only what is visible, scrollable is on by default
-        modifier = modifier.fillMaxSize()
-                            .background(MaterialTheme.colorScheme.surface), // surface
+        modifier = modifier.fillMaxSize().background(MaterialTheme.colorScheme.surface), // surface
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
 
@@ -104,7 +101,8 @@ fun CategoryScreenContent(
                 LoadCategoryImages(
                     onImageClick = onImageClick,
                     indexOfCategory = index,
-                    listOfUrls = medias[index].map {it.imageUrl},
+                    listOfUrls = viewModel.obtainAllImagesInCategory(index),
+                    mediaNames = viewModel.obtainAllNamesInCategory(index),
                     categoryColor = category.categoryColor
                 )
             }
@@ -139,14 +137,11 @@ fun LoadCategoryImages(
     onImageClick: (MediaDetails) -> Unit,
     indexOfCategory: Int,
     listOfUrls: List<String>,
+    mediaNames: List<String>,
     categoryColor : Color
 ) {
-    LazyRow( // image row, similar principle to LazyColumn
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(horizontal = 8.dp)
-            .clip(shape = RoundedCornerShape(15.dp))
-            .background(categoryColor) // different colors based on different categories
+    LazyRow( // image row
+        modifier = roundedCornerRow.background(categoryColor) // different colors based on different categories
     ) {
         item {
             for(i in 0..<listOfUrls.size) {
@@ -160,20 +155,11 @@ fun LoadCategoryImages(
                         disabledContentColor = MaterialTheme.colorScheme.onTertiaryFixed
                     ),
 
-                    modifier = Modifier.padding(16.dp)
-                        .dropShadow(
-                            shape = RoundedCornerShape(20.dp),
-                            shadow = Shadow(
-                                radius = 10.dp,
-                                spread = 3.dp,
-                                color = Color(0x95000000),
-                                offset = DpOffset(x = 2.dp, 2.dp)
-                            )
-                        )
+                    modifier = cardWithShadowModifier
                 ) {
                     AsyncImage(
                         model = listOfUrls[i],
-                        contentDescription = null,
+                        contentDescription = mediaNames[i],
                         modifier = Modifier
                             .size(175.dp)
                             .padding(horizontal = 8.dp)
@@ -197,22 +183,23 @@ fun LoadCategoryImages(
 fun CategoryPageTopBar(
     scrollBehavior: TopAppBarScrollBehavior
 ) {
-    val iconButtonPressed = false
+    val iconButtonPressed by remember {mutableStateOf(false)}
 
     CenterAlignedTopAppBar(
         colors = TopAppBarDefaults.topAppBarColors(
-            containerColor = MaterialTheme.colorScheme.secondaryContainer, // secondary
+            containerColor = MaterialTheme.colorScheme.secondaryContainer,
             titleContentColor = MaterialTheme.colorScheme.onSecondaryContainer,
             actionIconContentColor = MaterialTheme.colorScheme.onSecondaryContainer
         ),
 
         title = { // you can add colors
-            Box() { // wrap a rounded corner rectangle around the "Search" text
-                Text(
-                    text = "Search",
-                    style = MaterialTheme.typography.titleLarge
-                )
-            }
+            Text(
+                text = "Search",
+                style = MaterialTheme.typography.titleLarge,
+                modifier = Modifier
+                    .background(MaterialTheme.colorScheme.onSecondaryFixed, RoundedCornerShape(4.dp))
+                    .padding(4.dp)
+            )
         },
 
         scrollBehavior = scrollBehavior,

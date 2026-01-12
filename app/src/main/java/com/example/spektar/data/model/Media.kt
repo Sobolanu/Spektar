@@ -1,4 +1,4 @@
-package com.example.spektar.domain.model
+package com.example.spektar.data.model
 
 import kotlinx.serialization.Serializable
 

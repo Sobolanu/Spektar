@@ -1,6 +1,7 @@
-package com.example.spektar.ui.settingsScreen.accessibilityScreen
+package com.example.spektar.ui.settingsScreen.profileSettingsScreen
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
@@ -12,34 +13,19 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.example.spektar.R
 import com.example.spektar.ui.common.components.BottomBar
-import com.example.spektar.ui.common.components.SettingsSubScreenItem
-import com.example.spektar.ui.viewModels.DataStoreViewModel
-import kotlinx.coroutines.launch
 
 @Composable
-fun AccessibilityScreen(
-    onBottomBarItemClick: ( Int ) -> Unit,
-    selectedIcon: Int,
-    viewModel: DataStoreViewModel
+fun ProfileSettingsScreen(
+    onBottomBarItemClick: (Int) -> Unit,
+    selectedIcon : Int,
 ) {
-    val reduceMotionEnabled by viewModel.readThemeSettings("reduce_motion").collectAsState(initial = false) // this should be readAccessibilitySettings later
-    var reduceMotionInfoBoxEnabled by remember { mutableStateOf(false) }
-
-    val scope = rememberCoroutineScope()
-
     Scaffold(
-        topBar = { AccessibilityScreenTopBar() },
         bottomBar = {
             BottomBar(
                 onBottomBarItemClick,
@@ -50,34 +36,23 @@ fun AccessibilityScreen(
     ) { paddingValues ->
         Column(
             modifier = Modifier
-                .padding(paddingValues)
                 .fillMaxSize()
+                .padding(paddingValues)
                 .background(MaterialTheme.colorScheme.background),
-        ) {
-            SettingsSubScreenItem (
-                text = stringResource(R.string.reduce_motion_title),
-                switchState = reduceMotionEnabled,
-                infoBoxText = stringResource(R.string.reduce_motion_info_box_text),
-                showInfoBox = reduceMotionInfoBoxEnabled,
-                onInfoBoxClick = {
-                    reduceMotionInfoBoxEnabled = it
-                },
-                onCheckedChange = {
-                    scope.launch {
-                        viewModel.saveThemeSettings("reduce_motion", it)
-                    }
-                }
-            )
 
-            // implement colorblind stuff i suppose?
-            // and 3 contrast settings later
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.Center
+        ) {
+            Text(
+                "blabla"
+            )
         }
     }
 }
 
 @Composable
 @OptIn(ExperimentalMaterial3Api::class)
-fun AccessibilityScreenTopBar() {
+fun ProfileSettingsScreenTopBar() {
     TopAppBar(
         colors = TopAppBarDefaults.topAppBarColors(
             containerColor = MaterialTheme.colorScheme.secondaryContainer,

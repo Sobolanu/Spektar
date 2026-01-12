@@ -18,7 +18,7 @@ import com.example.spektar.domain.model.navigationBarIcons.bottomIcons
 @Composable
 fun BottomBar(
     onBottomBarItemClick: ( Int ) -> Unit,
-    selectedIcon: Int
+    selectedIcon: Int,
 ) {
     var selectedItemIndex by rememberSaveable { mutableStateOf(selectedIcon) }
 
@@ -28,10 +28,10 @@ fun BottomBar(
     ) {
         bottomIcons.forEachIndexed{ index, item ->
             NavigationBarItem(
-                selected = selectedItemIndex == index,
+                selected = (selectedItemIndex == index),
                 onClick = {
                     selectedItemIndex = index
-                    onBottomBarItemClick(index)
+                    onBottomBarItemClick(index) // responsible for changing the selectedIcon
                 },
 
                 label = {
@@ -49,7 +49,7 @@ fun BottomBar(
                         } else item.unselectedIcon,
                         contentDescription = item.title
                     )
-                }
+                },
             )
         }
     }

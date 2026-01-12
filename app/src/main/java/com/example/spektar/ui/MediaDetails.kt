@@ -21,6 +21,8 @@ import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -68,7 +70,7 @@ fun MediaDetailsScreen(
                         ),
 
                     model = uiState.medias[mediaPosition.first][mediaPosition.second].imageUrl,
-                    contentDescription = null
+                    contentDescription = "Image of the media ${uiState.medias[mediaPosition.first][mediaPosition.second].name}"
                 )
             }
 
@@ -76,8 +78,7 @@ fun MediaDetailsScreen(
 
             item {
                 Text(
-                    modifier = Modifier
-                        .padding(vertical = 24.dp),
+                    modifier = Modifier.padding(vertical = 24.dp),
                     text = uiState.medias[mediaPosition.first][mediaPosition.second].name,
                     autoSize = TextAutoSize.StepBased(
                         16.sp,
@@ -103,7 +104,9 @@ fun MediaDetailsScreen(
                     onClick = {
                         // navigate to note of said media
                     }
-                ) { }
+                ) {
+                    Text("Notes")
+                }
             }
         }
     }
@@ -116,8 +119,8 @@ fun DetailsPageTopBar(
     onBackClick: () -> Unit,
     modifier : Modifier = Modifier
 ) {
-    val backButtonPressed = false
-    val profileIconPressed = false
+    val backButtonPressed by remember {mutableStateOf(false)}
+    val profileIconPressed by remember {mutableStateOf(false)}
 
     TopAppBar(
         modifier = modifier,

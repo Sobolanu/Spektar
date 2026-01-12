@@ -1,23 +1,11 @@
 package com.example.spektar.ui.viewModels
 
+import androidx.datastore.core.DataStore
+import androidx.datastore.preferences.core.Preferences
 import androidx.lifecycle.ViewModel
 
-class ThemeScreenViewModel() : ViewModel() {
-
-    fun toggleDynamicColor(dynamicColorState : Boolean) {
-        if(dynamicColorState) {
-            // toggle on
-        } else {
-            // toggle off
-        }
-    }
-
-    fun toggleLightOrDarkMode(lightOrDarkModeState: Boolean) {
-        if(lightOrDarkModeState) {
-            // toggle dark
-        } else {
-            // toggle light
-        }
-    }
-
+class ThemeScreenViewModel(
+    private val dataStore: DataStore<Preferences>
+) : ViewModel() {
+    // implement later
 }

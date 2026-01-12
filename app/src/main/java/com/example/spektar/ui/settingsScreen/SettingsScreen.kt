@@ -1,5 +1,6 @@
 package com.example.spektar.ui.settingsScreen
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -21,7 +22,12 @@ import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import com.example.spektar.R
+import com.example.spektar.domain.model.Access
+import com.example.spektar.domain.model.SettingsScreenCategory
+import com.example.spektar.domain.usecase.SettingsScreenCategories
 import com.example.spektar.ui.common.components.BottomBar
 
 /*
@@ -51,11 +57,12 @@ fun SettingsScreen(
             modifier = Modifier
                 .padding(paddingValues)
                 .fillMaxSize()
+                .background(MaterialTheme.colorScheme.background),
         ) {
             SettingsScreenCategories.forEach{ index ->
                 SettingsCategory(
                     category = index,
-                    navigateToScreen
+                    navigateToScreen,
                 )
             }
         }
@@ -65,11 +72,10 @@ fun SettingsScreen(
 @Composable
 fun SettingsCategory(
     category : SettingsScreenCategory,
-    navigateToScreen: (Int) -> Unit
+    navigateToScreen: (Int) -> Unit,
 ) {
     Column( // title of category & spacing between categories
-        modifier = Modifier
-            .padding(bottom = 8.dp)
+        modifier = Modifier.padding(bottom = 8.dp)
     ) {
         Text(
             text = category.titleOfCategory,
@@ -90,10 +96,11 @@ fun SettingsCategory(
                         disabledContentColor =
                     ),
                  */
+
                 onClick = {
-                    if(index.third == Access.LANGUAGE_PANE.ordinal) {
+                     if(index.third == Access.LANGUAGE_PANE.ordinal) {
                         // open language pane here
-                    } else {
+                     } else {
                         navigateToScreen(index.third)
                     }
                 }
@@ -138,7 +145,7 @@ fun SettingsScreenTopBar() {
 
         title = {
             Text(
-                "Settings"
+                stringResource(R.string.settings_screen_title)
             )
         },
 

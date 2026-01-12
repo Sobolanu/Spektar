@@ -7,10 +7,13 @@ import com.example.spektar.domain.usecase.AccountService
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
+import java.io.File
 
 data class SignUpState(
+    val username: String = "",
     val email: String = "",
-    val password: String = ""
+    val password: String = "",
+    var avatar : File? = null
 )
 class SignUpViewModel(
     private val accountService: AccountService
@@ -21,28 +24,47 @@ class SignUpViewModel(
 
     init {
         _signUpState.value = SignUpState(
+            username = "",
             email = "",
-            password = ""
+            password = "",
+            avatar = null
         )
     }
 
+    fun updateUsername(newUsername: String) {
+        _signUpState.value = SignUpState(
+            username = newUsername,
+            password = _signUpState.value.password,
+            email = _signUpState.value.email,
+            avatar = _signUpState.value.avatar,
+        )
+    }
     fun updateEmail(newEmail: String) {
         _signUpState.value = SignUpState(
             email = newEmail,
-            password = _signUpState.value.password
+            password = _signUpState.value.password,
+            username = _signUpState.value.username,
+            avatar = _signUpState.value.avatar,
         )
     }
 
     fun updatePassword(newPassword: String) {
         _signUpState.value = SignUpState(
             email = _signUpState.value.email,
-            password = newPassword
+            password = newPassword,
+            avatar = _signUpState.value.avatar,
+            username = _signUpState.value.username,
         )
     }
 
     fun onSignUpClick() {
         viewModelScope.launch {
-            accountService.signUp(signUpState.value.email, signUpState.value.password)
+            accountService.signUp(
+                username = signUpState.value.username,
+                userEmail = signUpState.value.email,
+                userPassword = signUpState.value.password,
+                avatar = signUpState.value.avatar,
+            )
         }
     }
 }

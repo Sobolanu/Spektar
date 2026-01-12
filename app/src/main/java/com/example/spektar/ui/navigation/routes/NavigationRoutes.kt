@@ -7,16 +7,19 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 data class MediaDetails(
-    val indexCategory: Int,
-    val mediaIndexInsideOfCategory: Int,
+    val indexOfCategory: Int,
+    val indexOfMediaInsideCategory: Int,
 )
 @Serializable
 data class AppErrorScreen (
     val errorMessage: String
 )
 
+@Serializable // object UserLoginScreen
+data class UserLoginScreen (
+    val showEmailPopUp : Boolean
+)
 @Serializable object CategoryScreen
-@Serializable object UserLoginScreen
 @Serializable object UserRegistrationScreen
 @Serializable object SettingsScreen
 @Serializable object ThemeScreen

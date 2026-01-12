@@ -45,6 +45,7 @@ ktor-client-android = { group = "io.ktor", name = "ktor-client-android", version
 datastore-preferences = { group = "androidx.datastore", name = "datastore-preferences", version.ref = "datastore" }
 androidx-room-ktx = { group = "androidx.room", name = "room-ktx", version.ref = "roomKtx" }
 androidx-room-compiler = { group = "androidx.room", name = "room-compiler", version.ref = "roomKtx" }
+# supabase-storage = {group = "io.github.jan-tennert.supabase", name = "storage", version.ref = "supabase"}
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }

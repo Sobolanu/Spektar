@@ -1,8 +1,11 @@
 package com.example.spektar.data.remote
 
 import io.github.jan.supabase.auth.Auth
+import io.github.jan.supabase.auth.auth
 import io.github.jan.supabase.createSupabaseClient
 import io.github.jan.supabase.postgrest.Postgrest
+import io.github.jan.supabase.storage.Storage
+import io.github.jan.supabase.storage.storage
 
 object SupabaseClientProvider {
     val client = createSupabaseClient( // add sign-in and sign-up via google
@@ -11,5 +14,9 @@ object SupabaseClientProvider {
     ) {
         install(Postgrest)
         install(Auth)
+        install(Storage)
     }
+
+    val auth = client.auth
+    val storage = client.storage
 }

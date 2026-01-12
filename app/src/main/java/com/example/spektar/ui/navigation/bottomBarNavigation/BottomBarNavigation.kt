@@ -3,7 +3,7 @@ package com.example.spektar.ui.navigation.bottomBarNavigation
 import androidx.navigation.NavController
 import com.example.spektar.ui.navigation.routes.Settings
 
-fun bottomBarNavigation( // move someplace else when you re-organize your project eventually
+fun bottomBarNavigation(
     navController : NavController,
     index : Int
 ) {

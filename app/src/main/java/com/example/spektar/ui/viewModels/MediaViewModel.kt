@@ -3,7 +3,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import com.example.spektar.domain.model.Category
-import com.example.spektar.domain.model.SpecificMedia
+import com.example.spektar.data.model.SpecificMedia
 import com.example.spektar.data.repository.BookRepository
 import com.example.spektar.data.repository.CategoryRepository
 import com.example.spektar.data.repository.GameRepository
@@ -42,6 +42,14 @@ class MediaViewModel (
 
     // uiState obtains all values that are stored in the repositories.
 
+    fun obtainAllImagesInCategory(categoryIndex : Int) : List<String> {
+        return uiState.value.medias[categoryIndex].map {it.imageUrl}
+    }
+
+    fun obtainAllNamesInCategory(categoryIndex : Int) : List<String> {
+        return uiState.value.medias[categoryIndex].map {it.name}
+    }
+
     private fun loadData() {
         viewModelScope.launch {
             val categories = categoryRepository.getAllCategories()
@@ -57,6 +65,8 @@ class MediaViewModel (
             )
         }
     }
+
+    // medias[index].map {it.imageUrl}
 }
 
 @Suppress("UNCHECKED_CAST")
