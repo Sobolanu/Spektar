@@ -1,0 +1,73 @@
+// Setup type definitions for built-in Supabase Runtime APIs
+import "jsr:@supabase/functions-js/edge-runtime.d.ts";
+import { createClient } from 'jsr:@supabase/supabase-js@2'
+
+Deno.serve(async (req) => {
+  try {
+    const supabase = createClient(
+      Deno.env.get('SUPABASE_URL') ?? '',
+      Deno.env.get('SUPABASE_ANON_KEY') ?? '',
+      { global: { headers: { Authorization: req.headers.get('Authorization')! } } }
+    )
+
+    const { data, error } = await supabase.from('profiles').select('*')
+
+    if (data) {
+         // fetch data, locally L2 normalize embeddings, use later
+        const resp = await supabase.from('mediavectors').select('id, embedding');
+        const userVecs = await supabase.from('profiles').select('user_embedding, normalized_user_embedding') // this obtains data from all users, this should be done one-user only
+
+        if (resp.error)
+          throw resp.error;
+
+        if(userVecs.error)
+          throw userVecs.error;
+
+        const rows = resp.data as Array<{ id: string; embedding: number[] }>; // table rows from mediavectors, embeddings could be returned as strings too btw
+        const userRows = userVecs.data as Array<{userEmbedding: number[], normalizedEmbedding: number[]}> // user embeddings data
+
+        function l2Normalize(vec: number[]) {
+          const sumSq = vec.reduce((s, v) => s + v * v, 0);
+          if (sumSq === 0)
+            return vec.map(() => 0); // avoid div by zero
+          const norm = Math.sqrt(sumSq);
+          return vec.map((v) => v / norm);
+        }
+
+        const normalized = userRows.map((row) => ({
+          userEmbedding : row.userEmbedding,
+          normalizedEmbedding : l2Normalize(row.userEmbedding)
+        }));
+
+        // dot product computation locally :) with uservec ofc
+        function dot(a: number[], b: number[]) {
+          return a.reduce((s, v, i) => s + v * (b[i] ?? 0), 0);
+        }
+
+        const userVec: number[] = new Array(27).fill(0);
+        const userNorm = l2Normalize(userVec);
+
+        const scored = normalized.map((row) => ({ // placeholder code inside for now, do later
+          id: row.userEmbedding,
+          score: dot(userNorm, row.normalizedEmbedding), // cosine since both normalized
+        }));
+
+        scored.sort((a, b) => b.score - a.score);
+        const topK = scored.slice(0, 50);
+    }
+
+    if (error) {
+      throw error
+    }
+
+    return new Response(JSON.stringify({ data }), {
+      headers: { 'Content-Type': 'application/json' },
+      status: 200,
+    })
+  } catch (err) {
+    return new Response(JSON.stringify({ message: err?.message ?? err }), {
+      headers: { 'Content-Type': 'application/json' },
+      status: 500
+    })
+  }
+})
