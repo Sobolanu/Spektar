@@ -43,7 +43,7 @@ fun NavGraphBuilder.CategoryGraph(
         val args = backStackEntry.toRoute<MediaDetails>()
         MediaDetailsScreen(
             onBackClick = { navController.popBackStack() },
-            mediaPosition = Pair(args.indexOfCategory, args.indexOfMediaInsideCategory),
+            mediaPosition = Pair(args.indexOfCategory, args.indexOfMediaInsideCategory) ,
             viewModel = mediaViewModel
         )
     }

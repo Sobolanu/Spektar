@@ -17,6 +17,7 @@ object SupabaseClientProvider {
         install(Storage)
     }
 
+    val db = client
     val auth = client.auth
     val storage = client.storage
 }

@@ -12,11 +12,9 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import com.example.compose.SpektarTheme
 import com.example.spektar.data.local.DataStore.dataStore
-import com.example.spektar.data.repository.BookRepository
-import com.example.spektar.data.repository.CategoryRepository
-import com.example.spektar.data.repository.GameRepository
-import com.example.spektar.data.repository.MovieRepository
-import com.example.spektar.data.repository.ShowRepository
+import com.example.spektar.domain.usecase.AccountServiceImpl
+import com.example.spektar.domain.usecase.MediaServiceImpl
+import com.example.spektar.ui.navigation.SpektarNavigation
 import com.example.spektar.ui.viewModels.DataStoreViewModel
 import com.example.spektar.ui.viewModels.DataStoreViewModelFactory
 import com.example.spektar.ui.viewModels.MediaViewModel
@@ -25,8 +23,6 @@ import com.example.spektar.ui.viewModels.SignInViewModel
 import com.example.spektar.ui.viewModels.SignInViewModelFactory
 import com.example.spektar.ui.viewModels.SignUpViewModel
 import com.example.spektar.ui.viewModels.SignUpViewModelFactory
-import com.example.spektar.domain.usecase.AccountServiceImpl
-import com.example.spektar.ui.navigation.SpektarNavigation
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -39,11 +35,8 @@ class MainActivity : ComponentActivity() {
 
             val mediaViewModel: MediaViewModel by viewModels {
                 MediaViewModelFactory(
-                    CategoryRepository(),
-                    ShowRepository(),
-                    BookRepository(),
-                    GameRepository(),
-                    MovieRepository()
+                    mediaService = MediaServiceImpl(),
+                    accountService = AccountServiceImpl()
                 )
             }
 

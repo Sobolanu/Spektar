@@ -7,8 +7,8 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 data class MediaDetails(
-    val indexOfCategory: Int,
-    val indexOfMediaInsideCategory: Int,
+     val indexOfCategory: Int,
+     val indexOfMediaInsideCategory: Int,
 )
 @Serializable
 data class AppErrorScreen (

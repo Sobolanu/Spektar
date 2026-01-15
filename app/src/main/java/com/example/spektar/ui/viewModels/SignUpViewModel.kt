@@ -3,7 +3,7 @@ package com.example.spektar.ui.viewModels
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
-import com.example.spektar.domain.usecase.AccountService
+import com.example.spektar.domain.model.AccountService
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch

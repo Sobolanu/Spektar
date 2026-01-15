@@ -1,8 +1,6 @@
 package com.example.spektar.data.model
 
-import com.example.spektar.data.model.utils.UUIDSerializer
 import kotlinx.serialization.Serializable
-import java.util.UUID
 
 /*
     Defines a class Category (to describe a category of media, i.e books, movies, games...)
@@ -11,8 +9,7 @@ import java.util.UUID
 
 @Serializable
 data class SpecificMedia(
-    @Serializable(with = UUIDSerializer::class)
-    val id_uuid: UUID = UUID(0, 0),
+    val id_uuid : String = "",
 
     val name: String = "",
     val imageUrl: String = "",

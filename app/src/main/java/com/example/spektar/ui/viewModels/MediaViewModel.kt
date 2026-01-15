@@ -2,13 +2,11 @@ package com.example.spektar.ui.viewModels
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
-import com.example.spektar.domain.model.Category
+import com.example.spektar.data.model.EdgeResponse
 import com.example.spektar.data.model.SpecificMedia
-import com.example.spektar.data.repository.BookRepository
-import com.example.spektar.data.repository.CategoryRepository
-import com.example.spektar.data.repository.GameRepository
-import com.example.spektar.data.repository.MovieRepository
-import com.example.spektar.data.repository.ShowRepository
+import com.example.spektar.domain.model.AccountService
+import com.example.spektar.domain.model.Category
+import com.example.spektar.domain.model.MediaService
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
@@ -25,14 +23,9 @@ data class MediaUiState (
 )
 
 class MediaViewModel (
-    private val categoryRepository: CategoryRepository,
-
-    private val showRepository: ShowRepository,
-    private val bookRepository : BookRepository,
-    private val gameRepository: GameRepository,
-    private val movieRepository: MovieRepository
+    private val mediaService: MediaService,
+    private val accountService: AccountService
 ) : ViewModel() {
-
     private val _uiState = MutableStateFlow(MediaUiState())
     val uiState: StateFlow<MediaUiState> get() = _uiState
 
@@ -40,24 +33,40 @@ class MediaViewModel (
         loadData()
     }
 
+    suspend fun fetchMedia(): EdgeResponse? {
+        val session = accountService.retrieveSession()
+        val userId = accountService.retrieveUserId()
+
+        if(session != null) {
+            return mediaService.fetchTopMediaMatches(
+                edgeUrl = "https://rlyotyktmhyflfyljpmr.supabase.co/functions/v1/content-recommendation",
+                bearerToken = session.accessToken,
+                userId = userId
+            )
+        }
+
+        Exception("fetchMedia failed to receive a session.")
+        return null
+    }
+
     // uiState obtains all values that are stored in the repositories.
 
     fun obtainAllImagesInCategory(categoryIndex : Int) : List<String> {
-        return uiState.value.medias[categoryIndex].map {it.imageUrl}
+        return mediaService.obtainAllImagesInCategory(uiState.value.medias[categoryIndex])
     }
 
     fun obtainAllNamesInCategory(categoryIndex : Int) : List<String> {
-        return uiState.value.medias[categoryIndex].map {it.name}
+        return mediaService.obtainAllNamesInCategory(uiState.value.medias[categoryIndex])
     }
 
     private fun loadData() {
         viewModelScope.launch {
-            val categories = categoryRepository.getAllCategories()
+            val categories = mediaService.getAllCategories()
 
-            val shows = showRepository.getAllShows()
-            val books = bookRepository.getAllBooks()
-            val games = gameRepository.getAllGames()
-            val movies = movieRepository.getAllMovies()
+            val shows = mediaService.fillCategory("shows")
+            val books = mediaService.fillCategory("books")
+            val games = mediaService.fillCategory("games")
+            val movies = mediaService.fillCategory("movies")
 
             _uiState.value = MediaUiState(
                 medias = listOf(shows, books, games, movies),
@@ -65,28 +74,18 @@ class MediaViewModel (
             )
         }
     }
-
-    // medias[index].map {it.imageUrl}
 }
 
 @Suppress("UNCHECKED_CAST")
 class MediaViewModelFactory(
-    private val categoryRepository: CategoryRepository,
-
-    private val showRepository: ShowRepository,
-    private val bookRepository : BookRepository,
-    private val gameRepository: GameRepository,
-    private val movieRepository: MovieRepository
+    private val mediaService: MediaService,
+    private val accountService: AccountService
 ) : ViewModelProvider.Factory {
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
         if (modelClass.isAssignableFrom(MediaViewModel::class.java)) {
             return MediaViewModel(
-                categoryRepository,
-
-                showRepository,
-                bookRepository,
-                gameRepository,
-                movieRepository
+                mediaService,
+                accountService,
             ) as T
         }
         throw IllegalArgumentException("Unknown ViewModel class")

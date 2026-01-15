@@ -32,22 +32,7 @@
     TODO: ### BACK-END (sort out after designing screen UIs else you'll just get mad and burn out)
         - after splash screen designing, have the app auto log-on if you have made an account
 
-         - figure out user content recommendation,
-         which also means i need to implement tags for the media and also implement search
-            the category each media belongs to is the name of it's table
-
-            - so basically, the shtick for user content recommendation is that you'll make an account,
-            then fill out a questionnaire a la old netflix, to deduce what you'll want to consume next
-            recommended media would be among the first images in image rows
-
-            User embeddings are dense, low-dimensional vector representations that capture a user's
-            preferences, behaviors, and characteristics, enabling more personalized interactions in
-            machine learning applications.
-
-            The Similarity Score: To determine how well-matched a user and an item are, we calculate
-            the dot product of their embeddings.
-            similarity_score = dot_product(user_embedding, item_embedding)
-            A higher score implies a stronger match.
+         - questionnaire (to fill out user's embedding), maybe some data-tracking for user embedding improvement
 
         - sort out error handling
             - handle any potential errors from supabase and shit
@@ -58,8 +43,6 @@
             - each note should have a custom user-assigned title, and content that is modifiable
             the content should have modifiable text size, text color, bold/underline/italic,
             hyperlinks that lead to other notes and URLs and stuff y'know
-
-        - add supabase usernames
  */
 
  launchSingleTop = true basically says that you can't mash navigation buttons and have app navigation break
@@ -78,34 +61,3 @@
  Remote data sources (Supabase, Retrofit, Firebase)
  Local data sources (Room, DataStore)
  DTOs, mappers
-
- Use 27-dimensional user embeddings with float values in [0, 1].
-
- Use dot product as a simple, interpretable primary score:
- dot(user, media) = sum(user_i for features media has).
-
- Prefer cosine similarity if you want to remove magnitude bias (normalize user vectors), but with
- unsigned embeddings dot product already gives a direct weighted-sum interpretation.
-
- Optionally: fetch top-K by dot (fast with ANN) and re-rank by cosine for finer ordering.
- ---------------------------------------------------------------------------------------------------
- Querying: rank by dot product (primary approach)
- Dot with binary media gives a weighted sum of user affinities.
- Example pattern (adjust operator based on your pgvector version):
- ORDER BY embedding <#> 'user_vector'::vector DESC
-
- Optional: use cosine similarity (normalize)
- If you want to compare items independent of user magnitude (so an avid user doesn't always outrank
- a casual user), normalize user embeddings: store a normalized_user_embedding column (L2-normalized)
- or normalize on the fly (more expensive)
-
- Cosine on non-negative vectors still works; it focuses on alignment of relative preferences.
- Hybrid / practical flow (recommended)
- Step A: Use ANN index to quickly get top-N by dot product (fast).
- Step B: Re-rank those top-N with cosine (if desired) to reduce bias from users with larger norms.
- This gives both speed and robust ranking quality.
-
- Indexing recommendations
- Create an ANN index for inner product / dot product if available (ivfflat or HNSW depending on pgvector/build).
- If you plan to use cosine, store normalized embeddings in a separate column and index that column
- with an inner-product index — dot on normalized vectors == cosine similarity.

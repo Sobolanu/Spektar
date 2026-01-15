@@ -84,12 +84,15 @@ dependencies {
     implementation(libs.supabase.postgrest)
     // implementation(libs.supabase.storage)
     implementation("io.github.jan-tennert.supabase:storage-kt:3.3.0")
-
+    implementation("io.ktor:ktor-client-cio:3.3.3")
+    implementation("io.ktor:ktor-client-core:3.3.3")
     // Ktor
     implementation(libs.ktor.client.android)
 
     // Room
     implementation(libs.androidx.room.ktx)
+    implementation(libs.androidx.junit.ktx)
+    implementation(libs.androidx.monitor)
     ksp(libs.androidx.room.compiler)
 
     // Datastore
