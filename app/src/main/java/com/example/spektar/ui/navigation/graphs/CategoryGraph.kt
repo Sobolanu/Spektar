@@ -22,11 +22,12 @@ fun NavGraphBuilder.CategoryGraph(
 ) {
     composable<CategoryScreen> {
         CategoryScreen(
-            onImageClick = { mediaPosition ->
+            onImageClick = { media ->
                 navController.navigate(
                     MediaDetails(
-                        indexOfCategory = mediaPosition.indexOfCategory,
-                        indexOfMediaInsideCategory = mediaPosition.indexOfMediaInsideCategory // integrate color based off of categoryColor
+                        // indexOfCategory = mediaPosition.indexOfCategory,
+                        // indexOfMediaInsideCategory = mediaPosition.indexOfMediaInsideCategory // integrate color based off of categoryColor
+                        media.mediaId
                     )
                 ) { launchSingleTop = true }
             },
@@ -43,7 +44,7 @@ fun NavGraphBuilder.CategoryGraph(
         val args = backStackEntry.toRoute<MediaDetails>()
         MediaDetailsScreen(
             onBackClick = { navController.popBackStack() },
-            mediaPosition = Pair(args.indexOfCategory, args.indexOfMediaInsideCategory) ,
+            mediaPosition = args.mediaId, // Pair(args.indexOfCategory, args.indexOfMediaInsideCategory) ,
             viewModel = mediaViewModel
         )
     }

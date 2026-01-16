@@ -35,12 +35,14 @@ import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
+import com.example.spektar.data.model.MediaPreview
 import com.example.spektar.domain.model.Category
 import com.example.spektar.domain.model.navigationBarIcons.topProfileIcon
 import com.example.spektar.ui.common.components.BottomBar
 import com.example.spektar.ui.common.modifiers.cardWithShadowModifier
 import com.example.spektar.ui.common.modifiers.roundedCornerRow
 import com.example.spektar.ui.navigation.routes.MediaDetails
+import com.example.spektar.ui.viewModels.MediaUiState
 import com.example.spektar.ui.viewModels.MediaViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -75,8 +77,7 @@ fun CategoryScreen(
     ) { paddingValues ->
         CategoryScreenContent(
             onImageClick = onImageClick,
-            categories = uiState.categories,
-            viewModel = viewModel,
+            uiState = uiState,
             modifier = Modifier.padding(paddingValues),
         )
     }
@@ -86,23 +87,20 @@ fun CategoryScreen(
 @Composable
 fun CategoryScreenContent(
     onImageClick: (MediaDetails) -> Unit,
-    categories : List<Category>,
-    viewModel : MediaViewModel,
+    uiState: MediaUiState,
     modifier: Modifier = Modifier,
 ) {
     LazyColumn( // LazyColumn loads only what is visible, scrollable is on by default
         modifier = modifier.fillMaxSize().background(MaterialTheme.colorScheme.surface), // surface
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
-
+        val categories = uiState.categories
         item(categories) {
             categories.forEachIndexed {index, category ->
                 LoadCategoryText(category)
                 LoadCategoryImages(
                     onImageClick = onImageClick,
-                    indexOfCategory = index,
-                    listOfUrls = viewModel.obtainAllImagesInCategory(index),
-                    mediaNames = viewModel.obtainAllNamesInCategory(index),
+                    medias = uiState.medias[index],
                     categoryColor = category.categoryColor
                 )
             }
@@ -135,18 +133,16 @@ fun LoadCategoryText(
 @Composable
 fun LoadCategoryImages(
     onImageClick: (MediaDetails) -> Unit,
-    indexOfCategory: Int,
-    listOfUrls: List<String>,
-    mediaNames: List<String>,
-    categoryColor : Color
+    medias: List<MediaPreview>,
+    categoryColor: Color
 ) {
     LazyRow( // image row
         modifier = roundedCornerRow.background(categoryColor) // different colors based on different categories
     ) {
         item {
-            for(i in 0..<listOfUrls.size) {
+            for(i in 0..<medias.size) {
                 Card(
-                    onClick = { onImageClick(MediaDetails(indexOfCategory, i)) },
+                    onClick = { onImageClick(MediaDetails(mediaId = medias[i].id_uuid))  },
 
                     colors = CardColors( // sort card colors by category
                         containerColor = MaterialTheme.colorScheme.tertiaryContainer,
@@ -158,8 +154,8 @@ fun LoadCategoryImages(
                     modifier = cardWithShadowModifier
                 ) {
                     AsyncImage(
-                        model = listOfUrls[i],
-                        contentDescription = mediaNames[i],
+                        model = medias[i].imageUrl,
+                        contentDescription = medias[i].name,
                         modifier = Modifier
                             .size(175.dp)
                             .padding(horizontal = 8.dp)

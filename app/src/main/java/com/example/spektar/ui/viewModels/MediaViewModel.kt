@@ -3,7 +3,9 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import com.example.spektar.data.model.EdgeResponse
+import com.example.spektar.data.model.MediaPreview
 import com.example.spektar.data.model.SpecificMedia
+import com.example.spektar.data.repository.globalCategoryList
 import com.example.spektar.domain.model.AccountService
 import com.example.spektar.domain.model.Category
 import com.example.spektar.domain.model.MediaService
@@ -18,7 +20,7 @@ import kotlinx.coroutines.launch
 */
 
 data class MediaUiState (
-    val medias: List<List<SpecificMedia>> = emptyList(),
+    val medias: List<List<MediaPreview>> = emptyList(),
     val categories: List<Category> = emptyList(),
 )
 
@@ -33,43 +35,35 @@ class MediaViewModel (
         loadData()
     }
 
-    suspend fun fetchMedia(): EdgeResponse? {
-        val session = accountService.retrieveSession()
-        val userId = accountService.retrieveUserId()
-
-        if(session != null) {
-            return mediaService.fetchTopMediaMatches(
-                edgeUrl = "https://rlyotyktmhyflfyljpmr.supabase.co/functions/v1/content-recommendation",
-                bearerToken = session.accessToken,
-                userId = userId
-            )
-        }
-
-        Exception("fetchMedia failed to receive a session.")
-        return null
-    }
-
     // uiState obtains all values that are stored in the repositories.
-
-    fun obtainAllImagesInCategory(categoryIndex : Int) : List<String> {
-        return mediaService.obtainAllImagesInCategory(uiState.value.medias[categoryIndex])
-    }
-
-    fun obtainAllNamesInCategory(categoryIndex : Int) : List<String> {
-        return mediaService.obtainAllNamesInCategory(uiState.value.medias[categoryIndex])
+    suspend fun obtainMediaById(id: String) : SpecificMedia {
+        return mediaService.obtainDataByMediaId(id)
     }
 
     private fun loadData() {
         viewModelScope.launch {
+            val mediaList = globalCategoryList.map {
+                mediaService.fillCategory((it.mediaCategory[0].lowercase() + it.mediaCategory.substring(1)))
+            }
+
             val categories = mediaService.getAllCategories()
 
-            val shows = mediaService.fillCategory("shows")
-            val books = mediaService.fillCategory("books")
-            val games = mediaService.fillCategory("games")
-            val movies = mediaService.fillCategory("movies")
+            val session = accountService.retrieveSession()
+            val userId = accountService.retrieveUserId()
+
+            val recommendedMedia : EdgeResponse? = if(session != null) { // adapt so this fetches all media data?
+                mediaService.fetchTopMediaMatches(
+                    edgeUrl = "https://rlyotyktmhyflfyljpmr.supabase.co/functions/v1/content-recommendation",
+                    bearerToken = session.accessToken,
+                    userId = userId
+                )
+            } else {
+                Exception("fetchMedia failed to receive a session.")
+                null
+            }
 
             _uiState.value = MediaUiState(
-                medias = listOf(shows, books, games, movies),
+                medias = mediaList,
                 categories = categories, // name of each specific thing
             )
         }

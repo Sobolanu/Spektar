@@ -19,10 +19,13 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -30,6 +33,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
+import com.example.spektar.data.model.SpecificMedia
 import com.example.spektar.domain.model.navigationBarIcons.topProfileIcon
 import com.example.spektar.domain.model.navigationBarIcons.topBackArrowIcon
 import com.example.spektar.ui.viewModels.MediaViewModel
@@ -41,10 +45,16 @@ TODO: implement screen for notes and notes functionality
 fun MediaDetailsScreen(
     onBackClick: () -> Unit,
     // onEvent: (NoteEvent) -> Unit, implement navigation to notes for specific media
-    mediaPosition: Pair<Int, Int>,
+    //mediaPosition: Pair<Int, Int>,
+    mediaPosition: String,
     viewModel : MediaViewModel
 ) {
-    val uiState by viewModel.uiState.collectAsState()
+    // val uiState by viewModel.uiState.collectAsState()
+    var media by remember { mutableStateOf(SpecificMedia()) }
+
+    LaunchedEffect(mediaPosition) {
+        media = viewModel.obtainMediaById(mediaPosition)
+    }
 
     Scaffold(
         topBar = { DetailsPageTopBar(onBackClick) },
@@ -69,8 +79,8 @@ fun MediaDetailsScreen(
                             color = MaterialTheme.colorScheme.primaryContainer
                         ),
 
-                    model = uiState.medias[mediaPosition.first][mediaPosition.second].imageUrl,
-                    contentDescription = "Image of the media ${uiState.medias[mediaPosition.first][mediaPosition.second].name}"
+                    model = media.imageUrl,// uiState.medias[mediaPosition.first][mediaPosition.second].imageUrl,
+                    contentDescription = "Image of the media ${media.name}"
                 )
             }
 
@@ -79,7 +89,7 @@ fun MediaDetailsScreen(
             item {
                 Text(
                     modifier = Modifier.padding(vertical = 24.dp),
-                    text = uiState.medias[mediaPosition.first][mediaPosition.second].name,
+                    text = media.name,
                     autoSize = TextAutoSize.StepBased(
                         16.sp,
                         38.sp,
@@ -93,7 +103,7 @@ fun MediaDetailsScreen(
 
             item {
                 Text(
-                    uiState.medias[mediaPosition.first][mediaPosition.second].description,
+                    media.description,
                     modifier = Modifier.padding(horizontal = 16.dp),
                     textAlign = TextAlign.Center
                 )

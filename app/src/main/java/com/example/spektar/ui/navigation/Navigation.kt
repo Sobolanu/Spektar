@@ -13,6 +13,7 @@ import com.example.spektar.ui.navigation.bottomBarNavigation.bottomBarNavigation
 import com.example.spektar.ui.navigation.graphs.AuthGraph
 import com.example.spektar.ui.navigation.graphs.CategoryGraph
 import com.example.spektar.ui.navigation.graphs.SettingsGraph
+import com.example.spektar.ui.navigation.routes.CategoryScreen
 import com.example.spektar.ui.navigation.routes.UserLoginScreen
 import com.example.spektar.ui.viewModels.DataStoreViewModel
 import com.example.spektar.ui.viewModels.MediaViewModel
@@ -38,7 +39,7 @@ fun SpektarNavigation(
     // start will be UserLoginScreen(false)
     NavHost(
         navController = navController,
-        startDestination = UserLoginScreen(false) /* CategoryScreen */,
+        startDestination = /* UserLoginScreen(false) */ CategoryScreen,
         enterTransition = { slideIntoContainer(AnimatedContentTransitionScope.SlideDirection.Start, tween(500)) },
         exitTransition = { slideOutOfContainer(AnimatedContentTransitionScope.SlideDirection.Start, tween(500)) },
         popEnterTransition = { slideIntoContainer(AnimatedContentTransitionScope.SlideDirection.End, tween(500)) },
