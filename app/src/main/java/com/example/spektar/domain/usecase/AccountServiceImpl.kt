@@ -18,7 +18,7 @@ import java.io.File
 
 class AccountServiceImpl : AccountService {
     override suspend fun retrieveSession() : UserSession? {
-        val session = auth.currentSessionOrNull()
+        var session = auth.currentSessionOrNull()
 
         if(session != null) {
             return session
@@ -26,6 +26,8 @@ class AccountServiceImpl : AccountService {
 
         try {
             auth.refreshCurrentSession()
+
+            session = auth.currentSessionOrNull()
         } catch (e: Exception) {
             Exception("Session doesn't exist", e)
             // would lead smwhere i guess

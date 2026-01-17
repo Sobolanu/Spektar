@@ -4,13 +4,16 @@ import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
 import androidx.navigation.toRoute
-import com.example.spektar.ui.CategoryScreen
-import com.example.spektar.ui.MediaDetailsScreen
+import com.example.spektar.data.model.media.MediaPreview
+import com.example.spektar.ui.mediaScreens.CategoryScreen
+import com.example.spektar.ui.mediaScreens.MediaDetailsScreen
 import com.example.spektar.ui.common.ErrorScreen
+import com.example.spektar.ui.mediaScreens.MoreMedia
 import com.example.spektar.ui.navigation.navTypeUtils.navTypeOf
 import com.example.spektar.ui.navigation.routes.AppErrorScreen
 import com.example.spektar.ui.navigation.routes.CategoryScreen
 import com.example.spektar.ui.navigation.routes.MediaDetails
+import com.example.spektar.ui.navigation.routes.MoreMedia
 import com.example.spektar.ui.viewModels.MediaViewModel
 import kotlin.reflect.typeOf
 
@@ -24,29 +27,31 @@ fun NavGraphBuilder.CategoryGraph(
         CategoryScreen(
             onImageClick = { media ->
                 navController.navigate(
-                    MediaDetails(
-                        // indexOfCategory = mediaPosition.indexOfCategory,
-                        // indexOfMediaInsideCategory = mediaPosition.indexOfMediaInsideCategory // integrate color based off of categoryColor
-                        media.mediaId
-                    )
+                    // MediaDetails(media.mediaId)
+                    MediaDetails(media.partialMediaData)
                 ) { launchSingleTop = true }
             },
 
             onBottomBarItemClick = onBottomBarClick,
             selectedIcon = selectedIconProvider(),
+            onMoreClick = { navController.navigate(MoreMedia) },
             viewModel = mediaViewModel
         )
     }
 
     composable<MediaDetails>(
-        typeMap = mapOf(typeOf<MediaDetails>() to navTypeOf<MediaDetails>())
+        typeMap = mapOf(typeOf<MediaPreview>() to navTypeOf<MediaPreview>())
     ) { backStackEntry ->
         val args = backStackEntry.toRoute<MediaDetails>()
         MediaDetailsScreen(
             onBackClick = { navController.popBackStack() },
-            mediaPosition = args.mediaId, // Pair(args.indexOfCategory, args.indexOfMediaInsideCategory) ,
+            mediaPosition = args.partialMediaData,
             viewModel = mediaViewModel
         )
+    }
+
+    composable<MoreMedia>() {
+        MoreMedia()
     }
 
     // This composable is not implemented yet on the "actually getting errors" front

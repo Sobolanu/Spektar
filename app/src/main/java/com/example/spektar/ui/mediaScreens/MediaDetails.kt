@@ -1,4 +1,4 @@
-package com.example.spektar.ui
+package com.example.spektar.ui.mediaScreens
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -20,11 +20,9 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -33,7 +31,8 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
-import com.example.spektar.data.model.SpecificMedia
+import com.example.spektar.data.model.media.MediaPreview
+import com.example.spektar.data.model.media.SpecificMedia
 import com.example.spektar.domain.model.navigationBarIcons.topProfileIcon
 import com.example.spektar.domain.model.navigationBarIcons.topBackArrowIcon
 import com.example.spektar.ui.viewModels.MediaViewModel
@@ -44,13 +43,15 @@ TODO: implement screen for notes and notes functionality
 @Composable
 fun MediaDetailsScreen(
     onBackClick: () -> Unit,
-    // onEvent: (NoteEvent) -> Unit, implement navigation to notes for specific media
-    //mediaPosition: Pair<Int, Int>,
-    mediaPosition: String,
+    // onEvent: () -> Unit, implement navigation to notes for specific mediA
+    mediaPosition: MediaPreview,
     viewModel : MediaViewModel
 ) {
-    // val uiState by viewModel.uiState.collectAsState()
-    var media by remember { mutableStateOf(SpecificMedia()) }
+    var media by remember { mutableStateOf(SpecificMedia(
+        id_uuid = mediaPosition.id_uuid,
+        name = mediaPosition.name,
+        imageUrl = mediaPosition.imageUrl
+    )) }
 
     LaunchedEffect(mediaPosition) {
         media = viewModel.obtainMediaById(mediaPosition)
@@ -79,7 +80,7 @@ fun MediaDetailsScreen(
                             color = MaterialTheme.colorScheme.primaryContainer
                         ),
 
-                    model = media.imageUrl,// uiState.medias[mediaPosition.first][mediaPosition.second].imageUrl,
+                    model = media.imageUrl,
                     contentDescription = "Image of the media ${media.name}"
                 )
             }

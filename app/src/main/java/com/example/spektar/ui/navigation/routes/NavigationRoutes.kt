@@ -1,5 +1,6 @@
 package com.example.spektar.ui.navigation.routes
 
+import com.example.spektar.data.model.media.MediaPreview
 import kotlinx.serialization.Serializable
 
 // These are the routes that the navigation uses, defined as either objects or data classes depending on
@@ -7,9 +8,7 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 data class MediaDetails(
-     //val indexOfCategory: Int,
-     //val indexOfMediaInsideCategory: Int,
-    val mediaId: String
+    val partialMediaData: MediaPreview
 )
 @Serializable
 data class AppErrorScreen (
@@ -20,6 +19,8 @@ data class AppErrorScreen (
 data class UserLoginScreen (
     val showEmailPopUp : Boolean
 )
+
+@Serializable object MoreMedia
 @Serializable object CategoryScreen
 @Serializable object UserRegistrationScreen
 @Serializable object SettingsScreen

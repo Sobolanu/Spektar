@@ -3,8 +3,8 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import com.example.spektar.data.model.EdgeResponse
-import com.example.spektar.data.model.MediaPreview
-import com.example.spektar.data.model.SpecificMedia
+import com.example.spektar.data.model.media.MediaPreview
+import com.example.spektar.data.model.media.SpecificMedia
 import com.example.spektar.data.repository.globalCategoryList
 import com.example.spektar.domain.model.AccountService
 import com.example.spektar.domain.model.Category
@@ -13,6 +13,9 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 
+
+// DO NOT UNDER ANY CIRCUMSTANCES GET RID OF THE NON-EXPERIMENTAL FUNCTIONS
+// WITHOUT THEM THE CODE BREAKS FOR SOME REASON AND I DON'T KNOW HOW TO FIX IT
 /*
     defines some properties for a uiState variable
 
@@ -20,7 +23,7 @@ import kotlinx.coroutines.launch
 */
 
 data class MediaUiState (
-    val medias: List<List<MediaPreview>> = emptyList(),
+    val medias: List<List<MediaPreview>?> = emptyList(),
     val categories: List<Category> = emptyList(),
 )
 
@@ -36,34 +39,36 @@ class MediaViewModel (
     }
 
     // uiState obtains all values that are stored in the repositories.
-    suspend fun obtainMediaById(id: String) : SpecificMedia {
-        return mediaService.obtainDataByMediaId(id)
+    suspend fun obtainMediaById(partialMediaData: MediaPreview) : SpecificMedia {
+        return mediaService.obtainDataByMediaId(partialMediaData)
     }
 
     private fun loadData() {
         viewModelScope.launch {
+            // DO NOT UNDER ANY CIRCUMSTANCES GET RID OF THE NON-EXPERIMENTAL FUNCTIONS
+            // WITHOUT THEM THE CODE BREAKS FOR SOME REASON AND I DON'T KNOW HOW TO FIX IT
             val mediaList = globalCategoryList.map {
-                mediaService.fillCategory((it.mediaCategory[0].lowercase() + it.mediaCategory.substring(1)))
+                mediaService.fillCategory(it.mediaCategory.lowercase())
             }
 
             val categories = mediaService.getAllCategories()
-
             val session = accountService.retrieveSession()
             val userId = accountService.retrieveUserId()
 
-            val recommendedMedia : EdgeResponse? = if(session != null) { // adapt so this fetches all media data?
-                mediaService.fetchTopMediaMatches(
-                    edgeUrl = "https://rlyotyktmhyflfyljpmr.supabase.co/functions/v1/content-recommendation",
-                    bearerToken = session.accessToken,
-                    userId = userId
-                )
-            } else {
-                Exception("fetchMedia failed to receive a session.")
-                null
+            var recommendedMedia : List<List<MediaPreview>?> = emptyList()
+            if(session != null) {
+                // WORKS:
+                // val testData = mediaService.fetchTopMediaMatches(session.accessToken, userId)
+
+                // works (and i hope it will consistently)
+                recommendedMedia = globalCategoryList.map {
+                    mediaService.EXPERIMENTALfillCategory(session.accessToken, userId, it.mediaCategory.lowercase())
+                }
             }
 
             _uiState.value = MediaUiState(
-                medias = mediaList,
+                // medias = mediaList,
+                medias = recommendedMedia,
                 categories = categories, // name of each specific thing
             )
         }

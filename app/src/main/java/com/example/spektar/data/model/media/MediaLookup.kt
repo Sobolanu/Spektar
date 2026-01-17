@@ -1,4 +1,4 @@
-package com.example.spektar.data.model
+package com.example.spektar.data.model.media
 
 import kotlinx.serialization.Serializable
 

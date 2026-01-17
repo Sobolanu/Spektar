@@ -1,0 +1,58 @@
+ALL:
+
+kids - 1
+teens - 2
+adults - 3
+family-friendly - 4
+
+GENERAL:
+
+action - 5
+fantasy - 6
+sci-fi - 7
+comedy - 8
+thriller - 9
+crime - 10
+philosophy - 11
+psychology - 12
+drama - 13
+horror - 14
+romance - 15
+indie - 16
+sports - 17
+animated - 18
+historical - 19
+war - 20
+documentary - 21
+mystery - 22
+musical - 23
+biography - 24
+family - 25
+adventure - 26
+
+ANIME:
+
+anime - 27
+shonen - 28
+shojo - 29
+seinen - 30
+josei - 31
+isekai - 32
+slice of life - 33
+mecha - 34
+sports anime - 35
+
+GAMES:
+
+multiplayer - 36
+RPG - 37
+FPS - 38
+open-world - 39
+RTS - 40
+story-driven - 41
+simulation - 42
+turn-based - 43
+roguelike - 44
+survival - 45
+sandbox - 46
+MMO - 47

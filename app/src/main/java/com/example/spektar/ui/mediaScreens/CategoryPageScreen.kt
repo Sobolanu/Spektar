@@ -1,6 +1,9 @@
-package com.example.spektar.ui
+package com.example.spektar.ui.mediaScreens
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -8,12 +11,16 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.AddCircleOutline
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardColors
 import androidx.compose.material3.CenterAlignedTopAppBar
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -35,7 +42,7 @@ import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
-import com.example.spektar.data.model.MediaPreview
+import com.example.spektar.data.model.media.MediaPreview
 import com.example.spektar.domain.model.Category
 import com.example.spektar.domain.model.navigationBarIcons.topProfileIcon
 import com.example.spektar.ui.common.components.BottomBar
@@ -44,6 +51,7 @@ import com.example.spektar.ui.common.modifiers.roundedCornerRow
 import com.example.spektar.ui.navigation.routes.MediaDetails
 import com.example.spektar.ui.viewModels.MediaUiState
 import com.example.spektar.ui.viewModels.MediaViewModel
+import java.lang.RuntimeException
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -51,13 +59,11 @@ import com.example.spektar.ui.viewModels.MediaViewModel
 /*
 I think, at the end of the LoadCategoryText, there should be a button with "View completed"
 where you can search up completed pieces of media (so, stuff you've watched/read)
-
-modify your viewmodel you dingus
-remember, the ViewModel should be responsible for loading and rendering stuff!!!
  */
 
 fun CategoryScreen(
     onImageClick: (MediaDetails) -> Unit,
+    onMoreClick: () -> Unit,
     onBottomBarItemClick: (Int) -> Unit,
     selectedIcon: Int,
     viewModel : MediaViewModel
@@ -70,14 +76,17 @@ fun CategoryScreen(
             .nestedScroll(scrollBehavior.nestedScrollConnection),
 
         topBar = { CategoryPageTopBar(scrollBehavior = scrollBehavior) },
-        bottomBar = { BottomBar(
-            onBottomBarItemClick = onBottomBarItemClick,
-            selectedIcon,
-        ) },
+        bottomBar = {
+            BottomBar(
+                onBottomBarItemClick = onBottomBarItemClick,
+                selectedIcon,
+            )
+        },
     ) { paddingValues ->
         CategoryScreenContent(
             onImageClick = onImageClick,
             uiState = uiState,
+            onMoreClick = onMoreClick,
             modifier = Modifier.padding(paddingValues),
         )
     }
@@ -87,20 +96,23 @@ fun CategoryScreen(
 @Composable
 fun CategoryScreenContent(
     onImageClick: (MediaDetails) -> Unit,
+    onMoreClick: () -> Unit,
     uiState: MediaUiState,
     modifier: Modifier = Modifier,
 ) {
+    val categories = uiState.categories
     LazyColumn( // LazyColumn loads only what is visible, scrollable is on by default
         modifier = modifier.fillMaxSize().background(MaterialTheme.colorScheme.surface), // surface
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
-        val categories = uiState.categories
+
         item(categories) {
             categories.forEachIndexed {index, category ->
                 LoadCategoryText(category)
                 LoadCategoryImages(
                     onImageClick = onImageClick,
-                    medias = uiState.medias[index],
+                    onMoreClick = onMoreClick,
+                    medias = uiState.medias[index]!!,
                     categoryColor = category.categoryColor
                 )
             }
@@ -133,6 +145,7 @@ fun LoadCategoryText(
 @Composable
 fun LoadCategoryImages(
     onImageClick: (MediaDetails) -> Unit,
+    onMoreClick: () -> Unit,
     medias: List<MediaPreview>,
     categoryColor: Color
 ) {
@@ -142,7 +155,7 @@ fun LoadCategoryImages(
         item {
             for(i in 0..<medias.size) {
                 Card(
-                    onClick = { onImageClick(MediaDetails(mediaId = medias[i].id_uuid))  },
+                    onClick = { onImageClick( MediaDetails(partialMediaData = medias[i]) ) },
 
                     colors = CardColors( // sort card colors by category
                         containerColor = MaterialTheme.colorScheme.tertiaryContainer,
@@ -159,6 +172,42 @@ fun LoadCategoryImages(
                         modifier = Modifier
                             .size(175.dp)
                             .padding(horizontal = 8.dp)
+                    )
+                }
+            }
+
+            Card(
+                onClick = { onMoreClick() },
+
+                colors = CardColors( // sort card colors by category
+                    containerColor = Color(0x64888888),
+                    contentColor = Color(0x64888888),
+                    disabledContainerColor = Color(0x64888888),
+                    disabledContentColor = Color(0x64888888)
+                ),
+
+                modifier = cardWithShadowModifier
+                    .height(175.dp)
+                    .width(125.dp)
+            ) {
+                Column(
+                    verticalArrangement = Arrangement.Center,
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+                    Image(
+                        imageVector = Icons.Filled.AddCircleOutline,
+                        contentDescription = "See more media",
+                        modifier = Modifier.weight(1f)
+                            .height(175.dp)
+                            .width(125.dp)
+                            .padding(horizontal = 8.dp)
+                    )
+
+                    Text(
+                        text = "More",
+                        color = Color(245, 241, 244),
+                        style = MaterialTheme.typography.bodyLarge,
+                        modifier = Modifier.padding(bottom = 8.dp)
                     )
                 }
             }

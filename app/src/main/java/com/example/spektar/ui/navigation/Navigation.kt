@@ -39,7 +39,7 @@ fun SpektarNavigation(
     // start will be UserLoginScreen(false)
     NavHost(
         navController = navController,
-        startDestination = /* UserLoginScreen(false) */ CategoryScreen,
+        startDestination =  UserLoginScreen(false), // CategoryScreen,
         enterTransition = { slideIntoContainer(AnimatedContentTransitionScope.SlideDirection.Start, tween(500)) },
         exitTransition = { slideOutOfContainer(AnimatedContentTransitionScope.SlideDirection.Start, tween(500)) },
         popEnterTransition = { slideIntoContainer(AnimatedContentTransitionScope.SlideDirection.End, tween(500)) },

@@ -14,17 +14,21 @@
 
         - screen for each media's note
             - peep the bottom of this comment for elaborations (the implement per-media part)
+
         - profile screen
             - might be redundant if you can integrate into settings screen
         - questionnaire screen
+
         - settings screen
             - photosensitive mode, profile settings, app language, dynamic color on/off and other
             important stuff you think of
+
         - splash screen
             - app logo somehow slowly gaining color
+
         - grid screen for "More..." at the end of the image rows
+
         - make a color palette cause material3 highk sucks?
-        - create custom modifiers for ease-of-use's sake ### DONE
 
         - navigate to profile screen on profileSettings and the actual profile icon itself on the top bar
         - add animations between screens
