@@ -20,7 +20,6 @@ import androidx.compose.material.icons.filled.AddCircleOutline
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardColors
 import androidx.compose.material3.CenterAlignedTopAppBar
-import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -51,7 +50,6 @@ import com.example.spektar.ui.common.modifiers.roundedCornerRow
 import com.example.spektar.ui.navigation.routes.MediaDetails
 import com.example.spektar.ui.viewModels.MediaUiState
 import com.example.spektar.ui.viewModels.MediaViewModel
-import java.lang.RuntimeException
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -63,7 +61,7 @@ where you can search up completed pieces of media (so, stuff you've watched/read
 
 fun CategoryScreen(
     onImageClick: (MediaDetails) -> Unit,
-    onMoreClick: () -> Unit,
+    onMoreClick: (Category) -> Unit,
     onBottomBarItemClick: (Int) -> Unit,
     selectedIcon: Int,
     viewModel : MediaViewModel
@@ -96,7 +94,7 @@ fun CategoryScreen(
 @Composable
 fun CategoryScreenContent(
     onImageClick: (MediaDetails) -> Unit,
-    onMoreClick: () -> Unit,
+    onMoreClick: (Category) -> Unit,
     uiState: MediaUiState,
     modifier: Modifier = Modifier,
 ) {
@@ -105,15 +103,14 @@ fun CategoryScreenContent(
         modifier = modifier.fillMaxSize().background(MaterialTheme.colorScheme.surface), // surface
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
-
         item(categories) {
-            categories.forEachIndexed {index, category ->
+            categories.forEachIndexed { index, category ->
                 LoadCategoryText(category)
                 LoadCategoryImages(
                     onImageClick = onImageClick,
                     onMoreClick = onMoreClick,
                     medias = uiState.medias[index]!!,
-                    categoryColor = category.categoryColor
+                    category = category
                 )
             }
         }
@@ -145,17 +142,22 @@ fun LoadCategoryText(
 @Composable
 fun LoadCategoryImages(
     onImageClick: (MediaDetails) -> Unit,
-    onMoreClick: () -> Unit,
+    onMoreClick: (Category) -> Unit,
     medias: List<MediaPreview>,
-    categoryColor: Color
+    category: Category
 ) {
     LazyRow( // image row
-        modifier = roundedCornerRow.background(categoryColor) // different colors based on different categories
+        modifier = roundedCornerRow
+            .background(category.categoryColor)
+
+    // different colors based on different categories
     ) {
         item {
             for(i in 0..<medias.size) {
-                Card(
-                    onClick = { onImageClick( MediaDetails(partialMediaData = medias[i]) ) },
+                Card( // if this doesn't work switch it to js normal card
+                    onClick = {
+                        onImageClick( MediaDetails(partialMediaData = medias[i]) )
+                    },
 
                     colors = CardColors( // sort card colors by category
                         containerColor = MaterialTheme.colorScheme.tertiaryContainer,
@@ -177,7 +179,7 @@ fun LoadCategoryImages(
             }
 
             Card(
-                onClick = { onMoreClick() },
+                onClick = { onMoreClick(category) },
 
                 colors = CardColors( // sort card colors by category
                     containerColor = Color(0x64888888),

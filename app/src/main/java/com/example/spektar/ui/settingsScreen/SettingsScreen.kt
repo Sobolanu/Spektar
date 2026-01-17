@@ -112,7 +112,7 @@ fun SettingsCategory(
                 ) {
                     Icon(
                         imageVector = index.first,
-                        contentDescription = null,
+                        contentDescription = index.second,
                         modifier = Modifier.padding(end = 8.dp)
                     )
 

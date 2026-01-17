@@ -1,4 +1,4 @@
-package com.example.spektar.ui.navigation.navTypeUtils
+package com.example.spektar.ui.navigation.utils
 
 import android.net.Uri
 import android.os.Bundle

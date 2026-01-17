@@ -51,11 +51,11 @@ fun UserLoginScreen(
     onTextClick: () -> Unit,
     viewModel: SignInViewModel = viewModel(),
     showEmailPopUp : Boolean,
-    onDismiss: () -> Unit
+    // onDismiss: () -> Unit
 ) {
     var visible by remember { mutableStateOf(false) }
     val signInState by viewModel.signInState.collectAsState()
-    // var showEmail by remember { mutableStateOf(showEmailPopUp) }
+    var showEmail by remember { mutableStateOf(showEmailPopUp) }
 
     LaunchedEffect(Unit) {
         delay(100) // hardcoded 100ms delay
@@ -167,25 +167,36 @@ fun UserLoginScreen(
                     text = "Register now."
                 )
 
-                if (showEmailPopUp) {
-                    Dialog(onDismissRequest = onDismiss) {
-                        Surface(
-                            shape = RoundedCornerShape(12.dp),
-                            color = MaterialTheme.colorScheme.primaryContainer,
-                            modifier = Modifier.padding(16.dp)
-                        ) {
-                            Column(
-                                modifier = Modifier.padding(20.dp),
-                                horizontalAlignment = Alignment.CenterHorizontally
-                            ) {
-                                Text("A confirmation mail has been sent to your email account. Please confirm before proceeding.", fontSize = 18.sp)
-                                Spacer(Modifier.height(12.dp))
-                                Button(onClick = onDismiss) {
-                                    Text("Close")
-                                }
-                            }
-                        }
-                    }
+                if (showEmail) {
+                    ConfirmationDialog(onDismissRequest = { showEmail = false })
+                }
+            }
+        }
+    }
+}
+
+@Composable
+fun ConfirmationDialog(
+    onDismissRequest: () -> Unit
+) {
+    Dialog(onDismissRequest = onDismissRequest) {
+        Surface(
+            shape = RoundedCornerShape(12.dp),
+            color = MaterialTheme.colorScheme.primaryContainer,
+            modifier = Modifier.padding(16.dp)
+        ) {
+            Column(
+                modifier = Modifier.padding(20.dp),
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                Text(
+                    "A confirmation mail has been sent to your email account. Please confirm before proceeding.",
+                    fontSize = 18.sp
+                )
+                Spacer(Modifier.height(12.dp))
+
+                Button(onClick = { onDismissRequest() }) {
+                    Text("Close")
                 }
             }
         }

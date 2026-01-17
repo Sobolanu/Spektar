@@ -5,15 +5,17 @@ import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
 import androidx.navigation.toRoute
 import com.example.spektar.data.model.media.MediaPreview
+import com.example.spektar.domain.model.Category
+import com.example.spektar.ui.common.ErrorScreen
 import com.example.spektar.ui.mediaScreens.CategoryScreen
 import com.example.spektar.ui.mediaScreens.MediaDetailsScreen
-import com.example.spektar.ui.common.ErrorScreen
 import com.example.spektar.ui.mediaScreens.MoreMedia
-import com.example.spektar.ui.navigation.navTypeUtils.navTypeOf
 import com.example.spektar.ui.navigation.routes.AppErrorScreen
 import com.example.spektar.ui.navigation.routes.CategoryScreen
 import com.example.spektar.ui.navigation.routes.MediaDetails
 import com.example.spektar.ui.navigation.routes.MoreMedia
+import com.example.spektar.ui.navigation.utils.navTypeOf
+import com.example.spektar.ui.navigation.utils.safeNavigate
 import com.example.spektar.ui.viewModels.MediaViewModel
 import kotlin.reflect.typeOf
 
@@ -21,20 +23,20 @@ fun NavGraphBuilder.CategoryGraph(
     navController: NavController,
     mediaViewModel: MediaViewModel,
     selectedIconProvider: () -> Int,
-    onBottomBarClick: (Int) -> Unit
+    onBottomBarClick: (Int) -> Unit,
 ) {
     composable<CategoryScreen> {
         CategoryScreen(
             onImageClick = { media ->
-                navController.navigate(
-                    // MediaDetails(media.mediaId)
+                navController.safeNavigate(
                     MediaDetails(media.partialMediaData)
-                ) { launchSingleTop = true }
+                )
             },
 
             onBottomBarItemClick = onBottomBarClick,
             selectedIcon = selectedIconProvider(),
-            onMoreClick = { navController.navigate(MoreMedia) },
+            onMoreClick = { category ->
+                navController.safeNavigate(MoreMedia(category)) },
             viewModel = mediaViewModel
         )
     }
@@ -50,8 +52,21 @@ fun NavGraphBuilder.CategoryGraph(
         )
     }
 
-    composable<MoreMedia>() {
-        MoreMedia()
+    composable<MoreMedia>(
+        typeMap = mapOf(typeOf<Category>() to navTypeOf<Category>())
+    ) { backStackEntry ->
+        val args = backStackEntry.toRoute<MoreMedia>()
+        MoreMedia(
+            onBottomBarItemClick = onBottomBarClick,
+            onImageClick = { media ->
+                navController.safeNavigate(
+                    MediaDetails(media.partialMediaData)
+                )
+            },
+            selectedIcon = selectedIconProvider(),
+            category = args.category,
+            viewModel = mediaViewModel
+        )
     }
 
     // This composable is not implemented yet on the "actually getting errors" front

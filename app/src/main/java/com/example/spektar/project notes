@@ -26,16 +26,14 @@
         - splash screen
             - app logo somehow slowly gaining color
 
-        - grid screen for "More..." at the end of the image rows
-
         - make a color palette cause material3 highk sucks?
 
         - navigate to profile screen on profileSettings and the actual profile icon itself on the top bar
-        - add animations between screens
 
     TODO: ### BACK-END (sort out after designing screen UIs else you'll just get mad and burn out)
         - after splash screen designing, have the app auto log-on if you have made an account
 
+        - regulate backStack and navigation
          - questionnaire (to fill out user's embedding), maybe some data-tracking for user embedding improvement
 
         - sort out error handling

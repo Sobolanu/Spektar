@@ -29,9 +29,12 @@ fun BottomBar(
         bottomIcons.forEachIndexed{ index, item ->
             NavigationBarItem(
                 selected = (selectedItemIndex == index),
+
                 onClick = {
-                    selectedItemIndex = index
-                    onBottomBarItemClick(index) // responsible for changing the selectedIcon
+                    if(selectedItemIndex != index) {
+                        selectedItemIndex = index
+                        onBottomBarItemClick(index)
+                    } // responsible for changing the selectedIcon
                 },
 
                 label = {

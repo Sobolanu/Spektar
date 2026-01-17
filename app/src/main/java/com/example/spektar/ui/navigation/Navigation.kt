@@ -13,7 +13,6 @@ import com.example.spektar.ui.navigation.bottomBarNavigation.bottomBarNavigation
 import com.example.spektar.ui.navigation.graphs.AuthGraph
 import com.example.spektar.ui.navigation.graphs.CategoryGraph
 import com.example.spektar.ui.navigation.graphs.SettingsGraph
-import com.example.spektar.ui.navigation.routes.CategoryScreen
 import com.example.spektar.ui.navigation.routes.UserLoginScreen
 import com.example.spektar.ui.viewModels.DataStoreViewModel
 import com.example.spektar.ui.viewModels.MediaViewModel
@@ -35,11 +34,10 @@ fun SpektarNavigation(
     val navController = rememberNavController()
     // used to specify the currently selected icon in the app's bottom bar
     var selectedIcon by remember { mutableIntStateOf(0) }
-
     // start will be UserLoginScreen(false)
     NavHost(
         navController = navController,
-        startDestination =  UserLoginScreen(false), // CategoryScreen,
+        startDestination = UserLoginScreen(false), // CategoryScreen,
         enterTransition = { slideIntoContainer(AnimatedContentTransitionScope.SlideDirection.Start, tween(500)) },
         exitTransition = { slideOutOfContainer(AnimatedContentTransitionScope.SlideDirection.Start, tween(500)) },
         popEnterTransition = { slideIntoContainer(AnimatedContentTransitionScope.SlideDirection.End, tween(500)) },
@@ -48,7 +46,7 @@ fun SpektarNavigation(
         AuthGraph(
             navController = navController,
             signInViewModel = signInViewModel,
-            signUpViewModel = signUpViewModel
+            signUpViewModel = signUpViewModel,
         )
 
         CategoryGraph(
@@ -56,10 +54,11 @@ fun SpektarNavigation(
             mediaViewModel = mediaViewModel,
 
             onBottomBarClick = { index -> // where selectedIcon gets changed
-                selectedIcon = index
-                bottomBarNavigation(navController, index)
+                if(selectedIcon != index) {
+                    selectedIcon = index
+                    bottomBarNavigation(navController, index)
+                }
             },
-
             selectedIconProvider = { selectedIcon }
         )
 
@@ -67,8 +66,10 @@ fun SpektarNavigation(
             navController = navController,
             dataStoreViewModel = dataStoreViewModel,
             onBottomBarClick = { index ->
-                selectedIcon = index
-                bottomBarNavigation(navController, index)
+                if(selectedIcon != index) {
+                    selectedIcon = index
+                    bottomBarNavigation(navController, index)
+                }
             },
 
             selectedIconProvider = { selectedIcon }

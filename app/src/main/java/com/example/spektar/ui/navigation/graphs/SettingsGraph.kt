@@ -14,6 +14,7 @@ import com.example.spektar.ui.navigation.routes.ProfileSettingsScreen
 import com.example.spektar.ui.navigation.routes.Settings
 import com.example.spektar.ui.navigation.routes.SettingsScreen
 import com.example.spektar.ui.navigation.routes.ThemeScreen
+import com.example.spektar.ui.navigation.utils.safeNavigate
 import com.example.spektar.ui.settingsScreen.SettingsScreen
 import com.example.spektar.ui.settingsScreen.accessibilityScreen.AccessibilityScreen
 import com.example.spektar.ui.settingsScreen.profileSettingsScreen.ProfileSettingsScreen
@@ -30,7 +31,7 @@ fun NavGraphBuilder.SettingsGraph(
         composable<SettingsScreen> {
             SettingsScreen(
                 navigateToScreen = { id ->
-                    navController.navigate(
+                    navController.safeNavigate(
                         // placeholder until i sort out error messaging
                         when (id) {
                             Access.THEME_SCREEN.ordinal -> ThemeScreen
@@ -40,7 +41,7 @@ fun NavGraphBuilder.SettingsGraph(
                             Access.DONATE_SCREEN.ordinal -> DonateScreen
                             else -> { AppErrorScreen } // implement error screen when you get around to it
                         }
-                    ) {launchSingleTop = true}
+                    )
                 },
 
                 onBottomBarItemClick = onBottomBarClick,
