@@ -1,11 +1,14 @@
 package com.example.spektar.ui.navigation.graphs
 
+import androidx.compose.runtime.collectAsState
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
 import androidx.navigation.toRoute
 import com.example.spektar.data.model.media.MediaPreview
 import com.example.spektar.domain.model.Category
+import com.example.spektar.ui.NoteScreen
 import com.example.spektar.ui.common.ErrorScreen
 import com.example.spektar.ui.mediaScreens.CategoryScreen
 import com.example.spektar.ui.mediaScreens.MediaDetailsScreen
@@ -14,9 +17,11 @@ import com.example.spektar.ui.navigation.routes.AppErrorScreen
 import com.example.spektar.ui.navigation.routes.CategoryScreen
 import com.example.spektar.ui.navigation.routes.MediaDetails
 import com.example.spektar.ui.navigation.routes.MoreMedia
+import com.example.spektar.ui.navigation.routes.NoteScreen
 import com.example.spektar.ui.navigation.utils.navTypeOf
 import com.example.spektar.ui.navigation.utils.safeNavigate
 import com.example.spektar.ui.viewModels.MediaViewModel
+import com.example.spektar.ui.viewModels.NoteViewModel
 import kotlin.reflect.typeOf
 
 fun NavGraphBuilder.CategoryGraph(
@@ -24,6 +29,7 @@ fun NavGraphBuilder.CategoryGraph(
     mediaViewModel: MediaViewModel,
     selectedIconProvider: () -> Int,
     onBottomBarClick: (Int) -> Unit,
+    noteViewModel: NoteViewModel,
 ) {
     composable<CategoryScreen> {
         CategoryScreen(
@@ -37,6 +43,7 @@ fun NavGraphBuilder.CategoryGraph(
             selectedIcon = selectedIconProvider(),
             onMoreClick = { category ->
                 navController.safeNavigate(MoreMedia(category)) },
+
             viewModel = mediaViewModel
         )
     }
@@ -47,6 +54,7 @@ fun NavGraphBuilder.CategoryGraph(
         val args = backStackEntry.toRoute<MediaDetails>()
         MediaDetailsScreen(
             onBackClick = { navController.popBackStack() },
+            onNoteButtonClick = { navController.safeNavigate(NoteScreen) },
             mediaPosition = args.partialMediaData,
             viewModel = mediaViewModel
         )
@@ -66,6 +74,17 @@ fun NavGraphBuilder.CategoryGraph(
             selectedIcon = selectedIconProvider(),
             category = args.category,
             viewModel = mediaViewModel
+        )
+    }
+
+    composable<NoteScreen>() {
+        val state = noteViewModel.state.collectAsState()
+
+        NoteScreen(
+            state.value,
+            onEvent = { event ->
+                noteViewModel.onEvent(event)
+            }
         )
     }
 

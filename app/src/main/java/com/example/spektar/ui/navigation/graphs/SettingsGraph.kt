@@ -1,10 +1,16 @@
 package com.example.spektar.ui.navigation.graphs
 
+import androidx.compose.ui.platform.LocalContext
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.navigation
+import androidx.test.core.app.ApplicationProvider.getApplicationContext
+import com.example.spektar.data.local.DataStore.dataStore
 import com.example.spektar.domain.model.Access
+import com.example.spektar.domain.usecase.AccountServiceImpl
+import com.example.spektar.domain.usecase.MediaServiceImpl
 import com.example.spektar.ui.HomeScreen
 import com.example.spektar.ui.navigation.routes.AccessibilityScreen
 import com.example.spektar.ui.navigation.routes.AppErrorScreen
@@ -20,6 +26,9 @@ import com.example.spektar.ui.settingsScreen.accessibilityScreen.AccessibilitySc
 import com.example.spektar.ui.settingsScreen.profileSettingsScreen.ProfileSettingsScreen
 import com.example.spektar.ui.settingsScreen.themeScreen.ThemeScreen
 import com.example.spektar.ui.viewModels.DataStoreViewModel
+import com.example.spektar.ui.viewModels.DataStoreViewModelFactory
+import com.example.spektar.ui.viewModels.MediaViewModel
+import com.example.spektar.ui.viewModels.MediaViewModelFactory
 
 fun NavGraphBuilder.SettingsGraph(
     navController : NavController,
@@ -50,6 +59,12 @@ fun NavGraphBuilder.SettingsGraph(
         }
 
         composable<ThemeScreen> {
+            val context = LocalContext.current // i hope this is the right context
+
+            val viewModel: DataStoreViewModel = viewModel(
+                factory = DataStoreViewModelFactory(dataStore = context.dataStore) // i hope this is good
+            )
+
             ThemeScreen(
                 onBottomBarItemClick = onBottomBarClick,
                 selectedIcon = selectedIconProvider(),
@@ -58,6 +73,12 @@ fun NavGraphBuilder.SettingsGraph(
         }
 
         composable<AccessibilityScreen> {
+            val context = LocalContext.current // i hope this is the right context
+
+            val viewModel: DataStoreViewModel = viewModel(
+                factory = DataStoreViewModelFactory(dataStore = context.dataStore) // i hope this is good
+            )
+
             AccessibilityScreen(
                 onBottomBarItemClick = onBottomBarClick,
                 selectedIcon = selectedIconProvider(),
@@ -66,6 +87,12 @@ fun NavGraphBuilder.SettingsGraph(
         }
 
         composable<ProfileSettingsScreen> {
+            val context = LocalContext.current // i hope this is the right context
+
+            val viewModel: DataStoreViewModel = viewModel(
+                factory = DataStoreViewModelFactory(dataStore = context.dataStore) // i hope this is good
+            )
+
             ProfileSettingsScreen(
                 onBottomBarItemClick = onBottomBarClick,
                 selectedIcon = selectedIconProvider(),

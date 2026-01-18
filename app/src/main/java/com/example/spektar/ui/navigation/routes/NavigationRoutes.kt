@@ -16,7 +16,9 @@ data class AppErrorScreen (
     val errorMessage: String
 )
 
-@Serializable // object UserLoginScreen
+@Serializable
+object NoteScreen // modify to data class that takes id, navigate to note based on id
+@Serializable
 data class UserLoginScreen (
     val showEmailPopUp : Boolean
 )

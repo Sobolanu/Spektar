@@ -42,8 +42,10 @@
 
         - implement per-media notes properly
             - Each media should have a LIST of notes belonging to it
+
             - each note should have a custom user-assigned title, and content that is modifiable
             the content should have modifiable text size, text color, bold/underline/italic,
+
             hyperlinks that lead to other notes and URLs and stuff y'know
  */
 

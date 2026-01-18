@@ -42,6 +42,8 @@ import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.spektar.R
+import com.example.spektar.data.model.viewModelStates.UserSignInData
+import com.example.spektar.domain.repository.AuthEvent
 import com.example.spektar.ui.viewModels.SignInViewModel
 import kotlinx.coroutines.delay
 
@@ -49,12 +51,11 @@ import kotlinx.coroutines.delay
 fun UserLoginScreen(
     onSignInClick: () -> Unit,
     onTextClick: () -> Unit,
-    viewModel: SignInViewModel = viewModel(),
+    state : UserSignInData,
     showEmailPopUp : Boolean,
-    // onDismiss: () -> Unit
+    onEvent: (AuthEvent) -> Unit
 ) {
     var visible by remember { mutableStateOf(false) }
-    val signInState by viewModel.signInState.collectAsState()
     var showEmail by remember { mutableStateOf(showEmailPopUp) }
 
     LaunchedEffect(Unit) {
@@ -105,9 +106,9 @@ fun UserLoginScreen(
             )
 
             TextField(
-                value = signInState.email,
-                onValueChange = { newValue ->
-                    viewModel.updateEmail(newValue)
+                value = state.email,
+                onValueChange = { email ->
+                    onEvent(AuthEvent.SetEmail(email))
                 },
                 leadingIcon = {
                     Icon(
@@ -120,9 +121,9 @@ fun UserLoginScreen(
             )
 
             TextField(
-                value = signInState.password,
-                onValueChange = { newValue ->
-                    viewModel.updatePassword(newValue)
+                value = state.password,
+                onValueChange = { password ->
+                    onEvent(AuthEvent.SetPassword(password))
                 },
 
                 leadingIcon = {
@@ -137,7 +138,7 @@ fun UserLoginScreen(
 
             Button(
                 onClick = {
-                    viewModel.onSignInClick()
+                    onEvent(AuthEvent.SignIn(state))
                     onSignInClick()
                 }
             ) {

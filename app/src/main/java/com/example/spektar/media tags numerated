@@ -56,3 +56,204 @@ roguelike - 44
 survival - 45
 sandbox - 46
 MMO - 47
+
+// Setup type definitions for built-in Supabase Runtime APIs
+import "jsr:@supabase/functions-js/edge-runtime.d.ts";
+import { createClient, SupabaseClient } from "jsr:@supabase/supabase-js@2";
+
+type EmbeddingRow = {
+  user_embedding: number[] | null;
+};
+
+type MediaVectorRow = {
+  media_id: string;
+  embedding: number[] | null;
+  category: string;
+};
+
+type ScoredItem = {
+  media_id: string;
+  score: number;
+  category: string
+};
+
+function l2NormalizeSafe(vec: unknown): number[] {
+  if (!Array.isArray(vec)) return [];
+    const nums = vec.map((v: any) => Number(v)).filter((n) => Number.isFinite(n));
+  if (nums.length === 0) return [];
+    const sumSq = nums.reduce((s, v) => s + v * v, 0);
+  if (sumSq === 0) return nums.map(() => 0);
+   const norm = Math.sqrt(sumSq);
+    return nums.map((v) => v / norm);
+}
+
+function dot(a: number[], b: number[]) {
+  return a.reduce((s, v, i) => s + v * (b[i] ?? 0), 0);
+}
+
+function createRequestClient(req: Request): SupabaseClient {
+  const url = Deno.env.get("SUPABASE_URL") ?? "";
+  const anon = Deno.env.get("SUPABASE_ANON_KEY") ?? "";
+  return createClient(url, anon, {
+    global: { headers: { Authorization: req.headers.get("Authorization") ?? "" } },
+  });
+}
+
+async function fetchUserEmbeddings(
+  supabase: SupabaseClient,
+  userId: string,
+): Promise<number[] | null> {
+  const { data, error } = await supabase
+    .from("profiles")
+    .select("user_embedding")
+    .eq("id", userId)
+    .single()
+
+  if (error) throw error;
+  let emb = data?.user_embedding ?? null;
+  if (emb === null) return null;
+  if (typeof emb === "string") {
+    try {
+      emb = JSON.parse(emb);
+     } catch {
+      return null;
+    }
+  }
+
+  if (!Array.isArray(emb)) return null;
+  return emb.map((v: any) => Number(v)).filter((n) => Number.isFinite(n));
+}
+
+async function fetchMediaEmbeddings(
+  supabase: SupabaseClient,
+): Promise<MediaVectorRow[]> {
+  const {data, error} = await supabase
+    .from<MediaVectorRow>("mediavectors")
+    .select("media_id, embedding, media_category")
+
+  if (error) throw error;
+  return (data ?? []).map((r: any) => { let emb = r.embedding;
+  if (typeof emb === "string") {
+    try {
+      emb = JSON.parse(emb);
+    } catch { emb = []; }
+  }
+
+  if (!Array.isArray(emb)) emb = [];
+  emb = emb.map((v: any) => Number(v)).filter((n) => Number.isFinite(n));
+  return {
+    media_id: r.media_id,
+    embedding: emb,
+    category: r.media_category ?? "unknown"
+    };
+    }
+    );
+}
+
+Deno.serve(async (req: Request) => {
+  try {
+    const url = new URL(req.url);
+    let userId = url.searchParams.get("id") ?? url.searchParams.get("user_id");
+    if (!userId && req.method !== "GET") {
+      try {
+        const body = await req.json();
+        userId = body?.id ?? body?.user_id;
+      } catch {
+        // empty catch block as error is handled in the next if statement
+      }
+    }
+
+    if (!userId) {
+      return new Response(JSON.stringify({ error: "userId is required" }), {
+        status: 400,
+        headers: { "Content-Type": "application/json" },
+      });
+    }
+
+    const supabase = createRequestClient(req);
+
+    const { data: { user }, error: userErr} = await supabase.auth.getUser();
+
+    if (userErr) {
+      return new Response(JSON.stringify({ error: "Invalid or missing auth token" }), {
+        status: 401,
+        headers: { "Content-Type": "application/json" },
+      });
+    }
+
+    if (user?.id !== userId) {
+      return new Response(
+        JSON.stringify({ error: "Forbidden: cannot request another user's embeddings" }),
+        { status: 403, headers: { "Content-Type": "application/json" } }
+      );
+    }
+
+    // embedding processing starts here:
+
+    const userEmbedding = await fetchUserEmbeddings(supabase, userId);
+
+    if(userEmbedding.length == 0) {
+      return new Response(JSON.stringify({ error: "Could not retrieve embeddings for user."}),
+      { status: 404, headers : { "Content-Type" : "application/json"}})
+    }
+
+    const normalizedUserEmbedding = l2NormalizeSafe(userEmbedding)
+    const mediaEmbeddings = await fetchMediaEmbeddings(supabase)
+
+    if(userEmbedding.length == 0) {
+      return new Response(JSON.stringify({ error: "Could not retrieve embeddings for medias."}),
+      { status: 404, headers : { "Content-Type" : "application/json"}})
+    }
+      const scored: ScoredItem[] = mediaEmbeddings.map((m) => {
+          const normalizedMedia = l2NormalizeSafe(m.embedding);
+          return {
+            media_id: m.media_id,
+            score: dot(normalizedUserEmbedding, normalizedMedia),
+            category: m.category
+          } as ScoredItem;
+        });
+
+      const buckets: Record<string, ScoredItem[]> = {
+        shows: [],
+        books: [],
+        games: [],
+        movies: [],
+        unknown: []
+      };
+
+      for (const item of scored) {
+        const category = item.category.toLowerCase();
+        if (category === "shows" || category === "books" || category === "games" || category === "movies") {
+          buckets[category].push(item);
+        } else {
+          buckets.unknown.push(item);
+        }
+      }
+
+      const TOP_PER_CATEGORY = 25;
+      for (const key of Object.keys(buckets)) {
+        buckets[key] = buckets[key].sort((a, b) => b.score - a.score).slice(0, TOP_PER_CATEGORY);
+      }
+
+      // results in fixed order: [shows, books, games, movies]
+      const result = [
+        buckets.shows,
+        buckets.books,
+        buckets.games,
+        buckets.movies
+      ];
+
+      console.log(result)
+
+      return new Response(JSON.stringify({ results: result }), {
+        status: 200,
+        headers: { "Content-Type": "application/json" },
+      });
+  } catch (err: any) {
+    console.error("Edge function error:", err);
+    return new Response(JSON.stringify({ error: err?.message ?? String(err) }), {
+      status: 500,
+      headers: { "Content-Type": "application/json" },
+    });
+  }
+});

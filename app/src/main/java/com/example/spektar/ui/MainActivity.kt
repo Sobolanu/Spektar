@@ -10,8 +10,10 @@ import androidx.activity.viewModels
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.room.Room
 import com.example.compose.SpektarTheme
 import com.example.spektar.data.local.DataStore.dataStore
+import com.example.spektar.data.local.NoteDatabase
 import com.example.spektar.domain.usecase.AccountServiceImpl
 import com.example.spektar.domain.usecase.MediaServiceImpl
 import com.example.spektar.ui.navigation.SpektarNavigation
@@ -19,10 +21,9 @@ import com.example.spektar.ui.viewModels.DataStoreViewModel
 import com.example.spektar.ui.viewModels.DataStoreViewModelFactory
 import com.example.spektar.ui.viewModels.MediaViewModel
 import com.example.spektar.ui.viewModels.MediaViewModelFactory
-import com.example.spektar.ui.viewModels.SignInViewModel
-import com.example.spektar.ui.viewModels.SignInViewModelFactory
-import com.example.spektar.ui.viewModels.SignUpViewModel
-import com.example.spektar.ui.viewModels.SignUpViewModelFactory
+import com.example.spektar.ui.viewModels.NoteViewModel
+import com.example.spektar.ui.viewModels.NoteViewModelFactory
+import kotlin.getValue
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -40,12 +41,12 @@ class MainActivity : ComponentActivity() {
                 )
             }
 
-            val signInViewModel: SignInViewModel by viewModels {
-                SignInViewModelFactory(accountService = AccountServiceImpl())
+            val db by lazy {
+                Room.databaseBuilder(applicationContext, NoteDatabase::class.java, "notes.db").build()
             }
 
-            val signUpViewModel: SignUpViewModel by viewModels {
-                SignUpViewModelFactory(accountService = AccountServiceImpl())
+            val noteViewModel: NoteViewModel by viewModels {
+                NoteViewModelFactory(dao = db.dao)
             }
 
             val dynamicColorState by dataStoreViewModel.readThemeSettings("dynamic_color").collectAsState(initial = false)
@@ -57,9 +58,8 @@ class MainActivity : ComponentActivity() {
             ) {
                 SpektarNavigation(
                     mediaViewModel,
-                    signInViewModel,
-                    signUpViewModel,
                     dataStoreViewModel,
+                    noteViewModel
                 )
             }
         }

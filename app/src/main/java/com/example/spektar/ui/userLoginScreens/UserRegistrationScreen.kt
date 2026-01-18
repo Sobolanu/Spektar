@@ -38,17 +38,18 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import coil.compose.rememberAsyncImagePainter
 import com.example.spektar.R
+import com.example.spektar.data.model.viewModelStates.UserSignUpData
+import com.example.spektar.domain.repository.AuthEvent
 import com.example.spektar.ui.viewModels.SignUpViewModel
 import java.io.File
 
 // val file = uri.toFile()
 @Composable
 fun UserRegistrationScreen(
-    viewModel : SignUpViewModel = viewModel(),
-    onSignUp : () -> Unit
+    state: UserSignUpData,
+    onSignUp : () -> Unit,
+    onEvent: (AuthEvent) -> Unit
 ) {
-    val signUpState by viewModel.signUpState.collectAsState()
-
     Scaffold { paddingValues ->
         Column(
             modifier = Modifier
@@ -69,15 +70,16 @@ fun UserRegistrationScreen(
             ImagePicker(  // make this look nice
                 onImageSelected = { uri ->
                     selectedImageUri = uri
-                    signUpState.avatar = context.copyUriToFile(uri)
+                    val image = context.copyUriToFile(uri)
+                    onEvent(AuthEvent.SetAvatar(image))
                 },
                 painter = painter
             )
 
             TextField(
-                value = signUpState.username,
-                onValueChange = { newValue ->
-                    viewModel.updateUsername(newValue)
+                value = state.username,
+                onValueChange = { newUsername ->
+                    onEvent(AuthEvent.SetUsername(newUsername))
                 },
                 leadingIcon = { Icon(
                     Icons.Filled.AccountCircle,
@@ -88,9 +90,9 @@ fun UserRegistrationScreen(
             )
 
             TextField(
-                value = signUpState.email,
-                onValueChange = { newValue ->
-                    viewModel.updateEmail(newValue)
+                value = state.email,
+                onValueChange = { newEmail ->
+                    onEvent(AuthEvent.SetEmail(newEmail))
                 },
                 leadingIcon = { Icon(
                     Icons.Filled.Email,
@@ -101,9 +103,9 @@ fun UserRegistrationScreen(
             )
 
             TextField(
-                value = signUpState.password,
-                onValueChange = { newValue ->
-                    viewModel.updatePassword(newValue)
+                value = state.password,
+                onValueChange = { newPassword ->
+                    onEvent(AuthEvent.SetPassword(newPassword))
                 },
                 leadingIcon = { Icon(
                     Icons.Filled.Key,
@@ -119,7 +121,7 @@ fun UserRegistrationScreen(
             ) {
                 Button(
                     onClick = {
-                        viewModel.onSignUpClick()
+                        onEvent(AuthEvent.SignUp(state))
                         onSignUp() // move to login screen and show an indicator for "email has been sent to your mail account, confirm to use the app"
                     }
                 ) {

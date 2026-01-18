@@ -13,11 +13,11 @@ import com.example.spektar.ui.navigation.bottomBarNavigation.bottomBarNavigation
 import com.example.spektar.ui.navigation.graphs.AuthGraph
 import com.example.spektar.ui.navigation.graphs.CategoryGraph
 import com.example.spektar.ui.navigation.graphs.SettingsGraph
+import com.example.spektar.ui.navigation.routes.CategoryScreen
 import com.example.spektar.ui.navigation.routes.UserLoginScreen
 import com.example.spektar.ui.viewModels.DataStoreViewModel
 import com.example.spektar.ui.viewModels.MediaViewModel
-import com.example.spektar.ui.viewModels.SignInViewModel
-import com.example.spektar.ui.viewModels.SignUpViewModel
+import com.example.spektar.ui.viewModels.NoteViewModel
 
 /*
 Navigation uses "modern" (used to be modern, however Navigation3 came out but i'm kinda crunched on time so
@@ -26,10 +26,9 @@ i don't have time to migrate to Navigation3) type-safe navigation, which is also
 
 @Composable
 fun SpektarNavigation(
-    mediaViewModel : MediaViewModel,
-    signInViewModel : SignInViewModel,
-    signUpViewModel : SignUpViewModel,
-    dataStoreViewModel : DataStoreViewModel,
+    mediaViewModel: MediaViewModel,
+    dataStoreViewModel: DataStoreViewModel,
+    noteViewModel: NoteViewModel,
 ) {
     val navController = rememberNavController()
     // used to specify the currently selected icon in the app's bottom bar
@@ -45,13 +44,13 @@ fun SpektarNavigation(
     ) {
         AuthGraph(
             navController = navController,
-            signInViewModel = signInViewModel,
-            signUpViewModel = signUpViewModel,
+            // this has clean viewModels and stuff, rest don't cause hard to implement :(
         )
 
         CategoryGraph(
             navController = navController,
             mediaViewModel = mediaViewModel,
+            noteViewModel = noteViewModel,
 
             onBottomBarClick = { index -> // where selectedIcon gets changed
                 if(selectedIcon != index) {

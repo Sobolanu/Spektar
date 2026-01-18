@@ -7,64 +7,46 @@ import com.example.spektar.domain.model.AccountService
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
-import java.io.File
+import com.example.spektar.data.model.viewModelStates.UserSignUpData
+import com.example.spektar.domain.repository.AuthEvent
+import io.github.jan.supabase.auth.Auth
+import kotlinx.coroutines.flow.update
 
-data class SignUpState(
-    val username: String = "",
-    val email: String = "",
-    val password: String = "",
-    var avatar : File? = null
-)
 class SignUpViewModel(
     private val accountService: AccountService
 ) : ViewModel() {
 
-    val _signUpState = MutableStateFlow(SignUpState())
-    val signUpState: StateFlow<SignUpState> get() = _signUpState
+    private val _userSignUpData = MutableStateFlow(UserSignUpData())
+    val userSignUpData: StateFlow<UserSignUpData> get() = _userSignUpData
 
-    init {
-        _signUpState.value = SignUpState(
-            username = "",
-            email = "",
-            password = "",
-            avatar = null
-        )
-    }
-
-    fun updateUsername(newUsername: String) {
-        _signUpState.value = SignUpState(
-            username = newUsername,
-            password = _signUpState.value.password,
-            email = _signUpState.value.email,
-            avatar = _signUpState.value.avatar,
-        )
-    }
-    fun updateEmail(newEmail: String) {
-        _signUpState.value = SignUpState(
-            email = newEmail,
-            password = _signUpState.value.password,
-            username = _signUpState.value.username,
-            avatar = _signUpState.value.avatar,
-        )
-    }
-
-    fun updatePassword(newPassword: String) {
-        _signUpState.value = SignUpState(
-            email = _signUpState.value.email,
-            password = newPassword,
-            avatar = _signUpState.value.avatar,
-            username = _signUpState.value.username,
-        )
-    }
-
-    fun onSignUpClick() {
-        viewModelScope.launch {
-            accountService.signUp(
-                username = signUpState.value.username,
-                userEmail = signUpState.value.email,
-                userPassword = signUpState.value.password,
-                avatar = signUpState.value.avatar,
-            )
+    fun onEvent(event: AuthEvent) {
+        when(event) {
+            is AuthEvent.SetAvatar -> {
+                _userSignUpData.update { it.copy(
+                    avatar = event.avatar
+                )}
+            }
+            is AuthEvent.SetEmail -> {
+                _userSignUpData.update { it.copy(
+                    email = event.newEmail
+                )}
+            }
+            is AuthEvent.SetPassword -> {
+                _userSignUpData.update { it.copy(
+                    password = event.newPassword
+                )}
+            }
+            is AuthEvent.SetUsername -> {
+                _userSignUpData.update { it.copy(
+                    username = event.newUsername
+                )}
+            }
+            is AuthEvent.SignUp -> {
+                viewModelScope.launch {
+                    accountService.signUp(userSignUpData.value)
+                }
+            }
+            is AuthEvent.SignIn -> { } // empty
         }
     }
 }

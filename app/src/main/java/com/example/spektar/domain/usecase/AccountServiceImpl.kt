@@ -1,6 +1,8 @@
 package com.example.spektar.domain.usecase
 
 import com.example.spektar.data.model.User
+import com.example.spektar.data.model.viewModelStates.UserSignInData
+import com.example.spektar.data.model.viewModelStates.UserSignUpData
 import com.example.spektar.data.remote.SupabaseClientProvider
 import com.example.spektar.data.remote.SupabaseClientProvider.auth
 import com.example.spektar.domain.model.AccountService
@@ -11,7 +13,6 @@ import io.github.jan.supabase.postgrest.query.Columns
 import io.github.jan.supabase.storage.upload
 import kotlinx.serialization.json.buildJsonObject
 import kotlinx.serialization.json.put
-import java.io.File
 
 // reminder to go to your supabase dashboard and redirect users when they confirm their link
 // that is, your sign up composable should also tell you that you need to confirm your address
@@ -60,10 +61,10 @@ class AccountServiceImpl : AccountService {
         return " "
     }
 
-    override suspend fun signIn(userEmail: String, userPassword: String) {
+    override suspend fun signIn(state: UserSignInData) {
         auth.signInWith(Email) {
-            email = userEmail
-            password = userPassword
+            email = state.email
+            password = state.password
         }
     }
 
@@ -80,28 +81,30 @@ class AccountServiceImpl : AccountService {
         return data
     }
 
-    override suspend fun signUp(username: String, userEmail: String, userPassword: String, avatar: File?) {
-        requireNotNull(avatar)
+    override suspend fun signUp(
+        state: UserSignUpData
+    ) {
+        requireNotNull(state.avatar)
 
         auth.signUpWith(Email) {
-            email = userEmail
-            password = userPassword
+            email = state.email
+            password = state.password
             data = buildJsonObject {
-                put("username", username)
+                put("username", state.username)
             }
         }
 
         val userId = auth.currentUserOrNull()?.id ?: error("User ID missing from session after sign up")
         SupabaseClientProvider.storage.from("avatars")
-            .upload("$userId/${avatar.name}", avatar) { upsert = false }
+            .upload("$userId/${state.avatar!!.name}", state.avatar!!) { upsert = false }
 
         SupabaseClientProvider.db.from("profiles").update(
             mapOf(
-                "avatar_url" to "$userId/${avatar.name}",
-                "username" to username
+                "avatar_url" to "$userId/${state.avatar!!.name}",
+                "username" to state.username
             )
         ) {
-            filter {eq ("id", userId)}
+            filter { eq ("id", userId)}
         }
     }
 

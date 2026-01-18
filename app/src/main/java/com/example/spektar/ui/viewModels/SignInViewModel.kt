@@ -3,47 +3,42 @@ package com.example.spektar.ui.viewModels
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
+import com.example.spektar.data.model.viewModelStates.UserSignInData
 import com.example.spektar.domain.model.AccountService
+import com.example.spektar.domain.repository.AuthEvent
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-
-data class SignInState(
-    val email: String = "",
-    val password: String = ""
-)
 
 // introduce login with username?
 class SignInViewModel(
     private val accountService: AccountService
 ) : ViewModel() {
-     val _signInState = MutableStateFlow(SignInState())
-     val signInState: StateFlow<SignInState> get() = _signInState
+     private val _userSignInData = MutableStateFlow(UserSignInData())
+     val userSignInData: StateFlow<UserSignInData> get() = _userSignInData
 
-     init {
-         _signInState.value = SignInState(
-             email = "",
-             password = ""
-         )
-     }
+    fun onEvent(event : AuthEvent) { // should this be a suspend fun?
+        when(event) {
+            is AuthEvent.SetEmail -> {
+                _userSignInData.update { it.copy(
+                    email = event.newEmail
+                )}
+            }
+            is AuthEvent.SetPassword -> {
+                _userSignInData.update { it.copy(
+                    password = event.newPassword
+                )}
+            }
+            is AuthEvent.SignIn -> {
+                viewModelScope.launch {
+                    accountService.signIn(userSignInData.value)
+                }
+            }
 
-    fun updateEmail(newEmail: String) {
-       _signInState.value = SignInState(
-           email = newEmail,
-           password = _signInState.value.password
-       )
-    }
-
-    fun updatePassword(newPassword: String) {
-        _signInState.value = SignInState(
-            email = _signInState.value.email,
-            password = newPassword
-        )
-    }
-
-    fun onSignInClick() {
-        viewModelScope.launch {
-            accountService.signIn(signInState.value.email, signInState.value.password)
+            is AuthEvent.SetUsername -> { } // probably nothing too though i will add log-in via username
+            is AuthEvent.SetAvatar -> { } // nothing happens, you can't use avatars in the sign-in screen
+            is AuthEvent.SignUp -> { } // can't log in inside of SignUp.
         }
     }
 }

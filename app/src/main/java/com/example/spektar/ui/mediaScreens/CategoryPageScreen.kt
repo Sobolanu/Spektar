@@ -14,6 +14,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AddCircleOutline
@@ -48,7 +49,7 @@ import com.example.spektar.ui.common.components.BottomBar
 import com.example.spektar.ui.common.modifiers.cardWithShadowModifier
 import com.example.spektar.ui.common.modifiers.roundedCornerRow
 import com.example.spektar.ui.navigation.routes.MediaDetails
-import com.example.spektar.ui.viewModels.MediaUiState
+import com.example.spektar.data.model.viewModelStates.MediaUiData
 import com.example.spektar.ui.viewModels.MediaViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -64,9 +65,9 @@ fun CategoryScreen(
     onMoreClick: (Category) -> Unit,
     onBottomBarItemClick: (Int) -> Unit,
     selectedIcon: Int,
-    viewModel : MediaViewModel
+    viewModel: MediaViewModel
 ) {
-    val uiState by viewModel.uiState.collectAsState()
+    val state = viewModel.uiState.collectAsState()
     val scrollBehavior = enterAlwaysScrollBehavior()
 
     Scaffold(
@@ -83,7 +84,7 @@ fun CategoryScreen(
     ) { paddingValues ->
         CategoryScreenContent(
             onImageClick = onImageClick,
-            uiState = uiState,
+            uiState = state.value,
             onMoreClick = onMoreClick,
             modifier = Modifier.padding(paddingValues),
         )
@@ -95,7 +96,7 @@ fun CategoryScreen(
 fun CategoryScreenContent(
     onImageClick: (MediaDetails) -> Unit,
     onMoreClick: (Category) -> Unit,
-    uiState: MediaUiState,
+    uiState: MediaUiData,
     modifier: Modifier = Modifier,
 ) {
     val categories = uiState.categories
@@ -152,32 +153,32 @@ fun LoadCategoryImages(
 
     // different colors based on different categories
     ) {
-        item {
-            for(i in 0..<medias.size) {
-                Card( // if this doesn't work switch it to js normal card
-                    onClick = {
-                        onImageClick( MediaDetails(partialMediaData = medias[i]) )
-                    },
+        items(medias, key = { it.imageUrl } ) { media ->
+            Card( // if this doesn't work switch it to js normal card
+                onClick = {
+                    onImageClick( MediaDetails(partialMediaData = media) )
+                },
 
-                    colors = CardColors( // sort card colors by category
-                        containerColor = MaterialTheme.colorScheme.tertiaryContainer,
-                        contentColor = MaterialTheme.colorScheme.onTertiaryContainer,
-                        disabledContainerColor = MaterialTheme.colorScheme.tertiaryFixedDim,
-                        disabledContentColor = MaterialTheme.colorScheme.onTertiaryFixed
-                    ),
+                colors = CardColors( // sort card colors by category
+                    containerColor = MaterialTheme.colorScheme.tertiaryContainer,
+                    contentColor = MaterialTheme.colorScheme.onTertiaryContainer,
+                    disabledContainerColor = MaterialTheme.colorScheme.tertiaryFixedDim,
+                    disabledContentColor = MaterialTheme.colorScheme.onTertiaryFixed
+                ),
 
-                    modifier = cardWithShadowModifier
-                ) {
-                    AsyncImage(
-                        model = medias[i].imageUrl,
-                        contentDescription = medias[i].name,
-                        modifier = Modifier
-                            .size(175.dp)
-                            .padding(horizontal = 8.dp)
-                    )
-                }
+                modifier = cardWithShadowModifier
+            ) {
+                AsyncImage(
+                    model = media.imageUrl,
+                    contentDescription = media.name,
+                    modifier = Modifier
+                        .size(175.dp)
+                        .padding(horizontal = 8.dp)
+                )
             }
+        }
 
+        item {
             Card(
                 onClick = { onMoreClick(category) },
 
@@ -212,11 +213,11 @@ fun LoadCategoryImages(
                         modifier = Modifier.padding(bottom = 8.dp)
                     )
                 }
-            }
 
-            // also add a sliding bar below this row
-            // add "more" image that matches size and that
-            // redirects to grid of images (as in, to more media)
+                // also add a sliding bar below this row
+                // add "more" image that matches size and that
+                // redirects to grid of images (as in, to more media)
+            }
         }
     }
 

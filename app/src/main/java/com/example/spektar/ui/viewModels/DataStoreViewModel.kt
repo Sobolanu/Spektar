@@ -24,7 +24,7 @@ class DataStoreViewModel(
 
     // theme settings:
 
-    val themeSetting: Flow<Boolean>
+    val themeSettings: Flow<Boolean>
         get() = dataStore.data.map { prefs ->
             prefs[KEY_SETTINGS] ?: false
         }

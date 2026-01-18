@@ -43,7 +43,7 @@ TODO: implement screen for notes and notes functionality
 @Composable
 fun MediaDetailsScreen(
     onBackClick: () -> Unit,
-    // onEvent: () -> Unit, implement navigation to notes for specific mediA
+    onNoteButtonClick: () -> Unit,
     mediaPosition: MediaPreview,
     viewModel : MediaViewModel
 ) {
@@ -113,7 +113,7 @@ fun MediaDetailsScreen(
             item {
                 Button(
                     onClick = {
-                        // navigate to note of said media
+                        onNoteButtonClick()
                     }
                 ) {
                     Text("Notes")
@@ -142,7 +142,7 @@ fun DetailsPageTopBar(
             actionIconContentColor = MaterialTheme.colorScheme.onPrimaryContainer
         ),
 
-        title = {Text("test")},
+        title = { Text("test") },
 
         navigationIcon = {
             IconButton(onClick = onBackClick) {

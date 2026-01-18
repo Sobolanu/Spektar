@@ -2,13 +2,13 @@ package com.example.spektar.ui.viewModels
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
-import com.example.spektar.data.model.EdgeResponse
 import com.example.spektar.data.model.media.MediaPreview
 import com.example.spektar.data.model.media.SpecificMedia
+import com.example.spektar.data.model.viewModelStates.MediaUiData
 import com.example.spektar.data.repository.globalCategoryList
 import com.example.spektar.domain.model.AccountService
-import com.example.spektar.domain.model.Category
 import com.example.spektar.domain.model.MediaService
+import com.example.spektar.domain.repository.MediaEvent
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
@@ -22,17 +22,26 @@ import kotlinx.coroutines.launch
     implement error handling when you have the energy to do so
 */
 
-data class MediaUiState (
-    val medias: List<List<MediaPreview>?> = emptyList(),
-    val categories: List<Category> = emptyList(),
-)
-
 class MediaViewModel (
     private val mediaService: MediaService,
     private val accountService: AccountService
 ) : ViewModel() {
-    private val _uiState = MutableStateFlow(MediaUiState())
-    val uiState: StateFlow<MediaUiState> get() = _uiState
+    private val _uiState = MutableStateFlow(MediaUiData())
+    val uiState: StateFlow<MediaUiData> get() = _uiState
+    private val _media = MutableStateFlow<SpecificMedia?>(null)
+    val media: StateFlow<SpecificMedia?> = _media // combine this into uiState some time
+
+    fun onEvent(event: MediaEvent) {
+        when(event) {
+            is MediaEvent.ObtainMediaById -> {
+                viewModelScope.launch {
+                    val result = obtainMediaById(event.media)
+                    _media.value = result
+                }
+            }
+            else -> {}
+        }
+    }
 
     init {
         loadData()
@@ -66,7 +75,7 @@ class MediaViewModel (
                 }
             }
 
-            _uiState.value = MediaUiState(
+            _uiState.value = MediaUiData(
                 // medias = mediaList,
                 medias = recommendedMedia,
                 categories = categories, // name of each specific thing

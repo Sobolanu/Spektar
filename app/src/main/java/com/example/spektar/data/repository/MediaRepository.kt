@@ -23,7 +23,6 @@ object MediaRepository {
             }
             .decodeList<MediaPreview>()
 
-
         val rowMap = rows.associateBy { it.id_uuid }
         val ordered = mediaIds.mapNotNull { id -> rowMap[id] }
 
