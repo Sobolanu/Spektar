@@ -1,5 +1,6 @@
 package com.example.spektar.data.model
 
+import com.example.spektar.data.model.roomModels.Note
 import com.example.spektar.domain.model.SortType
 
 data class NoteState(

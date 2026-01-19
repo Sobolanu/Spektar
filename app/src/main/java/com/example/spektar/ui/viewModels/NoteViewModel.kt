@@ -1,15 +1,15 @@
 package com.example.spektar.ui.viewModels
 
+import com.example.spektar.data.model.roomModels.MediaId
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
-import com.example.spektar.data.model.MediaId
-import com.example.spektar.data.model.Note
+import com.example.spektar.data.model.roomModels.Note
 import com.example.spektar.data.model.NoteState
 import com.example.spektar.domain.model.SortType
-import com.example.spektar.domain.repository.MediaDao
-import com.example.spektar.domain.repository.NoteDao
-import com.example.spektar.domain.repository.NoteEvent
+import com.example.spektar.data.local.dao.MediaDao
+import com.example.spektar.data.local.dao.NoteDao
+import com.example.spektar.ui.notesScreen.NoteEvent
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted

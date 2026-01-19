@@ -2,13 +2,13 @@ package com.example.spektar.ui.viewModels
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
-import com.example.spektar.data.model.media.MediaPreview
-import com.example.spektar.data.model.media.SpecificMedia
+import com.example.spektar.domain.media.MediaPreview
+import com.example.spektar.domain.media.SpecificMedia
 import com.example.spektar.data.model.viewModelStates.MediaUiData
 import com.example.spektar.data.repository.globalCategoryList
 import com.example.spektar.domain.model.AccountService
 import com.example.spektar.domain.model.MediaService
-import com.example.spektar.domain.repository.MediaEvent
+import com.example.spektar.ui.mediaScreens.MediaEvent
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch

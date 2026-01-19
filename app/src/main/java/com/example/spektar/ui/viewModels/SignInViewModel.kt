@@ -3,9 +3,9 @@ package com.example.spektar.ui.viewModels
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
-import com.example.spektar.data.model.viewModelStates.UserSignInData
+import com.example.spektar.ui.viewModels.states.UserSignInData
 import com.example.spektar.domain.model.AccountService
-import com.example.spektar.domain.repository.AuthEvent
+import com.example.spektar.ui.userLoginScreens.AuthEvent
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.update

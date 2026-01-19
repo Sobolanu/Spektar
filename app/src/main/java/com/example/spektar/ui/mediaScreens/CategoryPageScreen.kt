@@ -42,9 +42,9 @@ import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
-import com.example.spektar.data.model.media.MediaPreview
+import com.example.spektar.domain.media.MediaPreview
 import com.example.spektar.domain.model.Category
-import com.example.spektar.domain.model.navigationBarIcons.topProfileIcon
+import com.example.spektar.ui.common.components.navigationBarIcons.topProfileIcon
 import com.example.spektar.ui.common.components.BottomBar
 import com.example.spektar.ui.common.modifiers.cardWithShadowModifier
 import com.example.spektar.ui.common.modifiers.roundedCornerRow

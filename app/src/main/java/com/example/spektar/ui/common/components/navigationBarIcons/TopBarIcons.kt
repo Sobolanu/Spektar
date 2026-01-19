@@ -1,11 +1,11 @@
-package com.example.spektar.domain.model.navigationBarIcons
+package com.example.spektar.ui.common.components.navigationBarIcons
 
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.automirrored.outlined.ArrowBack
 import androidx.compose.material.icons.filled.AccountCircle
 import androidx.compose.material.icons.outlined.AccountCircle
-import com.example.spektar.data.model.NavigationItem
+import com.example.spektar.ui.common.components.NavigationItem
 
 internal val topProfileIcon = NavigationItem(
     title = "Profile",

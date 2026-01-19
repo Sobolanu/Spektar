@@ -1,8 +1,8 @@
 package com.example.spektar.domain.usecase
 
 import com.example.spektar.data.model.User
-import com.example.spektar.data.model.viewModelStates.UserSignInData
-import com.example.spektar.data.model.viewModelStates.UserSignUpData
+import com.example.spektar.ui.viewModels.states.UserSignInData
+import com.example.spektar.ui.viewModels.states.UserSignUpData
 import com.example.spektar.data.remote.SupabaseClientProvider
 import com.example.spektar.data.remote.SupabaseClientProvider.auth
 import com.example.spektar.domain.model.AccountService

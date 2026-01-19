@@ -1,7 +1,6 @@
-package com.example.spektar.domain.repository
+package com.example.spektar.ui.notesScreen
 
-import androidx.compose.ui.text.TextStyle
-import com.example.spektar.data.model.Note
+import com.example.spektar.data.model.roomModels.Note
 import com.example.spektar.domain.model.SortType
 
 sealed interface NoteEvent {

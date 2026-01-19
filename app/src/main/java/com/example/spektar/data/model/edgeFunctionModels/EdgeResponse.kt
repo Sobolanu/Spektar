@@ -1,5 +1,6 @@
-package com.example.spektar.data.model
+package com.example.spektar.data.model.edgeFunctionModels
 
+import com.example.spektar.data.model.edgeFunctionModels.MatchResult
 import kotlinx.serialization.Serializable
 
 /*

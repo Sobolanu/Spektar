@@ -12,7 +12,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.text.style.TextAlign
-import com.example.spektar.domain.model.navigationBarIcons.bottomIcons
+import com.example.spektar.ui.common.components.navigationBarIcons.bottomIcons
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable

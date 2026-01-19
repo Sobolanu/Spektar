@@ -1,15 +1,15 @@
 package com.example.spektar.ui.navigation.graphs
 
+import com.example.spektar.data.model.roomModels.MediaId
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
 import androidx.navigation.toRoute
-import com.example.spektar.data.model.MediaId
-import com.example.spektar.data.model.media.MediaPreview
+import com.example.spektar.domain.media.MediaPreview
 import com.example.spektar.domain.model.Category
-import com.example.spektar.ui.NoteScreen
+import com.example.spektar.ui.notesScreen.NoteScreen
 import com.example.spektar.ui.common.ErrorScreen
 import com.example.spektar.ui.mediaScreens.CategoryScreen
 import com.example.spektar.ui.mediaScreens.MediaDetailsScreen

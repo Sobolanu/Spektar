@@ -31,10 +31,10 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
-import com.example.spektar.data.model.media.MediaPreview
-import com.example.spektar.data.model.media.SpecificMedia
-import com.example.spektar.domain.model.navigationBarIcons.topProfileIcon
-import com.example.spektar.domain.model.navigationBarIcons.topBackArrowIcon
+import com.example.spektar.domain.media.MediaPreview
+import com.example.spektar.domain.media.SpecificMedia
+import com.example.spektar.ui.common.components.navigationBarIcons.topProfileIcon
+import com.example.spektar.ui.common.components.navigationBarIcons.topBackArrowIcon
 import com.example.spektar.ui.viewModels.MediaViewModel
 
 /*

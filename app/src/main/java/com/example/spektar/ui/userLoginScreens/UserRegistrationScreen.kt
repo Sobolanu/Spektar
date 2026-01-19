@@ -38,8 +38,8 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import coil.compose.rememberAsyncImagePainter
 import com.example.spektar.R
-import com.example.spektar.data.model.viewModelStates.UserSignUpData
-import com.example.spektar.domain.repository.AuthEvent
+import com.example.spektar.ui.viewModels.states.UserSignUpData
+import com.example.spektar.ui.userLoginScreens.AuthEvent
 import com.example.spektar.ui.viewModels.SignUpViewModel
 import java.io.File
 

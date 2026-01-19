@@ -1,4 +1,4 @@
-package com.example.spektar.domain.model.navigationBarIcons
+package com.example.spektar.ui.common.components.navigationBarIcons
 
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AddBox
@@ -7,7 +7,7 @@ import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material.icons.outlined.AddBox
 import androidx.compose.material.icons.outlined.Home
 import androidx.compose.material.icons.outlined.Settings
-import com.example.spektar.data.model.NavigationItem
+import com.example.spektar.ui.common.components.NavigationItem
 
 internal val bottomIcons = listOf(
     NavigationItem(

@@ -1,4 +1,4 @@
-package com.example.spektar.data.model.viewModelStates
+package com.example.spektar.ui.viewModels.states
 
 import java.io.File
 

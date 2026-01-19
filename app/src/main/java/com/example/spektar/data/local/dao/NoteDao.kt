@@ -1,13 +1,12 @@
-package com.example.spektar.domain.repository
+package com.example.spektar.data.local.dao
 
 import androidx.room.Dao
 import androidx.room.Delete
-import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import androidx.room.Transaction
 import androidx.room.Upsert
-import com.example.spektar.data.model.MediaId
-import com.example.spektar.data.model.Note
+import com.example.spektar.data.model.roomModels.MediaId
+import com.example.spektar.data.model.roomModels.Note
 import kotlinx.coroutines.flow.Flow
 
 @Dao
@@ -30,5 +29,3 @@ interface NoteDao {
     @Query("SELECT * FROM notes WHERE mediaId = :mediaId")
     fun getNotesByMedia(mediaId : String): Flow<List<Note>>
 }
-
-// fun getNotesOrderedByName(): Flow<List<Note>>

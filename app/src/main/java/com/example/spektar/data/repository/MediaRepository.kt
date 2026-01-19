@@ -1,6 +1,6 @@
 package com.example.spektar.data.repository
 
-import com.example.spektar.data.model.media.MediaPreview
+import com.example.spektar.domain.media.MediaPreview
 import com.example.spektar.data.remote.SupabaseClientProvider
 import io.github.jan.supabase.postgrest.from
 import io.github.jan.supabase.postgrest.query.Columns

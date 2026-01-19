@@ -1,6 +1,6 @@
 package com.example.spektar.data.model.viewModelStates
 
-import com.example.spektar.data.model.media.MediaPreview
+import com.example.spektar.domain.media.MediaPreview
 import com.example.spektar.domain.model.Category
 
 data class MediaUiData (

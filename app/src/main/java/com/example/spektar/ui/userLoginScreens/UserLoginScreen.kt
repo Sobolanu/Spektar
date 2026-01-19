@@ -42,8 +42,8 @@ import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.spektar.R
-import com.example.spektar.data.model.viewModelStates.UserSignInData
-import com.example.spektar.domain.repository.AuthEvent
+import com.example.spektar.ui.viewModels.states.UserSignInData
+import com.example.spektar.ui.userLoginScreens.AuthEvent
 import com.example.spektar.ui.viewModels.SignInViewModel
 import kotlinx.coroutines.delay
 

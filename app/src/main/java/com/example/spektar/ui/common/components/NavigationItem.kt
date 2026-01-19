@@ -1,4 +1,4 @@
-package com.example.spektar.data.model
+package com.example.spektar.ui.common.components
 
 import androidx.compose.ui.graphics.vector.ImageVector
 

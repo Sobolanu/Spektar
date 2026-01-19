@@ -1,16 +1,15 @@
 package com.example.spektar.domain.usecase
 
-import com.example.spektar.data.model.EdgeResponse
-import com.example.spektar.data.model.IdPayload
-import com.example.spektar.data.model.media.MediaLookup
-import com.example.spektar.data.model.media.MediaPreview
-import com.example.spektar.data.model.media.SpecificMedia
+import com.example.spektar.data.model.edgeFunctionModels.EdgeResponse
+import com.example.spektar.data.model.edgeFunctionModels.IdPayload
+import com.example.spektar.domain.media.MediaLookup
+import com.example.spektar.domain.media.MediaPreview
+import com.example.spektar.domain.media.SpecificMedia
 import com.example.spektar.data.remote.SupabaseClientProvider
 import com.example.spektar.data.repository.MediaRepository
 import com.example.spektar.data.repository.globalCategoryList
 import com.example.spektar.domain.model.Category
 import com.example.spektar.domain.model.MediaService
-import io.github.jan.supabase.auth.user.UserSession
 import io.github.jan.supabase.postgrest.from
 import io.github.jan.supabase.postgrest.query.Columns
 import io.ktor.client.HttpClient

@@ -7,7 +7,7 @@ import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
 import androidx.navigation.toRoute
 import androidx.test.internal.platform.app.`ActivityInvoker$$CC`
-import com.example.spektar.data.model.viewModelStates.UserSignInData
+import com.example.spektar.ui.viewModels.states.UserSignInData
 import com.example.spektar.domain.usecase.AccountServiceImpl
 import com.example.spektar.ui.navigation.routes.CategoryScreen
 import com.example.spektar.ui.navigation.routes.UserLoginScreen

@@ -2,10 +2,10 @@ package com.example.spektar.data.local
 
 import androidx.room.Database
 import androidx.room.RoomDatabase
-import com.example.spektar.data.model.MediaId
-import com.example.spektar.data.model.Note
-import com.example.spektar.domain.repository.MediaDao
-import com.example.spektar.domain.repository.NoteDao
+import com.example.spektar.data.local.dao.MediaDao
+import com.example.spektar.data.local.dao.NoteDao
+import com.example.spektar.data.model.roomModels.Note
+import com.example.spektar.data.model.roomModels.MediaId
 
 @Database(
     entities = [Note::class, MediaId::class],

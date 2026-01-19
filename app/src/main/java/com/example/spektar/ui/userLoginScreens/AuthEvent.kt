@@ -1,7 +1,7 @@
-package com.example.spektar.domain.repository
+package com.example.spektar.ui.userLoginScreens
 
-import com.example.spektar.data.model.viewModelStates.UserSignInData
-import com.example.spektar.data.model.viewModelStates.UserSignUpData
+import com.example.spektar.ui.viewModels.states.UserSignInData
+import com.example.spektar.ui.viewModels.states.UserSignUpData
 import java.io.File
 
 sealed interface AuthEvent {

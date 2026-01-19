@@ -1,4 +1,4 @@
-package com.example.spektar.domain.usecase
+package com.example.spektar.ui.common.lists
 
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.Help
@@ -8,7 +8,7 @@ import androidx.compose.material.icons.filled.Brush
 import androidx.compose.material.icons.filled.Diamond
 import androidx.compose.material.icons.filled.Language
 import com.example.spektar.domain.model.Access
-import com.example.spektar.domain.model.SettingsScreenCategory
+import com.example.spektar.ui.common.components.SettingsScreenCategory
 
 internal val customization = SettingsScreenCategory(
     titleOfCategory = "Customization",
@@ -27,14 +27,22 @@ internal val customization = SettingsScreenCategory(
 internal val account = SettingsScreenCategory(
     titleOfCategory = "Account",
     tabs = listOf(
-        Triple(Icons.Filled.AccountCircle, "Profile Settings", Access.PROFILE_SETTINGS_SCREEN.ordinal)
+        Triple(
+            Icons.Filled.AccountCircle,
+            "Profile Settings",
+            Access.PROFILE_SETTINGS_SCREEN.ordinal
+        )
     )
 )
 
 internal val support = SettingsScreenCategory(
     titleOfCategory = "Support",
     tabs = listOf(
-        Triple(Icons.AutoMirrored.Filled.Help, "Help & Support", Access.HELP_SUPPORT_SCREEN.ordinal),
+        Triple(
+            Icons.AutoMirrored.Filled.Help,
+            "Help & Support",
+            Access.HELP_SUPPORT_SCREEN.ordinal
+        ),
         Triple(Icons.Filled.Diamond, "Donate", Access.HELP_SUPPORT_SCREEN.ordinal)
     )
 )

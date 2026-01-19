@@ -1,6 +1,6 @@
 package com.example.spektar.ui.navigation.routes
 
-import com.example.spektar.data.model.media.MediaPreview
+import com.example.spektar.domain.media.MediaPreview
 import com.example.spektar.domain.model.Category
 import kotlinx.serialization.Serializable
 

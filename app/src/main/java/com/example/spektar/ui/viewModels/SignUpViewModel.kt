@@ -7,8 +7,8 @@ import com.example.spektar.domain.model.AccountService
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
-import com.example.spektar.data.model.viewModelStates.UserSignUpData
-import com.example.spektar.domain.repository.AuthEvent
+import com.example.spektar.ui.viewModels.states.UserSignUpData
+import com.example.spektar.ui.userLoginScreens.AuthEvent
 import io.github.jan.supabase.auth.Auth
 import kotlinx.coroutines.flow.update
 
