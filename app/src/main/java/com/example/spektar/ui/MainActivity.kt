@@ -10,6 +10,9 @@ import androidx.activity.viewModels
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.room.Room
 import com.example.compose.SpektarTheme
 import com.example.spektar.data.local.DataStore.dataStore
@@ -41,12 +44,15 @@ class MainActivity : ComponentActivity() {
                 )
             }
 
-            val db by lazy {
+            val NotesTable by lazy {
                 Room.databaseBuilder(applicationContext, NoteDatabase::class.java, "notes.db").build()
             }
 
-            val noteViewModel: NoteViewModel by viewModels {
-                NoteViewModelFactory(dao = db.dao)
+            val noteViewModel: NoteViewModel by viewModels<NoteViewModel> {
+                NoteViewModelFactory(
+                    noteDao = NotesTable.noteDao,
+                    mediaDao = NotesTable.mediaDao
+                )
             }
 
             val dynamicColorState by dataStoreViewModel.readThemeSettings("dynamic_color").collectAsState(initial = false)
@@ -59,7 +65,7 @@ class MainActivity : ComponentActivity() {
                 SpektarNavigation(
                     mediaViewModel,
                     dataStoreViewModel,
-                    noteViewModel
+                    noteViewModel,
                 )
             }
         }

@@ -1,7 +1,4 @@
-// NOTE TO SELF: YOU CAN HAVE MULTIPLE VIEWMODELS IN ONE SCREEN, ONLY ONE CAN MODIFY THE UI THOUGH!!!
-// actually scratch that, one view model per screen is cleaner but if you need any data to be transferred between two viewmodels
-// you should share that through some repository
-
+// if you need any data to be transferred between two viewmodels you should share that through some repository
 // DONT DO ANYTHING WITH ERRORS UNTIL YOU FINISH THE APP!!!
 
 /* TODO:
@@ -12,55 +9,37 @@
             for shows, each season gets it's own "slot" in the repositories, so it'll just be of format
             "Episode X/Y", where X means the last page/episode you watched, Y is max)
 
-        - screen for each media's note
-            - peep the bottom of this comment for elaborations (the implement per-media part)
-
-        - profile screen
-            - might be redundant if you can integrate into settings screen
+        - profile screen - will exist in settings screen but a shortcut won't hurt
         - questionnaire screen
-
-        - settings screen
-            - photosensitive mode, profile settings, app language, dynamic color on/off and other
-            important stuff you think of
-
+        - settings screen - profile settings, theme previews
         - splash screen
             - app logo somehow slowly gaining color
-
         - make a color palette cause material3 highk sucks?
-
         - navigate to profile screen on profileSettings and the actual profile icon itself on the top bar
 
-    TODO: ### BACK-END (sort out after designing screen UIs else you'll just get mad and burn out)
+    TODO: ### BACK-END
+
         - after splash screen designing, have the app auto log-on if you have made an account
-
-        - regulate backStack and navigation
-         - questionnaire (to fill out user's embedding), maybe some data-tracking for user embedding improvement
-
+        - regulate backStack and navigation (so, prevent a user from going all the way back to the login screen)
+        - questionnaire (to fill out user's embedding), maybe some data-tracking for user embedding improvement
         - sort out error handling
             - handle any potential errors from supabase and shit
             - ERRORS SHOULD BE HANDLED IN VIEWMODELS!!!
-
-        - implement per-media notes properly
-            - Each media should have a LIST of notes belonging to it
-
-            - each note should have a custom user-assigned title, and content that is modifiable
-            the content should have modifiable text size, text color, bold/underline/italic,
-
-            hyperlinks that lead to other notes and URLs and stuff y'know
+        - per-media notes: hyperlinks that lead to other notes and URLs and stuff?
  */
-
- launchSingleTop = true basically says that you can't mash navigation buttons and have app navigation break
 
  UI Layer
  Activities, Fragments, Composables, ViewModels, UI state, navigation, events
 
  Domain Layer
+
  Use cases
  Domain models
  Business rules
  Repository interfaces
 
  Data Layer
+
  Repository implementations
  Remote data sources (Supabase, Retrofit, Firebase)
  Local data sources (Room, DataStore)

@@ -1,11 +1,12 @@
 package com.example.spektar.ui.navigation.graphs
 
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
-import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
 import androidx.navigation.toRoute
+import com.example.spektar.data.model.MediaId
 import com.example.spektar.data.model.media.MediaPreview
 import com.example.spektar.domain.model.Category
 import com.example.spektar.ui.NoteScreen
@@ -54,7 +55,9 @@ fun NavGraphBuilder.CategoryGraph(
         val args = backStackEntry.toRoute<MediaDetails>()
         MediaDetailsScreen(
             onBackClick = { navController.popBackStack() },
-            onNoteButtonClick = { navController.safeNavigate(NoteScreen) },
+            onNoteButtonClick = {
+                navController.safeNavigate(NoteScreen(it)) // pass id here
+            },
             mediaPosition = args.partialMediaData,
             viewModel = mediaViewModel
         )
@@ -77,13 +80,22 @@ fun NavGraphBuilder.CategoryGraph(
         )
     }
 
-    composable<NoteScreen>() {
-        val state = noteViewModel.state.collectAsState()
+    composable<NoteScreen>(
+        typeMap = mapOf(typeOf<MediaId>() to navTypeOf<MediaId>())
+    ) { backStackEntry ->
 
+        val args = backStackEntry.toRoute<NoteScreen>() // gets id
+
+        LaunchedEffect(args.id) {
+            noteViewModel.setMedia(args.id)
+        }
+
+        val state = noteViewModel.state.collectAsState()
         NoteScreen(
-            state.value,
-            onEvent = { event ->
-                noteViewModel.onEvent(event)
+            state = state.value,
+            mediaId = args.id,
+            onEvent = { event, mediaId ->
+                noteViewModel.onEvent(event, mediaId)
             }
         )
     }

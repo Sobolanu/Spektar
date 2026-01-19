@@ -82,11 +82,11 @@ dependencies {
     // Supabase
     implementation(platform(libs.supabase.bom))
     implementation(libs.supabase.postgrest)
-    // implementation(libs.supabase.storage)
-    implementation("io.github.jan-tennert.supabase:storage-kt:3.3.0")
-    implementation("io.ktor:ktor-client-cio:3.3.3")
-    implementation("io.ktor:ktor-client-core:3.3.3")
+    implementation(libs.supabase.storage)
+
     // Ktor
+    implementation(libs.ktor.client.cio)
+    implementation(libs.ktor.client.core)
     implementation(libs.ktor.client.android)
 
     // Room

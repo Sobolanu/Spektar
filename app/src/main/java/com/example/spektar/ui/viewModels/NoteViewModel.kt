@@ -3,9 +3,11 @@ package com.example.spektar.ui.viewModels
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
+import com.example.spektar.data.model.MediaId
 import com.example.spektar.data.model.Note
 import com.example.spektar.data.model.NoteState
 import com.example.spektar.domain.model.SortType
+import com.example.spektar.domain.repository.MediaDao
 import com.example.spektar.domain.repository.NoteDao
 import com.example.spektar.domain.repository.NoteEvent
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -13,35 +15,54 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.flatMapLatest
+import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
+/*
+too tired to make this look good btw
+ */
+
 @OptIn(ExperimentalCoroutinesApi::class)
 class NoteViewModel(
-    private val dao: NoteDao
+    private val noteDao: NoteDao,
+    private val mediaDao: MediaDao
 ) : ViewModel() {
     private val _sortType = MutableStateFlow(SortType.CONTENT_LENGTH)
-    private val _notes = _sortType
-        .flatMapLatest { sortType ->
-            when(sortType) {
-                SortType.CONTENT_LENGTH -> dao.getNotesOrderedByLongestContent()
+    private val _currentMediaId = MutableStateFlow<String?>(null)
+
+    // notes flow depends on both sort type and current mediaId
+    private val _notes = combine(_sortType, _currentMediaId) { sortType, mediaId ->
+        Pair(sortType, mediaId)
+    }.flatMapLatest { (sortType, mediaId) ->
+        if (mediaId == null) {
+            flowOf(emptyList())
+        } else {
+            when (sortType) {
+                SortType.CONTENT_LENGTH -> noteDao.getNotesByMedia(mediaId)
             }
         }
-        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(), emptyList())
+    }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(), emptyList())
+
     private val _state = MutableStateFlow(NoteState())
-    val state = combine(_state, _sortType, _notes) {state, sortType, notes ->
+    val state = combine(_state, _sortType, _notes, _currentMediaId) { state, sortType, notes, mediaId ->
         state.copy(
             notes = notes,
-            sortType = sortType
-        ) // 5000ms pause because this is a flow that is observed by the ui
+            sortType = sortType,
+            currentMediaId = mediaId
+        )
     }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), NoteState())
 
-    fun onEvent(event: NoteEvent) {
+    fun setMedia(mediaId: String) {
+        _currentMediaId.value = mediaId
+    }
+
+    fun onEvent(event: NoteEvent, mediaId: String) {
         when(event) {
             is NoteEvent.DeleteNote -> {
                 viewModelScope.launch {
-                    dao.deleteNote(event.note)
+                    noteDao.deleteNote(event.note)
                 }
             }
 
@@ -53,32 +74,48 @@ class NoteViewModel(
                     return // just leave because no data for inserting
                 }
 
-                val note = Note(
+                val note = Note( // then set the mediaId column to the function parameter mediaId
+                    mediaId = mediaId,
                     title = title,
                     text = text
                 )
 
                 viewModelScope.launch {
-                    dao.upsertNote(note)
+                    mediaDao.insertMedia(MediaId(mediaId))
+                    noteDao.upsertNote(note)
                 }
 
-                _state.update {it.copy(
+                _state.update { it.copy(
                     isAddingNote = false,
-                    title = "",
-                    text = ""
+                        title = "",
+                        text = ""
                 ) }
             }
 
             is NoteEvent.SetText -> {
-                _state.update{ it.copy(
-                    text = event.text
-                )}
+                if(event.noteId == null) {
+                    _state.update {it.copy (text = event.text) }
+                } else {
+                    viewModelScope.launch {
+                        val note = state.value.notes.find {it.id == event.noteId}
+                        if(note != null) {
+                            noteDao.upsertNote(note.copy(text = event.text))
+                        }
+                    }
+                }
             }
 
             is NoteEvent.SetTitle -> {
-                _state.update{ it.copy(
-                    title = event.title
-                )}
+                if(event.noteId == null) {
+                    _state.update {it.copy (title = event.title) }
+                } else {
+                    viewModelScope.launch {
+                        val note = state.value.notes.find {it.id == event.noteId}
+                        if(note != null) {
+                            noteDao.upsertNote(note.copy(title = event.title))
+                        }
+                    }
+                }
             }
 
             is NoteEvent.SortNotes -> {
@@ -90,12 +127,14 @@ class NoteViewModel(
 
 @Suppress("UNCHECKED_CAST")
 class NoteViewModelFactory(
-    private val dao: NoteDao
+    private val noteDao: NoteDao,
+    private val mediaDao: MediaDao
 ) : ViewModelProvider.Factory {
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
         if (modelClass.isAssignableFrom(NoteViewModel::class.java)) {
             return NoteViewModel(
-                dao
+                noteDao,
+                mediaDao,
             ) as T
         }
         throw IllegalArgumentException("Unknown ViewModel class")

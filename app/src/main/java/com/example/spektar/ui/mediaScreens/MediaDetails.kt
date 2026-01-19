@@ -43,7 +43,7 @@ TODO: implement screen for notes and notes functionality
 @Composable
 fun MediaDetailsScreen(
     onBackClick: () -> Unit,
-    onNoteButtonClick: () -> Unit,
+    onNoteButtonClick: (String) -> Unit,
     mediaPosition: MediaPreview,
     viewModel : MediaViewModel
 ) {
@@ -113,7 +113,7 @@ fun MediaDetailsScreen(
             item {
                 Button(
                     onClick = {
-                        onNoteButtonClick()
+                        onNoteButtonClick(media.id_uuid)
                     }
                 ) {
                     Text("Notes")
