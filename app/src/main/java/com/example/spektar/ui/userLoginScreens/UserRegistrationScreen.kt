@@ -23,7 +23,6 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -35,18 +34,15 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.viewmodel.compose.viewModel
 import coil.compose.rememberAsyncImagePainter
 import com.example.spektar.R
-import com.example.spektar.ui.viewModels.states.UserSignUpData
-import com.example.spektar.ui.userLoginScreens.AuthEvent
-import com.example.spektar.ui.viewModels.SignUpViewModel
+import com.example.spektar.ui.viewModels.states.SignUpRequest
 import java.io.File
 
 // val file = uri.toFile()
 @Composable
 fun UserRegistrationScreen(
-    state: UserSignUpData,
+    state: SignUpRequest,
     onSignUp : () -> Unit,
     onEvent: (AuthEvent) -> Unit
 ) {
@@ -64,7 +60,7 @@ fun UserRegistrationScreen(
             val painter = if (selectedImageUri != null) {
                 rememberAsyncImagePainter(selectedImageUri)
             } else {
-                painterResource(R.drawable.ic_launcher_foreground)
+                painterResource(R.drawable.ic_launcher_foreground) // add default gray profile
             }
 
             ImagePicker(  // make this look nice

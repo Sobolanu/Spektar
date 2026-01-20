@@ -7,43 +7,43 @@ import com.example.spektar.domain.model.AccountService
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
-import com.example.spektar.ui.viewModels.states.UserSignUpData
+import com.example.spektar.ui.viewModels.states.SignUpRequest
 import com.example.spektar.ui.userLoginScreens.AuthEvent
-import io.github.jan.supabase.auth.Auth
 import kotlinx.coroutines.flow.update
 
 class SignUpViewModel(
     private val accountService: AccountService
 ) : ViewModel() {
 
-    private val _userSignUpData = MutableStateFlow(UserSignUpData())
-    val userSignUpData: StateFlow<UserSignUpData> get() = _userSignUpData
+    private val _signUpRequest = MutableStateFlow(SignUpRequest())
+    val signUpRequest: StateFlow<SignUpRequest> get() = _signUpRequest
 
     fun onEvent(event: AuthEvent) {
         when(event) {
             is AuthEvent.SetAvatar -> {
-                _userSignUpData.update { it.copy(
+                _signUpRequest.update { it.copy(
                     avatar = event.avatar
                 )}
             }
             is AuthEvent.SetEmail -> {
-                _userSignUpData.update { it.copy(
+                _signUpRequest.update { it.copy(
                     email = event.newEmail
                 )}
             }
             is AuthEvent.SetPassword -> {
-                _userSignUpData.update { it.copy(
+                _signUpRequest.update { it.copy(
                     password = event.newPassword
                 )}
             }
             is AuthEvent.SetUsername -> {
-                _userSignUpData.update { it.copy(
+                _signUpRequest.update { it.copy(
                     username = event.newUsername
                 )}
             }
             is AuthEvent.SignUp -> {
+                // here i get error FOREIGN KEY constraint failed (code 787 SQLITE_CONSTRAINT_FOREIGNKEY[787])
                 viewModelScope.launch {
-                    accountService.signUp(userSignUpData.value)
+                    accountService.signUp(signUpRequest.value)
                 }
             }
             is AuthEvent.SignIn -> { } // empty

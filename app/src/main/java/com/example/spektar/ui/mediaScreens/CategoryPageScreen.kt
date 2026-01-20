@@ -61,20 +61,20 @@ where you can search up completed pieces of media (so, stuff you've watched/read
  */
 
 fun CategoryScreen(
+    goToProfile: () -> Unit,
     onImageClick: (MediaDetails) -> Unit,
     onMoreClick: (Category) -> Unit,
     onBottomBarItemClick: (Int) -> Unit,
     selectedIcon: Int,
-    viewModel: MediaViewModel
+    state: MediaUiData
 ) {
-    val state = viewModel.uiState.collectAsState()
     val scrollBehavior = enterAlwaysScrollBehavior()
 
     Scaffold(
         modifier = Modifier
             .nestedScroll(scrollBehavior.nestedScrollConnection),
 
-        topBar = { CategoryPageTopBar(scrollBehavior = scrollBehavior) },
+        topBar = { CategoryPageTopBar(goToProfile, scrollBehavior = scrollBehavior) },
         bottomBar = {
             BottomBar(
                 onBottomBarItemClick = onBottomBarItemClick,
@@ -84,7 +84,7 @@ fun CategoryScreen(
     ) { paddingValues ->
         CategoryScreenContent(
             onImageClick = onImageClick,
-            uiState = state.value,
+            uiState = state,
             onMoreClick = onMoreClick,
             modifier = Modifier.padding(paddingValues),
         )
@@ -155,7 +155,7 @@ fun LoadCategoryImages(
     ) {
         items(medias, key = { it.imageUrl } ) { media ->
             Card( // if this doesn't work switch it to js normal card
-                onClick = {
+                onClick = { //
                     onImageClick( MediaDetails(partialMediaData = media) )
                 },
 
@@ -229,6 +229,7 @@ fun LoadCategoryImages(
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun CategoryPageTopBar(
+    goToProfile: () -> Unit,
     scrollBehavior: TopAppBarScrollBehavior
 ) {
     val iconButtonPressed by remember {mutableStateOf(false)}
@@ -254,7 +255,7 @@ fun CategoryPageTopBar(
 
         actions = { // profile icon basically
             IconButton(
-                onClick = {} // figure out navigation to profile page
+                onClick = { goToProfile() } // figure out navigation to profile page
             ) {
                 Icon(
                     imageVector = if (iconButtonPressed) {

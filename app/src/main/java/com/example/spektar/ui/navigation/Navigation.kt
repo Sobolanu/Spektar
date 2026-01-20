@@ -18,6 +18,7 @@ import com.example.spektar.ui.navigation.routes.UserLoginScreen
 import com.example.spektar.ui.viewModels.DataStoreViewModel
 import com.example.spektar.ui.viewModels.MediaViewModel
 import com.example.spektar.ui.viewModels.NoteViewModel
+import com.example.spektar.ui.viewModels.ProfileViewModel
 
 /*
 Navigation uses "modern" (used to be modern, however Navigation3 came out but i'm kinda crunched on time so
@@ -29,6 +30,7 @@ fun SpektarNavigation(
     mediaViewModel: MediaViewModel,
     dataStoreViewModel: DataStoreViewModel,
     noteViewModel: NoteViewModel,
+    profileViewModel: ProfileViewModel
 ) {
     val navController = rememberNavController()
     // used to specify the currently selected icon in the app's bottom bar
@@ -36,7 +38,7 @@ fun SpektarNavigation(
     // start will be UserLoginScreen(false)
     NavHost(
         navController = navController,
-        startDestination = /* UserLoginScreen(false),*/ CategoryScreen,
+        startDestination = /* UserLoginScreen(false)*/ CategoryScreen,
         enterTransition = { slideIntoContainer(AnimatedContentTransitionScope.SlideDirection.Start, tween(500)) },
         exitTransition = { slideOutOfContainer(AnimatedContentTransitionScope.SlideDirection.Start, tween(500)) },
         popEnterTransition = { slideIntoContainer(AnimatedContentTransitionScope.SlideDirection.End, tween(500)) },
@@ -71,6 +73,7 @@ fun SpektarNavigation(
                 }
             },
 
+            profileViewModel = profileViewModel,
             selectedIconProvider = { selectedIcon }
         )
     }

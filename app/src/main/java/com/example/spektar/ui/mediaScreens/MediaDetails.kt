@@ -42,23 +42,13 @@ TODO: implement screen for notes and notes functionality
  */
 @Composable
 fun MediaDetailsScreen(
+    goToProfile: () -> Unit,
     onBackClick: () -> Unit,
     onNoteButtonClick: (String) -> Unit,
-    mediaPosition: MediaPreview,
-    viewModel : MediaViewModel
+    state: SpecificMedia,
 ) {
-    var media by remember { mutableStateOf(SpecificMedia(
-        id_uuid = mediaPosition.id_uuid,
-        name = mediaPosition.name,
-        imageUrl = mediaPosition.imageUrl
-    )) }
-
-    LaunchedEffect(mediaPosition) {
-        media = viewModel.obtainMediaById(mediaPosition)
-    }
-
     Scaffold(
-        topBar = { DetailsPageTopBar(onBackClick) },
+        topBar = { DetailsPageTopBar(goToProfile, onBackClick) },
     ) { paddingValues ->
         LazyColumn(
             modifier = Modifier
@@ -80,8 +70,8 @@ fun MediaDetailsScreen(
                             color = MaterialTheme.colorScheme.primaryContainer
                         ),
 
-                    model = media.imageUrl,
-                    contentDescription = "Image of the media ${media.name}"
+                    model = state.imageUrl,
+                    contentDescription = "Image of the media ${state.name}"
                 )
             }
 
@@ -90,7 +80,7 @@ fun MediaDetailsScreen(
             item {
                 Text(
                     modifier = Modifier.padding(vertical = 24.dp),
-                    text = media.name,
+                    text = state.name,
                     autoSize = TextAutoSize.StepBased(
                         16.sp,
                         38.sp,
@@ -104,7 +94,7 @@ fun MediaDetailsScreen(
 
             item {
                 Text(
-                    media.description,
+                    state.description,
                     modifier = Modifier.padding(horizontal = 16.dp),
                     textAlign = TextAlign.Center
                 )
@@ -113,7 +103,7 @@ fun MediaDetailsScreen(
             item {
                 Button(
                     onClick = {
-                        onNoteButtonClick(media.id_uuid)
+                        onNoteButtonClick(state.id_uuid)
                     }
                 ) {
                     Text("Notes")
@@ -127,6 +117,7 @@ fun MediaDetailsScreen(
 @Composable
 
 fun DetailsPageTopBar(
+    goToProfile: () -> Unit,
     onBackClick: () -> Unit,
     modifier : Modifier = Modifier
 ) {
@@ -160,7 +151,7 @@ fun DetailsPageTopBar(
 
         actions = {
             IconButton(
-                onClick = {} // figure out navigation to profile page
+                onClick = { goToProfile() } // figure out navigation to profile page
             ) {
                 Icon(
                     imageVector = if(profileIconPressed) {

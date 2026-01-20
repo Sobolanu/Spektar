@@ -65,23 +65,6 @@ class MediaServiceImpl : MediaService {
         return null
     }
 
-    /*
-    override suspend fun processData(
-        session: UserSession?,
-        userId: String
-    ) {
-        val recommendedMedia : EdgeResponse? = if(session != null) { // adapt so this fetches all media data?
-            fetchTopMediaMatches(
-                edgeUrl = "https://rlyotyktmhyflfyljpmr.supabase.co/functions/v1/content-recommendation",
-                bearerToken = session.accessToken,
-                userId = userId
-            )
-        } else {
-            Exception("fetchMedia failed to receive a session.")
-            null
-        }
-    } */
-
     override fun getAllCategories(): List<Category> {
         return globalCategoryList
     }

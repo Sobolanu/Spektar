@@ -29,7 +29,6 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -40,18 +39,15 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
-import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.spektar.R
-import com.example.spektar.ui.viewModels.states.UserSignInData
-import com.example.spektar.ui.userLoginScreens.AuthEvent
-import com.example.spektar.ui.viewModels.SignInViewModel
+import com.example.spektar.ui.viewModels.states.SignInRequest
 import kotlinx.coroutines.delay
 
 @Composable
 fun UserLoginScreen(
     onSignInClick: () -> Unit,
     onTextClick: () -> Unit,
-    state : UserSignInData,
+    state : SignInRequest,
     showEmailPopUp : Boolean,
     onEvent: (AuthEvent) -> Unit
 ) {

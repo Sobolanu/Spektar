@@ -3,7 +3,7 @@ package com.example.spektar.ui.viewModels
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
-import com.example.spektar.ui.viewModels.states.UserSignInData
+import com.example.spektar.ui.viewModels.states.SignInRequest
 import com.example.spektar.domain.model.AccountService
 import com.example.spektar.ui.userLoginScreens.AuthEvent
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -15,24 +15,24 @@ import kotlinx.coroutines.launch
 class SignInViewModel(
     private val accountService: AccountService
 ) : ViewModel() {
-     private val _userSignInData = MutableStateFlow(UserSignInData())
-     val userSignInData: StateFlow<UserSignInData> get() = _userSignInData
+     private val _signInRequest = MutableStateFlow(SignInRequest())
+     val signInRequest: StateFlow<SignInRequest> get() = _signInRequest
 
     fun onEvent(event : AuthEvent) { // should this be a suspend fun?
         when(event) {
             is AuthEvent.SetEmail -> {
-                _userSignInData.update { it.copy(
+                _signInRequest.update { it.copy(
                     email = event.newEmail
                 )}
             }
             is AuthEvent.SetPassword -> {
-                _userSignInData.update { it.copy(
+                _signInRequest.update { it.copy(
                     password = event.newPassword
                 )}
             }
             is AuthEvent.SignIn -> {
                 viewModelScope.launch {
-                    accountService.signIn(userSignInData.value)
+                    accountService.signIn(signInRequest.value)
                 }
             }
 

@@ -1,14 +1,15 @@
 package com.example.spektar.domain.usecase
 
 import com.example.spektar.data.model.User
-import com.example.spektar.ui.viewModels.states.UserSignInData
-import com.example.spektar.ui.viewModels.states.UserSignUpData
+import com.example.spektar.ui.viewModels.states.SignInRequest
+import com.example.spektar.ui.viewModels.states.SignUpRequest
 import com.example.spektar.data.remote.SupabaseClientProvider
 import com.example.spektar.data.remote.SupabaseClientProvider.auth
 import com.example.spektar.domain.model.AccountService
 import io.github.jan.supabase.auth.providers.builtin.Email
 import io.github.jan.supabase.auth.user.UserSession
 import io.github.jan.supabase.postgrest.from
+import io.github.jan.supabase.postgrest.postgrest
 import io.github.jan.supabase.postgrest.query.Columns
 import io.github.jan.supabase.storage.upload
 import kotlinx.serialization.json.buildJsonObject
@@ -26,13 +27,13 @@ class AccountServiceImpl : AccountService {
         }
 
         try {
-            auth.refreshCurrentSession()
-
-            session = auth.currentSessionOrNull()
+            val refreshed = auth.refreshCurrentSession()
         } catch (e: Exception) {
             Exception("Session doesn't exist", e)
             // would lead smwhere i guess
         }
+
+        session = auth.currentSessionOrNull()
 
         if(session != null) {
             return session
@@ -61,11 +62,29 @@ class AccountServiceImpl : AccountService {
         return " "
     }
 
-    override suspend fun signIn(state: UserSignInData) {
+    override suspend fun signIn(state: SignInRequest) {
         auth.signInWith(Email) {
             email = state.email
             password = state.password
         }
+    }
+
+    override suspend fun changePassword(userId: String, oldPassword: String, newPassword: String) {
+        val requestData = mapOf( // i hope this works
+            "current_plain_password" to oldPassword,
+            "new_plain_password" to newPassword,
+            "current_id" to userId
+        )
+
+        try {
+            SupabaseClientProvider.client.postgrest.rpc("change_password", { requestData })
+        } catch (e: Exception) {
+            Exception("Something is wrong with the change password request. Exact error is: ${e.message}")
+        }
+    }
+
+    override fun makeUseableStorageUrl(url: String) : String {
+        return "https://rlyotyktmhyflfyljpmr.supabase.co/storage/v1/object/public/avatars/$url"
     }
 
     override suspend fun retrieveUserDataWithId(id: String) : User {
@@ -76,13 +95,13 @@ class AccountServiceImpl : AccountService {
                 eq("id", id)
             }
         }
-            .decodeSingle<User>()
+            .decodeSingle<User>() // this is with updated user class
 
         return data
     }
 
     override suspend fun signUp(
-        state: UserSignUpData
+        state: SignUpRequest
     ) {
         requireNotNull(state.avatar)
 
@@ -117,6 +136,7 @@ class AccountServiceImpl : AccountService {
     }
 
     override suspend fun deleteAccount() {
-        // SupabaseClientProvider.client.auth.admin.deleteUser()
+        SupabaseClientProvider.client.postgrest.rpc("auth_delete_self")
+        signOut() // because jwt token would exist even after deleting the account
     }
 }

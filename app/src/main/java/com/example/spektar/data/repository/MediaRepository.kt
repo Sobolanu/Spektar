@@ -7,6 +7,7 @@ import io.github.jan.supabase.postgrest.query.Columns
 import io.github.jan.supabase.postgrest.query.filter.FilterOperator
 
 object MediaRepository {
+    // don't delete, deleting makes everything break and give me "session not found"
     suspend fun getAllMediaInCategory(category: String): List<MediaPreview> {
         return SupabaseClientProvider.db.from(category)
             .select(Columns.list("id_uuid", "name", "imageUrl"))

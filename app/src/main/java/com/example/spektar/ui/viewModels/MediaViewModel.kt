@@ -39,7 +39,6 @@ class MediaViewModel (
                     _media.value = result
                 }
             }
-            else -> {}
         }
     }
 

@@ -3,11 +3,16 @@ package com.example.spektar.ui.navigation.graphs
 import com.example.spektar.data.model.roomModels.MediaId
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
 import androidx.navigation.toRoute
 import com.example.spektar.domain.media.MediaPreview
+import com.example.spektar.domain.media.SpecificMedia
 import com.example.spektar.domain.model.Category
 import com.example.spektar.ui.notesScreen.NoteScreen
 import com.example.spektar.ui.common.ErrorScreen
@@ -19,6 +24,7 @@ import com.example.spektar.ui.navigation.routes.CategoryScreen
 import com.example.spektar.ui.navigation.routes.MediaDetails
 import com.example.spektar.ui.navigation.routes.MoreMedia
 import com.example.spektar.ui.navigation.routes.NoteScreen
+import com.example.spektar.ui.navigation.routes.ProfileScreen
 import com.example.spektar.ui.navigation.utils.navTypeOf
 import com.example.spektar.ui.navigation.utils.safeNavigate
 import com.example.spektar.ui.viewModels.MediaViewModel
@@ -33,7 +39,10 @@ fun NavGraphBuilder.CategoryGraph(
     noteViewModel: NoteViewModel,
 ) {
     composable<CategoryScreen> {
+        val state = mediaViewModel.uiState.collectAsState()
         CategoryScreen(
+
+            goToProfile = { navController.safeNavigate(ProfileScreen) },
             onImageClick = { media ->
                 navController.safeNavigate(
                     MediaDetails(media.partialMediaData)
@@ -44,8 +53,7 @@ fun NavGraphBuilder.CategoryGraph(
             selectedIcon = selectedIconProvider(),
             onMoreClick = { category ->
                 navController.safeNavigate(MoreMedia(category)) },
-
-            viewModel = mediaViewModel
+            state = state.value
         )
     }
 
@@ -53,13 +61,24 @@ fun NavGraphBuilder.CategoryGraph(
         typeMap = mapOf(typeOf<MediaPreview>() to navTypeOf<MediaPreview>())
     ) { backStackEntry ->
         val args = backStackEntry.toRoute<MediaDetails>()
+
+        var state by remember { mutableStateOf(SpecificMedia(
+            id_uuid = args.partialMediaData.id_uuid,
+            name = args.partialMediaData.name,
+            imageUrl = args.partialMediaData.imageUrl
+        )) }
+
+        LaunchedEffect(args.partialMediaData) {
+            state = mediaViewModel.obtainMediaById(args.partialMediaData)
+        }
+
         MediaDetailsScreen(
+            goToProfile = { navController.safeNavigate(ProfileScreen) },
             onBackClick = { navController.popBackStack() },
             onNoteButtonClick = {
                 navController.safeNavigate(NoteScreen(it)) // pass id here
             },
-            mediaPosition = args.partialMediaData,
-            viewModel = mediaViewModel
+            state = state
         )
     }
 
@@ -67,7 +86,10 @@ fun NavGraphBuilder.CategoryGraph(
         typeMap = mapOf(typeOf<Category>() to navTypeOf<Category>())
     ) { backStackEntry ->
         val args = backStackEntry.toRoute<MoreMedia>()
+        val state = mediaViewModel.uiState.collectAsState()
+
         MoreMedia(
+            goToProfile = { navController.safeNavigate(ProfileScreen) },
             onBottomBarItemClick = onBottomBarClick,
             onImageClick = { media ->
                 navController.safeNavigate(
@@ -76,7 +98,7 @@ fun NavGraphBuilder.CategoryGraph(
             },
             selectedIcon = selectedIconProvider(),
             category = args.category,
-            viewModel = mediaViewModel
+            state = state.value
         )
     }
 

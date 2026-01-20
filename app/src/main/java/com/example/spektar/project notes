@@ -5,42 +5,35 @@
     ### FRONT END
         - home screen
             - this home screen would contain pieces of media you're currently consuming, and they'd
-            have a progress counter (page X/Y for books and an optional daily goal for books, whereas
-            for shows, each season gets it's own "slot" in the repositories, so it'll just be of format
-            "Episode X/Y", where X means the last page/episode you watched, Y is max)
+            have a progress counter (current progress is X, Y is max progress, optional daily goal for books)
 
-        - profile screen - will exist in settings screen but a shortcut won't hurt
+        - settings screen - theme previews, language pane, help&support screen with some app email and donate screen will be a formal "Work in progress"
+            - merge theme and accessibility because not enough options in accessibility to warrant new screen
         - questionnaire screen
-        - settings screen - profile settings, theme previews
         - splash screen
             - app logo somehow slowly gaining color
-        - make a color palette cause material3 highk sucks?
-        - navigate to profile screen on profileSettings and the actual profile icon itself on the top bar
+        - make a color palette cause material3 builder highk sucks?
 
     TODO: ### BACK-END
 
         - after splash screen designing, have the app auto log-on if you have made an account
         - regulate backStack and navigation (so, prevent a user from going all the way back to the login screen)
         - questionnaire (to fill out user's embedding), maybe some data-tracking for user embedding improvement
+
         - sort out error handling
             - handle any potential errors from supabase and shit
             - ERRORS SHOULD BE HANDLED IN VIEWMODELS!!!
+
+        do at very end of app
         - per-media notes: hyperlinks that lead to other notes and URLs and stuff?
  */
 
- UI Layer
- Activities, Fragments, Composables, ViewModels, UI state, navigation, events
-
- Domain Layer
-
- Use cases
- Domain models
- Business rules
- Repository interfaces
-
- Data Layer
-
- Repository implementations
- Remote data sources (Supabase, Retrofit, Firebase)
- Local data sources (Room, DataStore)
- DTOs, mappers
+errors:
+edge function returns error 500 if you do the following steps:
+            - have a already existing account
+            - make another one
+            - log in on that one
+            - delete it
+            - then try to log in again on that old account
+            it could be because you deleted it in auth.users and not through the delete user func but point is you keep the session of the deleted account
+            that needs to be fixed

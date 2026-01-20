@@ -6,8 +6,6 @@ import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
 import androidx.navigation.toRoute
-import androidx.test.internal.platform.app.`ActivityInvoker$$CC`
-import com.example.spektar.ui.viewModels.states.UserSignInData
 import com.example.spektar.domain.usecase.AccountServiceImpl
 import com.example.spektar.ui.navigation.routes.CategoryScreen
 import com.example.spektar.ui.navigation.routes.UserLoginScreen
@@ -24,8 +22,6 @@ import kotlin.reflect.typeOf
 
 fun NavGraphBuilder.AuthGraph(
     navController: NavController,
-    // signInViewModel: SignInViewModel,
-    // signUpViewModel: SignUpViewModel,
 ) {
     composable<UserLoginScreen>(
         typeMap = mapOf(typeOf<UserLoginScreen>() to navTypeOf<UserLoginScreen>())
@@ -35,7 +31,7 @@ fun NavGraphBuilder.AuthGraph(
         val signInViewModel: SignInViewModel = viewModel(
             factory = SignInViewModelFactory(accountService = AccountServiceImpl())
         )
-        val uiState = signInViewModel.userSignInData.collectAsState()
+        val uiState = signInViewModel.signInRequest.collectAsState()
 
         UserLoginScreen(
             onSignInClick = { navController.safeNavigate(CategoryScreen) }, // placeholder route until i make home screen
@@ -52,7 +48,7 @@ fun NavGraphBuilder.AuthGraph(
         val signUpViewModel: SignUpViewModel = viewModel(
             factory = SignUpViewModelFactory(accountService = AccountServiceImpl())
         )
-        val uiState = signUpViewModel.userSignUpData.collectAsState()
+        val uiState = signUpViewModel.signUpRequest.collectAsState()
 
         UserRegistrationScreen(
             state = uiState.value,

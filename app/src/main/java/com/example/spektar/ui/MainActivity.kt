@@ -26,6 +26,8 @@ import com.example.spektar.ui.viewModels.MediaViewModel
 import com.example.spektar.ui.viewModels.MediaViewModelFactory
 import com.example.spektar.ui.viewModels.NoteViewModel
 import com.example.spektar.ui.viewModels.NoteViewModelFactory
+import com.example.spektar.ui.viewModels.ProfileViewModel
+import com.example.spektar.ui.viewModels.ProfileViewModelFactory
 import kotlin.getValue
 
 class MainActivity : ComponentActivity() {
@@ -33,6 +35,9 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContent {
+            val profileViewModel: ProfileViewModel by viewModels {
+                ProfileViewModelFactory(AccountServiceImpl())
+            }
             val dataStoreViewModel : DataStoreViewModel by viewModels {
                 DataStoreViewModelFactory(applicationContext.dataStore)
             }
@@ -66,6 +71,7 @@ class MainActivity : ComponentActivity() {
                     mediaViewModel,
                     dataStoreViewModel,
                     noteViewModel,
+                    profileViewModel,
                 )
             }
         }

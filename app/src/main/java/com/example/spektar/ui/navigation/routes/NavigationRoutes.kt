@@ -35,6 +35,6 @@ data class MoreMedia (
 @Serializable object ThemeScreen
 @Serializable object Settings
 @Serializable object AccessibilityScreen
-@Serializable object ProfileSettingsScreen
+@Serializable object ProfileScreen
 @Serializable object HelpSupportScreen
 @Serializable object DonateScreen

@@ -27,6 +27,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
+import com.example.spektar.data.model.viewModelStates.MediaUiData
 import com.example.spektar.domain.model.Category
 import com.example.spektar.ui.common.components.navigationBarIcons.topProfileIcon
 import com.example.spektar.ui.common.components.BottomBar
@@ -37,14 +38,14 @@ import com.example.spektar.ui.viewModels.MediaViewModel
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun MoreMedia(
+    goToProfile: () -> Unit,
     onBottomBarItemClick : (Int) -> Unit,
     onImageClick: (MediaDetails) -> Unit,
     selectedIcon: Int,
     category: Category,
-    viewModel: MediaViewModel
+    state: MediaUiData
 ) { // grid screen, use LazyVerticalGrid.
 
-    val uiState by viewModel.uiState.collectAsState()
     val scrollBehavior = enterAlwaysScrollBehavior()
 
     val index = when(category.mediaCategory) {
@@ -59,12 +60,12 @@ fun MoreMedia(
         IllegalArgumentException("Invalid category passed to screen MoreMedia.")
     }
 
-    if(uiState.medias[index] == null) {
+    if(state.medias[index] == null) {
         IllegalArgumentException("Failed to retrieve media at screen MoreMedia.")
     }
 
     Scaffold(
-        topBar = { MoreMediaPageTopBar(scrollBehavior = scrollBehavior) },
+        topBar = { MoreMediaPageTopBar(goToProfile, scrollBehavior = scrollBehavior) },
         bottomBar = { BottomBar(onBottomBarItemClick = onBottomBarItemClick, selectedIcon) },
         containerColor = category.categoryColor
     ) { paddingValues ->
@@ -74,9 +75,9 @@ fun MoreMedia(
             verticalArrangement = Arrangement.Center,
             horizontalArrangement = Arrangement.Center,
         ) {
-            items(uiState.medias[index]!!.size) { media ->
+            items(state.medias[index]!!.size) { media ->
                 Card(
-                    onClick = { onImageClick( MediaDetails(partialMediaData = uiState.medias[index]!![media]) ) },
+                    onClick = { onImageClick( MediaDetails(partialMediaData = state.medias[index]!![media]) ) },
 
                     colors = CardColors( // sort card colors by category
                         containerColor = MaterialTheme.colorScheme.tertiaryContainer,
@@ -88,8 +89,8 @@ fun MoreMedia(
                     modifier = cardWithShadowModifier
                 ){
                     AsyncImage(
-                        model = uiState.medias[index]!![media].imageUrl,
-                        contentDescription = uiState.medias[index]!![media].name,
+                        model = state.medias[index]!![media].imageUrl,
+                        contentDescription = state.medias[index]!![media].name,
                         modifier = Modifier
                             .size(175.dp)
                             .padding(horizontal = 8.dp)
@@ -103,6 +104,7 @@ fun MoreMedia(
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun MoreMediaPageTopBar(
+    goToProfile: () -> Unit,
     scrollBehavior: TopAppBarScrollBehavior
 ) {
     val iconButtonPressed by remember {mutableStateOf(false)}
@@ -128,7 +130,7 @@ fun MoreMediaPageTopBar(
 
         actions = { // profile icon basically
             IconButton(
-                onClick = {} // figure out navigation to profile page
+                onClick = { goToProfile() } // figure out navigation to profile page
             ) {
                 Icon(
                     imageVector = if (iconButtonPressed) {

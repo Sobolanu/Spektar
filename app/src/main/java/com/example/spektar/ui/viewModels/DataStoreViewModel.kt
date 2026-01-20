@@ -7,6 +7,7 @@ import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
+import com.example.spektar.ui.settingsScreen.SettingsEvent
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.map
@@ -20,6 +21,19 @@ class DataStoreViewModel(
     companion object {
         private val KEY_SETTINGS = booleanPreferencesKey("Settings")
         private val KEY_REFRESH_TOKEN = stringPreferencesKey("refresh_token")
+    }
+
+    fun onEvent(event: SettingsEvent) {
+        when(event) {
+            // implement
+            is SettingsEvent.readThemeSetting -> {
+
+            }
+
+            is SettingsEvent.saveThemeSetting -> {
+
+            }
+        }
     }
 
     // theme settings:
