@@ -4,13 +4,22 @@ import android.net.Uri
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarDuration
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
+import androidx.compose.material3.SnackbarResult
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
@@ -18,17 +27,21 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.window.Dialog
 import coil.compose.rememberAsyncImagePainter
 import com.example.spektar.data.model.User
 import com.example.spektar.ui.common.components.BottomBar
+import com.example.spektar.ui.userLoginScreens.ConfirmationDialog
 import com.example.spektar.ui.userLoginScreens.ImagePicker
 import com.example.spektar.ui.userLoginScreens.copyUriToFile
+import kotlinx.coroutines.launch
 
 @Composable
 fun ProfileScreen(
@@ -40,6 +53,13 @@ fun ProfileScreen(
     var selectedImageUri by remember { mutableStateOf<Uri?>(null) }
     val context = LocalContext.current
 
+    // snackbar thing:
+    val snackbarHostState = remember { SnackbarHostState() }
+    val scope = rememberCoroutineScope()
+
+    // confirmation box:
+    var showConfirmationBox by remember { mutableStateOf(false) }
+
     val painter = if (selectedImageUri != null) {
         rememberAsyncImagePainter(selectedImageUri)
     } else {
@@ -47,6 +67,7 @@ fun ProfileScreen(
     }
 
     Scaffold(
+        snackbarHost = { SnackbarHost(hostState = snackbarHostState) },
         topBar = { ProfileScreenTopBar() },
         bottomBar = {
             BottomBar(
@@ -70,7 +91,21 @@ fun ProfileScreen(
                 onImageSelected = { uri ->
                     selectedImageUri = uri
                     val image = context.copyUriToFile(uri)
-                    onEvent(ProfileEvent.updateAvatar(state.id,image, state.username))
+                    scope.launch {
+                        val result = snackbarHostState.showSnackbar(
+                            message = "There are unsaved changes. Save now?",
+                            actionLabel = "Save",
+                            duration = SnackbarDuration.Indefinite
+                        )
+                        when(result) {
+                            SnackbarResult.ActionPerformed -> {
+                                onEvent(ProfileEvent.updateAvatar(state.id,image, state.username))
+                            }
+                            SnackbarResult.Dismissed -> {
+                                /* Handle snackbar dismissed */
+                            }
+                        }
+                    }
                 },
                 painter = painter
             ) // add some "Apply" box discord-style to this when you change the image
@@ -92,8 +127,12 @@ fun ProfileScreen(
 
             Button(
                 // should move you to start of the app aswell
-                onClick = { /* onEvent(ProfileEvent.deleteAccount) */ }
+                onClick = {
+                    showConfirmationBox = true
+                    // onEvent(ProfileEvent.deleteAccount)
+                }
             ) {
+                // make this red
                 Text(
                     "Delete account (onclick is empty for now)"
                 )
@@ -108,11 +147,19 @@ fun ProfileScreen(
             }
 
             Button(
-
                 onClick = { /* onEvent(ProfileEvent.resetPassword) */ }
             ) {
                 Text(
                     "Reset password"
+                )
+            }
+
+            if(showConfirmationBox) {
+                ProfileConfirmationDialog(
+                    text = "The action you are about to do is irreversible. Proceed anyway?",
+                    onContinueClick = { /* onEvent(ProfileEvent.deleteAccount) */ },
+                    // can't close/open :(
+                    onDismissClick = { !showConfirmationBox },
                 )
             }
         }
@@ -134,5 +181,28 @@ fun ProfileScreenTopBar() {
         },
 
         modifier = Modifier.padding(bottom = 16.dp)
+    )
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun ProfileConfirmationDialog(
+    text: String,
+    onContinueClick: () -> Unit,
+    onDismissClick: () -> Unit
+) {
+    AlertDialog(
+        onDismissRequest = onDismissClick,
+        text = { Text(text) },
+        confirmButton = {
+            Button(onClick = { onContinueClick() }) {
+                Text("Continue")
+            }
+        },
+        dismissButton = {
+            Button(onClick = { onDismissClick() }) {
+                Text("Dismiss")
+            }
+        }
     )
 }

@@ -7,7 +7,6 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.navigation
 import com.example.spektar.domain.model.Access
 import com.example.spektar.ui.HomeScreen
-import com.example.spektar.ui.navigation.routes.AccessibilityScreen
 import com.example.spektar.ui.navigation.routes.AppErrorScreen
 import com.example.spektar.ui.navigation.routes.DonateScreen
 import com.example.spektar.ui.navigation.routes.HelpSupportScreen
@@ -18,7 +17,6 @@ import com.example.spektar.ui.navigation.routes.ThemeScreen
 import com.example.spektar.ui.navigation.utils.safeNavigate
 import com.example.spektar.ui.profileScreen.ProfileScreen
 import com.example.spektar.ui.settingsScreen.SettingsScreen
-import com.example.spektar.ui.settingsScreen.accessibilityScreen.AccessibilityScreen
 import com.example.spektar.ui.settingsScreen.themeScreen.ThemeScreen
 import com.example.spektar.ui.viewModels.DataStoreViewModel
 import com.example.spektar.ui.viewModels.ProfileViewModel
@@ -36,13 +34,10 @@ fun NavGraphBuilder.SettingsGraph(
             SettingsScreen(
                 navigateToScreen = { id ->
                     navController.safeNavigate(
-                        // placeholder until i sort out error messaging
                         when (id) {
                             Access.THEME_SCREEN.ordinal -> ThemeScreen
-                            Access.ACCESSIBILITY_SCREEN.ordinal -> AccessibilityScreen
                             Access.PROFILE_SETTINGS_SCREEN.ordinal -> ProfileScreen
                             Access.HELP_SUPPORT_SCREEN.ordinal -> HelpSupportScreen
-                            Access.DONATE_SCREEN.ordinal -> DonateScreen
                             else -> { AppErrorScreen } // implement error screen when you get around to it
                         }
                     )
@@ -54,16 +49,7 @@ fun NavGraphBuilder.SettingsGraph(
         }
 
         composable<ThemeScreen> {
-
             ThemeScreen(
-                onBottomBarItemClick = onBottomBarClick,
-                selectedIcon = selectedIconProvider(),
-                viewModel = dataStoreViewModel
-            )
-        }
-
-        composable<AccessibilityScreen> {
-            AccessibilityScreen(
                 onBottomBarItemClick = onBottomBarClick,
                 selectedIcon = selectedIconProvider(),
                 viewModel = dataStoreViewModel

@@ -13,8 +13,7 @@ import com.example.spektar.ui.common.components.SettingsScreenCategory
 internal val customization = SettingsScreenCategory(
     titleOfCategory = "Customization",
     tabs = listOf(
-        Triple(Icons.Filled.Brush, "Theme", Access.THEME_SCREEN.ordinal),
-        Triple(Icons.Filled.AccessibilityNew, "Accessibility", Access.ACCESSIBILITY_SCREEN.ordinal),
+        Triple(Icons.Filled.Brush, "Theme & Accessibility", Access.THEME_SCREEN.ordinal),
         Triple(
             Icons.Filled.Language,
             "Language",

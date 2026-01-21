@@ -7,17 +7,22 @@
             - this home screen would contain pieces of media you're currently consuming, and they'd
             have a progress counter (current progress is X, Y is max progress, optional daily goal for books)
 
-        - settings screen - theme previews, language pane, help&support screen with some app email and donate screen will be a formal "Work in progress"
+        - settings screen - theme previews, help&support screen with some app email
         - questionnaire screen
-        - splash screen
-            - app logo somehow slowly gaining color
+        - splash screen - app logo somehow slowly gaining color
         - make a color palette cause material3 builder highk sucks?
+        - reusable snackbars
 
     TODO: ### BACK-END
 
         - after splash screen designing, have the app auto log-on if you have made an account
+
         - regulate backStack and navigation (so, prevent a user from going all the way back to the login screen)
+
         - questionnaire (to fill out user's embedding), maybe some data-tracking for user embedding improvement
+
+        - search functionality on media
+            search: https://supabase.com/docs/guides/database/full-text-search?queryGroups=language&language=kotlin#search-a-single-column
 
         - sort out error handling
             - handle any potential errors from supabase and shit

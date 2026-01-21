@@ -8,6 +8,10 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarDuration
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
+import androidx.compose.material3.SnackbarResult
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
@@ -36,15 +40,27 @@ fun ThemeScreen(
     selectedIcon: Int,
     viewModel: DataStoreViewModel
 ) {
+    // theme:
     val dynamicColorEnabled by viewModel.readThemeSettings("dynamic_color").collectAsState(initial = false)
     val darkSchemeEnabled by viewModel.readThemeSettings("dark_scheme").collectAsState(initial = false)
+    // accessibility:
+    val reduceMotionEnabled by viewModel.readThemeSettings("reduce_motion").collectAsState(initial = false)
 
+    // infoboxes:
+    var reduceMotionInfoBoxEnabled by remember { mutableStateOf(false) }
     var dynamicColorInfoBoxEnabled by remember {mutableStateOf(false)}
     var lightDarkInfoBoxEnabled by remember {mutableStateOf(false)}
+
+    // snackbar thing:
+    val snackbarHostState = remember { SnackbarHostState() }
 
     val scope = rememberCoroutineScope()
 
     Scaffold(
+        snackbarHost = {
+            // can pass your custom snackbar here
+            SnackbarHost(hostState = snackbarHostState)
+        },
         topBar = { ThemeScreenTopBar() },
         bottomBar = { BottomBar(
             onBottomBarItemClick,
@@ -67,9 +83,21 @@ fun ThemeScreen(
                 onInfoBoxClick = {
                     dynamicColorInfoBoxEnabled = it
                 },
-                onCheckedChange = {
+                onCheckedChange = { newValue ->
                     scope.launch {
-                        viewModel.saveThemeSettings("dynamic_color", it)
+                        val result = snackbarHostState.showSnackbar(
+                            message = "There are unsaved changes. Save now?",
+                            actionLabel = "Save",
+                            duration = SnackbarDuration.Indefinite
+                        )
+                        when(result) {
+                            SnackbarResult.ActionPerformed -> {
+                                viewModel.saveThemeSettings("dynamic_color", newValue)
+                            }
+                            SnackbarResult.Dismissed -> {
+                                /* Handle snackbar dismissed */
+                            }
+                        }
                     }
                 },
             )
@@ -88,6 +116,21 @@ fun ThemeScreen(
                 onCheckedChange = {
                     scope.launch {
                         viewModel.saveThemeSettings("dark_scheme", it)
+                    }
+                }
+            )
+
+            SettingsSubScreenItem (
+                text = stringResource(R.string.reduce_motion_title),
+                switchState = reduceMotionEnabled,
+                infoBoxText = stringResource(R.string.reduce_motion_info_box_text),
+                showInfoBox = reduceMotionInfoBoxEnabled,
+                onInfoBoxClick = {
+                    reduceMotionInfoBoxEnabled = it
+                },
+                onCheckedChange = {
+                    scope.launch {
+                        viewModel.saveThemeSettings("reduce_motion", it)
                     }
                 }
             )
