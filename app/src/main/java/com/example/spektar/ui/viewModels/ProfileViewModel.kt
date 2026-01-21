@@ -77,7 +77,9 @@ class ProfileViewModel(
             }
 
             is ProfileEvent.updateAvatar -> {
-
+                viewModelScope.launch {
+                    accountService.updateAvatar(event.userId, event.newAvatar, event.username)
+                }
             }
 
             is ProfileEvent.updateUsername -> {

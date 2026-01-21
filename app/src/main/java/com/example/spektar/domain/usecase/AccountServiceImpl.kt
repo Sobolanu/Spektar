@@ -7,39 +7,48 @@ import com.example.spektar.data.remote.SupabaseClientProvider
 import com.example.spektar.data.remote.SupabaseClientProvider.auth
 import com.example.spektar.domain.model.AccountService
 import io.github.jan.supabase.auth.providers.builtin.Email
+import io.github.jan.supabase.auth.status.SessionStatus
 import io.github.jan.supabase.auth.user.UserSession
 import io.github.jan.supabase.postgrest.from
 import io.github.jan.supabase.postgrest.postgrest
 import io.github.jan.supabase.postgrest.query.Columns
 import io.github.jan.supabase.storage.upload
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.launch
 import kotlinx.serialization.json.buildJsonObject
 import kotlinx.serialization.json.put
+import java.io.File
 
 // reminder to go to your supabase dashboard and redirect users when they confirm their link
 // that is, your sign up composable should also tell you that you need to confirm your address
 
 class AccountServiceImpl : AccountService {
-    override suspend fun retrieveSession() : UserSession? {
-        var session = auth.currentSessionOrNull()
 
-        if(session != null) {
-            return session
+    init {
+        CoroutineScope(Dispatchers.Main).launch {
+            auth.sessionStatus.collect { status ->
+                when (status) {
+                    is SessionStatus.Authenticated -> {
+                        _sessionFlow.value = status.session
+                    }
+                    is SessionStatus.NotAuthenticated -> {
+                        _sessionFlow.value = null
+                    }
+                    else -> { /* handle other cases if needed */ }
+                }
+            }
         }
 
-        try {
-            val refreshed = auth.refreshCurrentSession()
-        } catch (e: Exception) {
-            Exception("Session doesn't exist", e)
-            // would lead smwhere i guess
-        }
+    }
 
-        session = auth.currentSessionOrNull()
+    private val _sessionFlow = MutableStateFlow<UserSession?>(null)
+    override val sessionFlow: StateFlow<UserSession?> get() =_sessionFlow
 
-        if(session != null) {
-            return session
-        }
-
-        return null
+    override suspend fun retrieveSession(): UserSession? {
+        return sessionFlow.value
     }
 
     override suspend fun retrieveUserId(): String {
@@ -114,13 +123,30 @@ class AccountServiceImpl : AccountService {
         }
 
         val userId = auth.currentUserOrNull()?.id ?: error("User ID missing from session after sign up")
-        SupabaseClientProvider.storage.from("avatars")
-            .upload("$userId/${state.avatar!!.name}", state.avatar!!) { upsert = false }
 
+        updateAvatar(userId, state.avatar!!, state.username)
+        /*
+        SupabaseClientProvider.storage.from("avatars")
+            .upload("$userId/${state.avatar!!.name}", state.avatar!!) { upsert = true }
+         */
         SupabaseClientProvider.db.from("profiles").update(
             mapOf(
                 "avatar_url" to "$userId/${state.avatar!!.name}",
                 "username" to state.username
+            )
+        ) {
+            filter { eq ("id", userId)}
+        }
+    }
+
+    override suspend fun updateAvatar(userId: String, avatar: File, username: String) {
+        SupabaseClientProvider.storage.from("avatars")
+            .upload("$userId/${avatar.name}", avatar) { upsert = true }
+
+        SupabaseClientProvider.db.from("profiles").update(
+            mapOf(
+                "avatar_url" to "$userId/${avatar.name}",
+                "username" to username
             )
         ) {
             filter { eq ("id", userId)}

@@ -65,11 +65,12 @@ fun ProfileScreen(
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Top
         ) {
+            // uploads to storage but not to userid folder pls fix
             ImagePicker(  // make this look nice
                 onImageSelected = { uri ->
                     selectedImageUri = uri
                     val image = context.copyUriToFile(uri)
-                    onEvent(ProfileEvent.updateAvatar(image))
+                    onEvent(ProfileEvent.updateAvatar(state.id,image, state.username))
                 },
                 painter = painter
             ) // add some "Apply" box discord-style to this when you change the image

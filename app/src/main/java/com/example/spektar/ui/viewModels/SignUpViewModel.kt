@@ -41,7 +41,6 @@ class SignUpViewModel(
                 )}
             }
             is AuthEvent.SignUp -> {
-                // here i get error FOREIGN KEY constraint failed (code 787 SQLITE_CONSTRAINT_FOREIGNKEY[787])
                 viewModelScope.launch {
                     accountService.signUp(signUpRequest.value)
                 }

@@ -8,7 +8,6 @@
             have a progress counter (current progress is X, Y is max progress, optional daily goal for books)
 
         - settings screen - theme previews, language pane, help&support screen with some app email and donate screen will be a formal "Work in progress"
-            - merge theme and accessibility because not enough options in accessibility to warrant new screen
         - questionnaire screen
         - splash screen
             - app logo somehow slowly gaining color
@@ -30,6 +29,7 @@
 
 errors:
 edge function returns error 500 if you do the following steps:
+same with other shit aswell
             - have a already existing account
             - make another one
             - log in on that one

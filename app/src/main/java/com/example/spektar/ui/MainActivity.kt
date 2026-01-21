@@ -38,6 +38,7 @@ class MainActivity : ComponentActivity() {
             val profileViewModel: ProfileViewModel by viewModels {
                 ProfileViewModelFactory(AccountServiceImpl())
             }
+
             val dataStoreViewModel : DataStoreViewModel by viewModels {
                 DataStoreViewModelFactory(applicationContext.dataStore)
             }

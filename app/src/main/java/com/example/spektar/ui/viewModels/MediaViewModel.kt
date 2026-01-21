@@ -43,8 +43,26 @@ class MediaViewModel (
     }
 
     init {
-        loadData()
+        viewModelScope.launch {
+            accountService.sessionFlow.collect { session ->
+                if (session != null) {
+                    val userId = accountService.retrieveUserId()
+                    val recommendedMedia = globalCategoryList.map {
+                        mediaService.EXPERIMENTALfillCategory(
+                            session.accessToken,
+                            userId,
+                            it.mediaCategory.lowercase()
+                        )
+                    }
+                    _uiState.value = _uiState.value.copy(
+                        medias = recommendedMedia
+                    )
+                }
+            }
+        }
+        loadData() // optional initial load
     }
+
 
     // uiState obtains all values that are stored in the repositories.
     suspend fun obtainMediaById(partialMediaData: MediaPreview) : SpecificMedia {
@@ -60,25 +78,23 @@ class MediaViewModel (
             }
 
             val categories = mediaService.getAllCategories()
-            val session = accountService.retrieveSession()
-            val userId = accountService.retrieveUserId()
 
-            var recommendedMedia : List<List<MediaPreview>?> = emptyList()
-            if(session != null) {
-                // WORKS:
-                // val testData = mediaService.fetchTopMediaMatches(session.accessToken, userId)
-
-                // works (and i hope it will consistently)
-                recommendedMedia = globalCategoryList.map {
-                    mediaService.EXPERIMENTALfillCategory(session.accessToken, userId, it.mediaCategory.lowercase())
+            accountService.sessionFlow.collect { session ->
+                if (session != null) {
+                    val userId = accountService.retrieveUserId()
+                    val recommendedMedia = globalCategoryList.map {
+                        mediaService.EXPERIMENTALfillCategory(
+                            session.accessToken,
+                            userId,
+                            it.mediaCategory.lowercase()
+                        )
+                    }
+                    _uiState.value = _uiState.value.copy(
+                        medias = recommendedMedia,
+                        categories = categories,
+                    )
                 }
             }
-
-            _uiState.value = MediaUiData(
-                // medias = mediaList,
-                medias = recommendedMedia,
-                categories = categories, // name of each specific thing
-            )
         }
     }
 }
