@@ -16,13 +16,10 @@
     TODO: ### BACK-END
 
         - after splash screen designing, have the app auto log-on if you have made an account
-
         - regulate backStack and navigation (so, prevent a user from going all the way back to the login screen)
-
         - questionnaire (to fill out user's embedding), maybe some data-tracking for user embedding improvement
 
-        - search functionality on media
-            search: https://supabase.com/docs/guides/database/full-text-search?queryGroups=language&language=kotlin#search-a-single-column
+        TODO: search implemented, remember you have "Crime And Punishment" as a placeholder.
 
         - sort out error handling
             - handle any potential errors from supabase and shit
@@ -33,6 +30,8 @@
  */
 
 errors:
+on sign-up, retrieve image_url after it finishes uploading
+
 edge function returns error 500 if you do the following steps:
 same with other shit aswell
             - have a already existing account

@@ -159,7 +159,7 @@ fun ProfileScreen(
                     text = "The action you are about to do is irreversible. Proceed anyway?",
                     onContinueClick = { /* onEvent(ProfileEvent.deleteAccount) */ },
                     // can't close/open :(
-                    onDismissClick = { !showConfirmationBox },
+                    onDismissClick = { showConfirmationBox = false },
                 )
             }
         }

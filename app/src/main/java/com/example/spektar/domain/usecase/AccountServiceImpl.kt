@@ -37,7 +37,7 @@ class AccountServiceImpl : AccountService {
                     is SessionStatus.NotAuthenticated -> {
                         _sessionFlow.value = null
                     }
-                    else -> { /* handle other cases if needed */ }
+                    else -> { } // empty cause idrk what else to do
                 }
             }
         }
@@ -131,7 +131,7 @@ class AccountServiceImpl : AccountService {
          */
         SupabaseClientProvider.db.from("profiles").update(
             mapOf(
-                "avatar_url" to "$userId/${state.avatar!!.name}",
+                "avatar_url" to "${userId}/${state.avatar!!.name}",
                 "username" to state.username
             )
         ) {
@@ -141,11 +141,11 @@ class AccountServiceImpl : AccountService {
 
     override suspend fun updateAvatar(userId: String, avatar: File, username: String) {
         SupabaseClientProvider.storage.from("avatars")
-            .upload("$userId/${avatar.name}", avatar) { upsert = true }
+            .upload("${userId}/${avatar.name}", avatar) { upsert = true }
 
         SupabaseClientProvider.db.from("profiles").update(
             mapOf(
-                "avatar_url" to "$userId/${avatar.name}",
+                "avatar_url" to "${userId}/${avatar.name}",
                 "username" to username
             )
         ) {

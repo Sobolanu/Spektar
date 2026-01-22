@@ -26,6 +26,9 @@ class MediaViewModel (
     private val mediaService: MediaService,
     private val accountService: AccountService
 ) : ViewModel() {
+    private val _search = MutableStateFlow(emptyList<MediaPreview>())
+
+    val search: StateFlow<List<MediaPreview>> get() = _search
     private val _uiState = MutableStateFlow(MediaUiData())
     val uiState: StateFlow<MediaUiData> get() = _uiState
     private val _media = MutableStateFlow<SpecificMedia?>(null)
@@ -39,44 +42,18 @@ class MediaViewModel (
                     _media.value = result
                 }
             }
+
+            is MediaEvent.SearchForMedia -> {
+                viewModelScope.launch {
+                    val result = mediaService.searchByName(event.name)
+                    _search.value = result
+                }
+            }
         }
     }
 
     init {
         viewModelScope.launch {
-            accountService.sessionFlow.collect { session ->
-                if (session != null) {
-                    val userId = accountService.retrieveUserId()
-                    val recommendedMedia = globalCategoryList.map {
-                        mediaService.EXPERIMENTALfillCategory(
-                            session.accessToken,
-                            userId,
-                            it.mediaCategory.lowercase()
-                        )
-                    }
-                    _uiState.value = _uiState.value.copy(
-                        medias = recommendedMedia
-                    )
-                }
-            }
-        }
-        loadData() // optional initial load
-    }
-
-
-    // uiState obtains all values that are stored in the repositories.
-    suspend fun obtainMediaById(partialMediaData: MediaPreview) : SpecificMedia {
-        return mediaService.obtainDataByMediaId(partialMediaData)
-    }
-
-    private fun loadData() {
-        viewModelScope.launch {
-            // DO NOT UNDER ANY CIRCUMSTANCES GET RID OF THE NON-EXPERIMENTAL FUNCTIONS
-            // WITHOUT THEM THE CODE BREAKS FOR SOME REASON AND I DON'T KNOW HOW TO FIX IT
-            val mediaList = globalCategoryList.map {
-                mediaService.fillCategory(it.mediaCategory.lowercase())
-            }
-
             val categories = mediaService.getAllCategories()
 
             accountService.sessionFlow.collect { session ->
@@ -91,11 +68,17 @@ class MediaViewModel (
                     }
                     _uiState.value = _uiState.value.copy(
                         medias = recommendedMedia,
-                        categories = categories,
+                        categories = categories
                     )
                 }
             }
         }
+    }
+
+
+    // uiState obtains all values that are stored in the repositories.
+    suspend fun obtainMediaById(partialMediaData: MediaPreview) : SpecificMedia {
+        return mediaService.obtainDataByMediaId(partialMediaData)
     }
 }
 

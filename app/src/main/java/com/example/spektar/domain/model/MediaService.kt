@@ -13,6 +13,8 @@ interface MediaService {
     suspend fun EXPERIMENTALfillCategory(accessToken: String, userId: String, categoryName: String): List<MediaPreview>?
     fun getAllCategories() : List<Category>
 
+    suspend fun searchByName(name: String) : List<MediaPreview>
+
     suspend fun obtainCategoryWithMediaId(mediaId: String) : MediaLookup?
     suspend fun obtainDataByMediaId(partialMediaData: MediaPreview) : SpecificMedia
     suspend fun fetchTopMediaMatches(bearerToken: String, userId: String): EdgeResponse?

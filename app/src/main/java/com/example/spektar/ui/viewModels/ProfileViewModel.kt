@@ -6,8 +6,11 @@ import androidx.lifecycle.viewModelScope
 import com.example.spektar.data.model.User
 import com.example.spektar.domain.model.AccountService
 import com.example.spektar.ui.profileScreen.ProfileEvent
+import io.github.jan.supabase.auth.user.UserSession
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 
 /* we need user data, so:
@@ -30,20 +33,20 @@ class ProfileViewModel(
 
     fun loadData() {
         viewModelScope.launch {
-            val session = accountService.retrieveSession()
+            accountService.sessionFlow.collect { session ->
+                if (session != null) {
+                    val fullUserData = accountService.retrieveUserDataWithId(session.user!!.id) // i hope this always will pass
 
-            if(session != null) {
-                val fullUserData = accountService.retrieveUserDataWithId(session.user!!.id) // i hope this always will pass
-
-                _state.value = User(
-                    id = fullUserData.id,
-                    username = fullUserData.username,
-                    email = session.user!!.email!!,
-                    avatar_url = accountService.makeUseableStorageUrl(fullUserData.avatar_url!!),
-                    accountCreationDate = session.user!!.createdAt.toString()
-                )
-            } else {
-                Exception("Session is null at function loadData of ProfileScreenViewModel.")
+                    _state.value = User(
+                        id = fullUserData.id,
+                        username = fullUserData.username,
+                        email =  session.user!!.email!!,
+                        avatar_url = fullUserData.avatar_url?.let { accountService.makeUseableStorageUrl(it) },
+                        accountCreationDate = session.user!!.createdAt.toString()
+                    )
+                } else {
+                    Exception("Session is null at function loadData of ProfileScreenViewModel.")
+                }
             }
         }
     }

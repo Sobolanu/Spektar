@@ -12,6 +12,7 @@ import com.example.spektar.domain.model.Category
 import com.example.spektar.domain.model.MediaService
 import io.github.jan.supabase.postgrest.from
 import io.github.jan.supabase.postgrest.query.Columns
+import io.github.jan.supabase.postgrest.query.filter.TextSearchType
 import io.ktor.client.HttpClient
 import io.ktor.client.engine.cio.CIO
 import io.ktor.client.request.header
@@ -22,7 +23,18 @@ import io.ktor.client.statement.bodyAsText
 import io.ktor.http.ContentType
 import io.ktor.http.HttpHeaders
 import io.ktor.http.contentType
+import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.Json
+
+// used in fun searchByName, same stuff as MediaPreview but i don't want to break anything.
+@Serializable
+data class MediaLookupRow(
+    val id_uuid: String,
+    val image_url: String,
+    val media_name: String
+)
+
+
 class MediaServiceImpl : MediaService {
 
     // DO NOT UNDER ANY CIRCUMSTANCES GET RID OF THE NON-EXPERIMENTAL FUNCTIONS
@@ -30,6 +42,21 @@ class MediaServiceImpl : MediaService {
     override suspend fun fillCategory(categoryName: String) : List<MediaPreview> {
         return MediaRepository.getAllMediaInCategory(categoryName)
     }
+
+    override suspend fun searchByName(name: String): List<MediaPreview> {
+        val data = SupabaseClientProvider.db
+            .from("media_lookup")
+            .select(Columns.list("id_uuid", "image_url", "media_name")) {
+                filter {
+                    // replace "Crime and Punishment" with name.
+                    textSearch("media_name", "Crime And Punishment", TextSearchType.PHRASETO)
+                }
+            }
+            .decodeList<MediaLookupRow>()
+
+        return data.map { MediaPreview(it.id_uuid, it.image_url, it.media_name) }
+    }
+
 
     override suspend fun EXPERIMENTALfillCategory(
         accessToken: String,

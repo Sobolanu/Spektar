@@ -41,7 +41,9 @@ fun NavGraphBuilder.CategoryGraph(
     composable<CategoryScreen> {
         val state = mediaViewModel.uiState.collectAsState()
         CategoryScreen(
-
+            onEvent = { event ->
+                mediaViewModel.onEvent(event)
+            },
             goToProfile = { navController.safeNavigate(ProfileScreen) },
             onImageClick = { media ->
                 navController.safeNavigate(

@@ -5,5 +5,6 @@ import com.example.spektar.domain.model.Category
 
 data class MediaUiData (
     val medias: List<List<MediaPreview>?> = emptyList(),
+    val searchMedias: List<MediaPreview> = emptyList(),
     val categories: List<Category> = emptyList(),
 )
