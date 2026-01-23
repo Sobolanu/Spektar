@@ -47,22 +47,15 @@ import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
-import com.example.spektar.data.model.viewModelStates.MediaUiData
-import com.example.spektar.domain.media.MediaPreview
-import com.example.spektar.domain.model.Category
+import com.example.spektar.data.model.media.MediaPreview
 import com.example.spektar.ui.common.components.BottomBar
 import com.example.spektar.ui.common.components.navigationBarIcons.topProfileIcon
 import com.example.spektar.ui.common.modifiers.cardWithShadowModifier
 import com.example.spektar.ui.common.modifiers.roundedCornerRow
-import com.example.spektar.ui.navigation.routes.MediaDetails
+import com.example.spektar.ui.navigation.graphs.categoryGraph.MediaDetails
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-
-/*
-I think, at the end of the LoadCategoryText, there should be a button with "View completed"
-where you can search up completed pieces of media (so, stuff you've watched/read)
- */
 
 fun CategoryScreen(
     onEvent: (MediaEvent) -> Unit,
@@ -177,7 +170,7 @@ fun LoadCategoryImages(
         items(medias, key = { it.imageUrl } ) { media ->
             Card( // if this doesn't work switch it to js normal card
                 onClick = { //
-                    onImageClick( MediaDetails(partialMediaData = media) )
+                    onImageClick(MediaDetails(partialMediaData = media))
                 },
 
                 colors = CardColors( // sort card colors by category

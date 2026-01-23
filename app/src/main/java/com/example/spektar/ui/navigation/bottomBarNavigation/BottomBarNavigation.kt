@@ -1,17 +1,17 @@
 package com.example.spektar.ui.navigation.bottomBarNavigation
 
 import androidx.navigation.NavController
-import com.example.spektar.ui.navigation.routes.Settings
+import com.example.spektar.ui.navigation.graphs.settingsGraph.SettingsScreen
 
 fun bottomBarNavigation(
     navController : NavController,
     index : Int
 ) {
     navController.navigate(when (index) {
-        0 -> Settings // all are Settings because i haven't made the rest yet
-        1 -> Settings
-        2 -> Settings
-        else -> Settings
+        0 -> SettingsScreen // all are Settings because i haven't made the rest yet
+        1 -> SettingsScreen
+        2 -> SettingsScreen
+        else -> SettingsScreen
     } ) {
         launchSingleTop = true
         restoreState = true

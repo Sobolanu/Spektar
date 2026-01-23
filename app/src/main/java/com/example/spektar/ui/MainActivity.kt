@@ -10,24 +10,21 @@ import androidx.activity.viewModels
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableIntStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.room.Room
 import com.example.compose.SpektarTheme
 import com.example.spektar.data.local.DataStore.dataStore
 import com.example.spektar.data.local.NoteDatabase
-import com.example.spektar.domain.usecase.AccountServiceImpl
-import com.example.spektar.domain.usecase.MediaServiceImpl
+import com.example.spektar.data.remote.AccountServiceImpl
+import com.example.spektar.data.remote.MediaServiceImpl
 import com.example.spektar.ui.navigation.SpektarNavigation
-import com.example.spektar.ui.viewModels.DataStoreViewModel
-import com.example.spektar.ui.viewModels.DataStoreViewModelFactory
-import com.example.spektar.ui.viewModels.MediaViewModel
-import com.example.spektar.ui.viewModels.MediaViewModelFactory
-import com.example.spektar.ui.viewModels.NoteViewModel
-import com.example.spektar.ui.viewModels.NoteViewModelFactory
-import com.example.spektar.ui.viewModels.ProfileViewModel
-import com.example.spektar.ui.viewModels.ProfileViewModelFactory
+import com.example.spektar.ui.settingsScreen.DataStoreViewModel
+import com.example.spektar.ui.settingsScreen.DataStoreViewModelFactory
+import com.example.spektar.ui.mediaScreens.MediaViewModel
+import com.example.spektar.ui.mediaScreens.MediaViewModelFactory
+import com.example.spektar.ui.notesScreen.NoteViewModel
+import com.example.spektar.ui.notesScreen.NoteViewModelFactory
+import com.example.spektar.ui.profileScreen.ProfileViewModel
+import com.example.spektar.ui.profileScreen.ProfileViewModelFactory
 import kotlin.getValue
 
 class MainActivity : ComponentActivity() {

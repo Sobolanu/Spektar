@@ -1,7 +1,7 @@
 package com.example.spektar.data.repository
 
 import androidx.compose.ui.graphics.Color
-import com.example.spektar.domain.model.Category
+import com.example.spektar.ui.mediaScreens.Category
 
 private val shows = Category("Shows", Color(0xFF06783F))
 private val books = Category("Books", Color(0xFFFF5D60))

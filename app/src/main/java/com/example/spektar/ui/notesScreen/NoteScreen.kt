@@ -31,7 +31,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.spektar.data.model.NoteState
+import com.example.spektar.ui.notesScreen.NoteState
 import com.example.spektar.ui.notesScreen.NoteEvent
 
 // refer to https://www.youtube.com/watch?v=bOd3wO0uFr8&t=1453s for good UI design i suppose?

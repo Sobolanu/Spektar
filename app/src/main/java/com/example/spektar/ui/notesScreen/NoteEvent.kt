@@ -1,7 +1,7 @@
 package com.example.spektar.ui.notesScreen
 
 import com.example.spektar.data.model.roomModels.Note
-import com.example.spektar.domain.model.SortType
+import com.example.spektar.ui.settingsScreen.SortType
 
 sealed interface NoteEvent {
     object SaveNote: NoteEvent

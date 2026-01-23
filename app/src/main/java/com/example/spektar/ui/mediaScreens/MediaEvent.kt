@@ -1,6 +1,6 @@
 package com.example.spektar.ui.mediaScreens
 
-import com.example.spektar.domain.media.MediaPreview
+import com.example.spektar.data.model.media.MediaPreview
 
 sealed interface MediaEvent {
     data class ObtainMediaById(val media: MediaPreview) : MediaEvent

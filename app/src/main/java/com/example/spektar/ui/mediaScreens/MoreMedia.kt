@@ -20,20 +20,16 @@ import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.TopAppBarDefaults.enterAlwaysScrollBehavior
 import androidx.compose.material3.TopAppBarScrollBehavior
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
-import com.example.spektar.data.model.viewModelStates.MediaUiData
-import com.example.spektar.domain.model.Category
-import com.example.spektar.ui.common.components.navigationBarIcons.topProfileIcon
 import com.example.spektar.ui.common.components.BottomBar
+import com.example.spektar.ui.common.components.navigationBarIcons.topProfileIcon
 import com.example.spektar.ui.common.modifiers.cardWithShadowModifier
-import com.example.spektar.ui.navigation.routes.MediaDetails
-import com.example.spektar.ui.viewModels.MediaViewModel
+import com.example.spektar.ui.navigation.graphs.categoryGraph.MediaDetails
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -77,7 +73,7 @@ fun MoreMedia(
         ) {
             items(state.medias[index]!!.size) { media ->
                 Card(
-                    onClick = { onImageClick( MediaDetails(partialMediaData = state.medias[index]!![media]) ) },
+                    onClick = { onImageClick(MediaDetails(partialMediaData = state.medias[index]!![media])) },
 
                     colors = CardColors( // sort card colors by category
                         containerColor = MaterialTheme.colorScheme.tertiaryContainer,

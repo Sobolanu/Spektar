@@ -7,7 +7,7 @@ import androidx.compose.material.icons.filled.AccountCircle
 import androidx.compose.material.icons.filled.Brush
 import androidx.compose.material.icons.filled.Diamond
 import androidx.compose.material.icons.filled.Language
-import com.example.spektar.domain.model.Access
+import com.example.spektar.ui.settingsScreen.Access
 import com.example.spektar.ui.common.components.SettingsScreenCategory
 
 internal val customization = SettingsScreenCategory(

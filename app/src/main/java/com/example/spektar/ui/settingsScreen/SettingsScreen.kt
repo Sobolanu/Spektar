@@ -38,7 +38,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.example.spektar.R
-import com.example.spektar.domain.model.Access
+import com.example.spektar.ui.settingsScreen.Access
 import com.example.spektar.ui.common.components.SettingsScreenCategory
 import com.example.spektar.ui.common.lists.SettingsScreenCategories
 import com.example.spektar.ui.common.components.BottomBar

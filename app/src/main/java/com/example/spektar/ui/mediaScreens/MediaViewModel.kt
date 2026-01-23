@@ -1,0 +1,98 @@
+package com.example.spektar.ui.mediaScreens
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.viewModelScope
+import com.example.spektar.data.model.media.MediaPreview
+import com.example.spektar.domain.model.SpecificMedia
+import com.example.spektar.ui.mediaScreens.MediaUiData
+import com.example.spektar.data.repository.globalCategoryList
+import com.example.spektar.domain.model.services.AccountService
+import com.example.spektar.domain.model.services.MediaService
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.launch
+
+
+// DO NOT UNDER ANY CIRCUMSTANCES GET RID OF THE NON-EXPERIMENTAL FUNCTIONS
+// WITHOUT THEM THE CODE BREAKS FOR SOME REASON AND I DON'T KNOW HOW TO FIX IT
+/*
+    defines some properties for a uiState variable
+
+    implement error handling when you have the energy to do so
+*/
+
+class MediaViewModel (
+    private val mediaService: MediaService,
+    private val accountService: AccountService
+) : ViewModel() {
+    private val _search = MutableStateFlow(emptyList<MediaPreview>())
+
+    val search: StateFlow<List<MediaPreview>> get() = _search
+    private val _uiState = MutableStateFlow(MediaUiData())
+    val uiState: StateFlow<MediaUiData> get() = _uiState
+    private val _media = MutableStateFlow<SpecificMedia?>(null)
+    val media: StateFlow<SpecificMedia?> = _media // combine this into uiState some time
+
+    fun onEvent(event: MediaEvent) {
+        when(event) {
+            is MediaEvent.ObtainMediaById -> {
+                viewModelScope.launch {
+                    val result = obtainMediaById(event.media)
+                    _media.value = result
+                }
+            }
+
+            is MediaEvent.SearchForMedia -> {
+                viewModelScope.launch {
+                    val result = mediaService.searchByName(event.name)
+                    _search.value = result
+                }
+            }
+        }
+    }
+
+    init {
+        viewModelScope.launch {
+            val categories = mediaService.getAllCategories()
+
+            accountService.sessionFlow.collect { session ->
+                if (session != null) {
+                    val userId = accountService.retrieveUserId()
+                    val recommendedMedia = globalCategoryList.map {
+                        mediaService.EXPERIMENTALfillCategory(
+                            session.accessToken,
+                            userId,
+                            it.mediaCategory.lowercase()
+                        )
+                    }
+                    _uiState.value = _uiState.value.copy(
+                        medias = recommendedMedia,
+                        categories = categories
+                    )
+                }
+            }
+        }
+    }
+
+
+    // uiState obtains all values that are stored in the repositories.
+    suspend fun obtainMediaById(partialMediaData: MediaPreview) : SpecificMedia {
+        return mediaService.obtainDataByMediaId(partialMediaData)
+    }
+}
+
+@Suppress("UNCHECKED_CAST")
+class MediaViewModelFactory(
+    private val mediaService: MediaService,
+    private val accountService: AccountService
+) : ViewModelProvider.Factory {
+    override fun <T : ViewModel> create(modelClass: Class<T>): T {
+        if (modelClass.isAssignableFrom(MediaViewModel::class.java)) {
+            return MediaViewModel(
+                mediaService,
+                accountService,
+            ) as T
+        }
+        throw IllegalArgumentException("Unknown ViewModel class")
+    }
+}

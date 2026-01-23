@@ -9,16 +9,16 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.rememberNavController
+import com.example.spektar.ui.mediaScreens.MediaViewModel
 import com.example.spektar.ui.navigation.bottomBarNavigation.bottomBarNavigation
-import com.example.spektar.ui.navigation.graphs.AuthGraph
-import com.example.spektar.ui.navigation.graphs.CategoryGraph
-import com.example.spektar.ui.navigation.graphs.SettingsGraph
-import com.example.spektar.ui.navigation.routes.CategoryScreen
-import com.example.spektar.ui.navigation.routes.UserLoginScreen
-import com.example.spektar.ui.viewModels.DataStoreViewModel
-import com.example.spektar.ui.viewModels.MediaViewModel
-import com.example.spektar.ui.viewModels.NoteViewModel
-import com.example.spektar.ui.viewModels.ProfileViewModel
+import com.example.spektar.ui.navigation.graphs.authGraph.AuthGraph
+import com.example.spektar.ui.navigation.graphs.authGraph.UserLoginScreen
+import com.example.spektar.ui.navigation.graphs.categoryGraph.CategoryGraph
+import com.example.spektar.ui.navigation.graphs.common.CommonGraph
+import com.example.spektar.ui.navigation.graphs.settingsGraph.SettingsGraph
+import com.example.spektar.ui.notesScreen.NoteViewModel
+import com.example.spektar.ui.profileScreen.ProfileViewModel
+import com.example.spektar.ui.settingsScreen.DataStoreViewModel
 
 /*
 Navigation uses "modern" (used to be modern, however Navigation3 came out but i'm kinda crunched on time so
@@ -38,7 +38,7 @@ fun SpektarNavigation(
     // start will be UserLoginScreen(false)
     NavHost(
         navController = navController,
-        startDestination =  UserLoginScreen(false),
+        startDestination = UserLoginScreen(false),
         enterTransition = { slideIntoContainer(AnimatedContentTransitionScope.SlideDirection.Start, tween(500)) },
         exitTransition = { slideOutOfContainer(AnimatedContentTransitionScope.SlideDirection.Start, tween(500)) },
         popEnterTransition = { slideIntoContainer(AnimatedContentTransitionScope.SlideDirection.End, tween(500)) },
@@ -72,8 +72,18 @@ fun SpektarNavigation(
                     bottomBarNavigation(navController, index)
                 }
             },
+            selectedIconProvider = { selectedIcon }
+        )
 
+        CommonGraph(
+            navController = navController,
             profileViewModel = profileViewModel,
+            onBottomBarClick = { index ->
+                if(selectedIcon != index) {
+                    selectedIcon = index
+                    bottomBarNavigation(navController, index)
+                }
+            },
             selectedIconProvider = { selectedIcon }
         )
     }
