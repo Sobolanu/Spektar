@@ -22,41 +22,39 @@ import kotlin.reflect.typeOf
 fun NavGraphBuilder.AuthGraph(
     navController: NavController,
 ) {
-    navigation<Auth>(startDestination = UserLoginScreen(false)) {
-        composable<UserLoginScreen>(
-            typeMap = mapOf(typeOf<UserLoginScreen>() to navTypeOf<UserLoginScreen>())
-        ) { backStackEntry ->
-            val args = backStackEntry.toRoute<UserLoginScreen>()
+    composable<UserLoginScreen>(
+        typeMap = mapOf(typeOf<UserLoginScreen>() to navTypeOf<UserLoginScreen>())
+    ) { backStackEntry ->
+        val args = backStackEntry.toRoute<UserLoginScreen>()
 
-            val signInViewModel: SignInViewModel = viewModel(
-                factory = SignInViewModelFactory(accountService = AccountServiceImpl())
-            )
-            val uiState = signInViewModel.signInRequest.collectAsState()
+        val signInViewModel: SignInViewModel = viewModel(
+            factory = SignInViewModelFactory(accountService = AccountServiceImpl())
+        )
+        val uiState = signInViewModel.signInRequest.collectAsState()
 
-            UserLoginScreen(
-                onSignInClick = { navController.safeNavigate(CategoryScreen) }, // placeholder route until i make home screen
-                onTextClick = { navController.safeNavigate(UserRegistrationScreen) },
-                state = uiState.value,
-                onEvent = { authEvent ->
-                    signInViewModel.onEvent(authEvent)
-                },
-                showEmailPopUp = args.showEmailPopUp,
-            )
-        }
+        UserLoginScreen(
+            onSignInClick = { navController.safeNavigate(CategoryScreen) }, // placeholder route until i make home screen
+            onTextClick = { navController.safeNavigate(UserRegistrationScreen) },
+            state = uiState.value,
+            onEvent = { authEvent ->
+                signInViewModel.onEvent(authEvent)
+            },
+            showEmailPopUp = args.showEmailPopUp,
+        )
+    }
 
-        composable<UserRegistrationScreen> {
-            val signUpViewModel: SignUpViewModel = viewModel(
-                factory = SignUpViewModelFactory(accountService = AccountServiceImpl())
-            )
-            val uiState = signUpViewModel.signUpRequest.collectAsState()
+    composable<UserRegistrationScreen> {
+        val signUpViewModel: SignUpViewModel = viewModel(
+            factory = SignUpViewModelFactory(accountService = AccountServiceImpl())
+        )
+        val uiState = signUpViewModel.signUpRequest.collectAsState()
 
-            UserRegistrationScreen(
-                state = uiState.value,
-                onEvent = { authEvent ->
-                    signUpViewModel.onEvent(authEvent)
-                },
-                onSignUp = { navController.safeNavigate(UserLoginScreen(true)) } // read comment above
-            )
-        }
+        UserRegistrationScreen(
+            state = uiState.value,
+            onEvent = { authEvent ->
+                signUpViewModel.onEvent(authEvent)
+            },
+            onSignUp = { navController.safeNavigate(UserLoginScreen(true)) } // read comment above
+        )
     }
 }
