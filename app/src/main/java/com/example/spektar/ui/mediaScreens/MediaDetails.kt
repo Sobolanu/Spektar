@@ -25,6 +25,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -33,9 +34,6 @@ import com.example.spektar.domain.model.SpecificMedia
 import com.example.spektar.ui.common.components.navigationBarIcons.topProfileIcon
 import com.example.spektar.ui.common.components.navigationBarIcons.topBackArrowIcon
 
-/*
-TODO: implement screen for notes and notes functionality
- */
 @Composable
 fun MediaDetailsScreen(
     goToProfile: () -> Unit,
@@ -140,7 +138,7 @@ fun DetailsPageTopBar(
                         topBackArrowIcon.unselectedIcon
                     },
 
-                    contentDescription = topBackArrowIcon.title
+                    contentDescription = stringResource(topBackArrowIcon.title)
                 )
             }
         },
@@ -156,7 +154,7 @@ fun DetailsPageTopBar(
                         topProfileIcon.unselectedIcon
                     },
 
-                    contentDescription = topProfileIcon.title
+                    contentDescription = stringResource(topProfileIcon.title)
                 )
             }
         }

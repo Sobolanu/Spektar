@@ -8,6 +8,5 @@ import kotlinx.serialization.Serializable
 
 @Serializable data class NoteScreen(val id: String)
 @Serializable data class MediaDetails(val partialMediaData: MediaPreview)
-@Serializable data class UserLoginScreen (val showEmailPopUp : Boolean)
 @Serializable data class MoreMedia (val category : Category)
 @Serializable object CategoryScreen

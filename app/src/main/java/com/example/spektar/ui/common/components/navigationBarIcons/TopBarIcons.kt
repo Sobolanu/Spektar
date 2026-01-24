@@ -5,16 +5,17 @@ import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.automirrored.outlined.ArrowBack
 import androidx.compose.material.icons.filled.AccountCircle
 import androidx.compose.material.icons.outlined.AccountCircle
+import com.example.spektar.R
 import com.example.spektar.ui.common.components.NavigationItem
 
 internal val topProfileIcon = NavigationItem(
-    title = "Profile",
+    title = R.string.account,
     selectedIcon = Icons.Filled.AccountCircle,
     unselectedIcon = Icons.Outlined.AccountCircle
 )
 
 internal val topBackArrowIcon = NavigationItem(
-    title = "Back arrow",
+    title = R.string.back_arrow,
     selectedIcon = Icons.AutoMirrored.Filled.ArrowBack,
     unselectedIcon = Icons.AutoMirrored.Outlined.ArrowBack
 )

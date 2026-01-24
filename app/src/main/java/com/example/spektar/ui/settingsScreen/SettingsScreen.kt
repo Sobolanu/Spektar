@@ -7,8 +7,10 @@ this screen would need a ViewModel of some kind to survive config changes
 remember, the ViewModel should be responsible for preparing the data for loading stuff!
  */
 
-import android.app.Activity
 import androidx.activity.compose.BackHandler
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -22,10 +24,13 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowForwardIos
+import androidx.compose.material.icons.filled.Check
 import androidx.compose.material3.Button
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.DrawerValue
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -37,18 +42,13 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.rememberDrawerState
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.example.spektar.R
-import com.example.spektar.ui.common.LocaleHelper
 import com.example.spektar.ui.common.components.BottomBar
 import com.example.spektar.ui.common.components.SettingsScreenCategory
 import com.example.spektar.ui.common.lists.SettingsScreenCategories
@@ -56,40 +56,37 @@ import kotlinx.coroutines.launch
 
 @Composable
 fun SettingsScreen(
+    onEvent: (SettingsEvent) -> Unit,
     navigateToScreen: (Int) -> Unit,
     onBottomBarItemClick: (Int) -> Unit,
     selectedIcon: Int,
-    viewModel: SettingsViewModel
+    state: LanguageState
 ) {
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
     val scope = rememberCoroutineScope()
 
-    ModalNavigationDrawer(
-        drawerState = drawerState,
-        drawerContent = {
-            LanguageDrawerDemo(
-                viewModel = viewModel,
-                onDismiss = {
-                scope.launch {
-                    drawerState.close()
-                }
-            })
-        }
-    ) {
-        Scaffold(
-            bottomBar = {
-                BottomBar(
-                    selectedIcon = selectedIcon,
-                    onBottomBarItemClick = onBottomBarItemClick
+    Box(modifier = Modifier.fillMaxSize()) {
+        ModalNavigationDrawer(
+            drawerState = drawerState,
+            drawerContent = {
+                LanguageDrawerDemo(
+                    onEvent,
+                    state.selectedLanguage,
+                    onDismiss = { scope.launch { drawerState.close() } }
                 )
-            },
-            topBar = { SettingsScreenTopBar() },
-            contentWindowInsets = WindowInsets(left = 8.dp)
-        ) { paddingValues ->
-            Box(modifier = Modifier.fillMaxSize()) {
+            }
+        ) {
+            Scaffold(
+                bottomBar = {
+                    BottomBar(
+                        selectedIcon = selectedIcon,
+                        onBottomBarItemClick = onBottomBarItemClick
+                    )
+                },
+                topBar = { SettingsScreenTopBar() },
+                contentWindowInsets = WindowInsets(left = 8.dp)
+            ) { paddingValues ->
                 Column(
-                    verticalArrangement = Arrangement.Top,
-                    horizontalAlignment = Alignment.CenterHorizontally,
                     modifier = Modifier
                         .padding(paddingValues)
                         .fillMaxSize()
@@ -109,6 +106,24 @@ fun SettingsScreen(
                     }
                 }
             }
+
+            AnimatedVisibility(
+                visible = state.phase != LanguageChangePhase.Idle,
+                enter = fadeIn(),
+                exit = fadeOut()
+            ) {
+                Box(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .background(MaterialTheme.colorScheme.background.copy(alpha = 0.8f)),
+                    contentAlignment = Alignment.Center
+                ) {
+                    if (state.phase == LanguageChangePhase.FadeIn || state.phase == LanguageChangePhase.Changing) {
+                        CircularProgressIndicator()
+                    }
+                }
+            }
+
         }
     }
 
@@ -116,6 +131,7 @@ fun SettingsScreen(
         scope.launch { drawerState.close() }
     }
 }
+
 
 
 @Composable
@@ -147,7 +163,9 @@ fun SettingsCategory(
                         text = stringResource(index.second),
                         style = MaterialTheme.typography.bodyLarge
                     )
+
                     Spacer(modifier = Modifier.weight(1f))
+
                     Icon(
                         imageVector = Icons.AutoMirrored.Filled.ArrowForwardIos,
                         contentDescription = stringResource(index.second),
@@ -160,12 +178,10 @@ fun SettingsCategory(
 
 @Composable
 fun LanguageDrawerDemo(
-    viewModel : SettingsViewModel,
+    onEvent: (SettingsEvent) -> Unit,
+    selectedLanguage: String,
     onDismiss: () -> Unit
 ) {
-    val scope = rememberCoroutineScope()
-    val context = LocalContext.current
-
     val languages = listOf(
         "en" to stringResource(R.string.english),
         "sr" to stringResource(R.string.serbian)
@@ -187,19 +203,32 @@ fun LanguageDrawerDemo(
         Spacer(modifier = Modifier.height(12.dp))
 
         languages.forEach { (code, label) ->
-            Text(
-                text = label,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .clickable {
-                        scope.launch {
-                            // change language here
-                            viewModel.saveLanguagePreferences(code)
+            Row(
+                horizontalArrangement = Arrangement.Start,
+                verticalAlignment = Alignment.CenterVertically,
+
+                modifier = Modifier.padding(4.dp)
+            ) {
+                Text(
+                    text = label,
+                    modifier = Modifier
+                        .weight(1f)
+                        .clickable {
+                            if (code != selectedLanguage) {
+                                onEvent(SettingsEvent.SelectLanguage(code))
+                                onDismiss()
+                            }
                         }
-                        onDismiss()
-                    }
-                    .padding(vertical = 8.dp)
-            )
+                        .padding(vertical = 8.dp)
+                )
+
+                if(selectedLanguage == code) {
+                    Icon(
+                        imageVector = Icons.Filled.Check,
+                        contentDescription = stringResource(R.string.current_language),
+                    )
+                }
+            }
         }
     }
 }

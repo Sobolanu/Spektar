@@ -81,7 +81,7 @@ fun UserLoginScreen(
             ) {
                 Text(
                     text = stringResource(R.string.app_greeting),
-                    style = MaterialTheme.typography.headlineLarge,
+                    style = MaterialTheme.typography.headlineMedium,
                 )
             }
         }

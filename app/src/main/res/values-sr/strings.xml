@@ -30,4 +30,9 @@
     <string name="languages">Jezici</string>
     <string name="english">Engleski</string>
     <string name="serbian">Srpski</string>
+    <string name="home">Home</string>
+    <string name="questionnaire">Upitnik</string>
+    <string name="settings">Postavke</string>
+    <string name="back_arrow">Strelica unazad</string>
+    <string name="current_language">Trenutni jezik</string>
 </resources>

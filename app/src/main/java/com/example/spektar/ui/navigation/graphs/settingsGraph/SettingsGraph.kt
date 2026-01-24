@@ -9,6 +9,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.navigation
 import com.example.spektar.data.local.DataStore.dataStore
 import com.example.spektar.ui.HomeScreen
+import com.example.spektar.ui.common.AppLocaleManager
 import com.example.spektar.ui.navigation.graphs.common.AppErrorScreen
 import com.example.spektar.ui.navigation.graphs.common.ProfileScreen
 import com.example.spektar.ui.navigation.utils.safeNavigate
@@ -30,8 +31,10 @@ fun NavGraphBuilder.SettingsGraph(
             val context = LocalContext.current
             val settingsViewModel : SettingsViewModel = viewModel<SettingsViewModel> (
                 viewModelStoreOwner = backStackEntry,
-                factory = SettingsViewModelFactory(context.dataStore)
+                factory = SettingsViewModelFactory(AppLocaleManager(context))
             )
+
+            val state = settingsViewModel.settingState.collectAsStateWithLifecycle()
 
             SettingsScreen(
                 navigateToScreen = { id ->
@@ -47,7 +50,10 @@ fun NavGraphBuilder.SettingsGraph(
 
                 onBottomBarItemClick = onBottomBarClick,
                 selectedIcon = selectedIconProvider(),
-                viewModel = settingsViewModel // only time i'll do this
+                onEvent = { event ->
+                    settingsViewModel.onEvent(event)
+                },
+                state = state.value
             )
         }
 

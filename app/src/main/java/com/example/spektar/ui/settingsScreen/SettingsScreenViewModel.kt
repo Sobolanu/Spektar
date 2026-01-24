@@ -1,38 +1,79 @@
 package com.example.spektar.ui.settingsScreen
 
-import androidx.datastore.core.DataStore
-import androidx.datastore.preferences.core.Preferences
-import androidx.datastore.preferences.core.edit
-import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.map
+import androidx.lifecycle.viewModelScope
+import com.example.spektar.ui.common.AppLocaleManager
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.launch
+
+enum class LanguageChangePhase {
+    Idle, FadeIn, Changing, FadeOut
+}
+
+data class LanguageState(
+    val selectedLanguage: String = "en",
+    val phase: LanguageChangePhase = LanguageChangePhase.Idle
+)
+
 
 class SettingsViewModel(
-    private val dataStore: DataStore<Preferences>
+    private val appLocaleManager: AppLocaleManager
 ) : ViewModel() {
-    object PreferencesKeys { val LANGUAGE = stringPreferencesKey("language") }
-    val savedLanguage: Flow<String> = dataStore.data.map { prefs ->
-        prefs[PreferencesKeys.LANGUAGE] ?: "en"
+    private val _settingState = MutableStateFlow(LanguageState())
+    val settingState: StateFlow<LanguageState> = _settingState
+
+    init {
+        loadInitialLanguage()
     }
 
-    suspend fun saveLanguagePreferences(lang: String) {
-        dataStore.edit { prefs ->
-            prefs[PreferencesKeys.LANGUAGE] = lang
+    fun onEvent(event: SettingsEvent) {
+        when (event) {
+            is SettingsEvent.SelectLanguage -> {
+                viewModelScope.launch {
+                    // 1: fade in
+                    _settingState.value = _settingState.value.copy(phase = LanguageChangePhase.FadeIn)
+                    delay(300) // let fade-in animation run
+
+                    // 2: trigger language change
+                    _settingState.value = _settingState.value.copy(phase = LanguageChangePhase.Changing)
+                    changeLanguage(event.language)
+                    // or appLocaleManager.changeLanguage(event.language)
+
+                    // 3: reload state
+                    _settingState.value = _settingState.value.copy(
+                        selectedLanguage = event.language,
+                        phase = LanguageChangePhase.FadeOut
+                    )
+
+                    delay(300) // let fade-out animation run
+                    _settingState.value = _settingState.value.copy(phase = LanguageChangePhase.Idle)
+                }
+            }
         }
+    }
+
+    private fun loadInitialLanguage() {
+        val currentLanguage = appLocaleManager.getLanguageCode()
+        _settingState.value = _settingState.value.copy(selectedLanguage = currentLanguage)
+    }
+
+    fun changeLanguage(languageCode: String) {
+        appLocaleManager.changeLanguage(languageCode)
+        _settingState.value = _settingState.value.copy(selectedLanguage = languageCode)
     }
 }
 
-
 @Suppress("UNCHECKED_CAST")
 class SettingsViewModelFactory(
-    private val dataStore: DataStore<Preferences>
+    private val appLocaleManager: AppLocaleManager
 ) : ViewModelProvider.Factory {
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
         if (modelClass.isAssignableFrom(SettingsViewModel::class.java)) {
             return SettingsViewModel(
-                dataStore
+                appLocaleManager
             ) as T
         }
         throw IllegalArgumentException("Unknown ViewModel class")

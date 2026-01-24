@@ -15,6 +15,10 @@ android {
         version = release(36)
     }
 
+    androidResources {
+        generateLocaleConfig = true
+    }
+
     defaultConfig {
         applicationId = "com.example.spektar"
         minSdk = 26
@@ -93,6 +97,7 @@ dependencies {
     implementation(libs.androidx.room.ktx)
     implementation(libs.androidx.junit.ktx)
     implementation(libs.androidx.monitor)
+    implementation(libs.androidx.appcompat)
     ksp(libs.androidx.room.compiler)
 
     // Datastore

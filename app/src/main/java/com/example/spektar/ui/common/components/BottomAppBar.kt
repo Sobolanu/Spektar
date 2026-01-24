@@ -11,6 +11,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import com.example.spektar.ui.common.components.navigationBarIcons.bottomIcons
 
@@ -39,7 +40,7 @@ fun BottomBar(
 
                 label = {
                     Text(
-                        text = item.title,
+                        text = stringResource(item.title),
                         textAlign = TextAlign.Center,
                         style = MaterialTheme.typography.labelLarge
                     )
@@ -50,7 +51,7 @@ fun BottomBar(
                         imageVector = if(index == selectedItemIndex) {
                             item.selectedIcon
                         } else item.unselectedIcon,
-                        contentDescription = item.title
+                        contentDescription = stringResource(item.title)
                     )
                 },
             )

@@ -19,12 +19,18 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.rememberNavController
 import com.example.spektar.ui.common.ObserveAsEvents
 import com.example.spektar.ui.common.SnackbarController
+import com.example.spektar.ui.common.components.BottomBar
 import com.example.spektar.ui.navigation.bottomBarNavigation.bottomBarNavigation
 import com.example.spektar.ui.navigation.graphs.authGraph.AuthGraph
 import com.example.spektar.ui.navigation.graphs.authGraph.UserLoginScreen
 import com.example.spektar.ui.navigation.graphs.categoryGraph.CategoryGraph
+import com.example.spektar.ui.navigation.graphs.categoryGraph.CategoryScreen
+import com.example.spektar.ui.navigation.graphs.categoryGraph.MoreMedia
 import com.example.spektar.ui.navigation.graphs.common.CommonGraph
+import com.example.spektar.ui.navigation.graphs.common.ProfileScreen
 import com.example.spektar.ui.navigation.graphs.settingsGraph.SettingsGraph
+import com.example.spektar.ui.navigation.graphs.settingsGraph.SettingsScreen
+import com.example.spektar.ui.navigation.graphs.settingsGraph.ThemeScreen
 import com.example.spektar.ui.settingsScreen.DataStoreViewModel
 import kotlinx.coroutines.launch
 
@@ -60,6 +66,7 @@ fun SpektarNavigation() {
 
     // used to specify the currently selected icon in the app's bottom bar
     var selectedIcon by remember { mutableIntStateOf(0) }
+
     // start will be UserLoginScreen(false)
     Scaffold(
         snackbarHost = {
