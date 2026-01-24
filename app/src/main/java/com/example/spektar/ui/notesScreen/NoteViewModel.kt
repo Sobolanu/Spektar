@@ -1,9 +1,12 @@
 package com.example.spektar.ui.notesScreen
 
+import android.content.Context
 import com.example.spektar.data.model.roomModels.MediaId
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
+import androidx.room.Room
+import com.example.spektar.data.local.NoteDatabase
 import com.example.spektar.data.model.roomModels.Note
 import com.example.spektar.ui.notesScreen.NoteState
 import com.example.spektar.ui.settingsScreen.SortType
@@ -125,6 +128,19 @@ class NoteViewModel(
 }
 
 @Suppress("UNCHECKED_CAST")
+class NoteViewModelFactory(private val context: Context) : ViewModelProvider.Factory {
+    override fun <T : ViewModel> create(modelClass: Class<T>): T {
+        val db = Room.databaseBuilder(
+            context.applicationContext,
+            NoteDatabase::class.java,
+            "notes.db"
+        ).build()
+        return NoteViewModel(db.noteDao, db.mediaDao) as T
+    }
+}
+
+/*
+@Suppress("UNCHECKED_CAST")
 class NoteViewModelFactory(
     private val noteDao: NoteDao,
     private val mediaDao: MediaDao
@@ -139,3 +155,4 @@ class NoteViewModelFactory(
         throw IllegalArgumentException("Unknown ViewModel class")
     }
 }
+ */

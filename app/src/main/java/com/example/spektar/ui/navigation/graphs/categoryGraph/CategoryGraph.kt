@@ -6,36 +6,52 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.platform.LocalContext
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.navigation
 import androidx.navigation.toRoute
+import androidx.room.Room
+import androidx.test.core.app.ApplicationProvider.getApplicationContext
+import com.example.spektar.data.local.NoteDatabase
+import com.example.spektar.data.local.dao.MediaDao
+import com.example.spektar.data.local.dao.NoteDao
 import com.example.spektar.data.model.media.MediaPreview
 import com.example.spektar.data.model.roomModels.MediaId
+import com.example.spektar.data.remote.AccountServiceImpl
+import com.example.spektar.data.remote.MediaServiceImpl
 import com.example.spektar.domain.model.SpecificMedia
 import com.example.spektar.ui.mediaScreens.Category
 import com.example.spektar.ui.mediaScreens.CategoryScreen
 import com.example.spektar.ui.mediaScreens.MediaDetailsScreen
 import com.example.spektar.ui.mediaScreens.MediaViewModel
+import com.example.spektar.ui.mediaScreens.MediaViewModelFactory
 import com.example.spektar.ui.mediaScreens.MoreMedia
 import com.example.spektar.ui.navigation.graphs.common.ProfileScreen
 import com.example.spektar.ui.navigation.utils.navTypeOf
 import com.example.spektar.ui.navigation.utils.safeNavigate
 import com.example.spektar.ui.notesScreen.NoteScreen
 import com.example.spektar.ui.notesScreen.NoteViewModel
+import com.example.spektar.ui.notesScreen.NoteViewModelFactory
+import java.security.AccessController.getContext
+import kotlin.getValue
 import kotlin.reflect.typeOf
 
 fun NavGraphBuilder.CategoryGraph(
     navController: NavController,
-    mediaViewModel: MediaViewModel,
     selectedIconProvider: () -> Int,
     onBottomBarClick: (Int) -> Unit,
-    noteViewModel: NoteViewModel,
 ) {
     navigation<Media>(startDestination = CategoryScreen) {
-        composable<CategoryScreen> {
+        composable<CategoryScreen> { backStackEntry ->
+            val mediaViewModel : MediaViewModel = viewModel<MediaViewModel> (
+                viewModelStoreOwner = backStackEntry,
+                factory = MediaViewModelFactory(MediaServiceImpl(), AccountServiceImpl()),
+            )
             val state = mediaViewModel.uiState.collectAsState()
+
             CategoryScreen(
                 onEvent = { event ->
                     mediaViewModel.onEvent(event)
@@ -67,7 +83,12 @@ fun NavGraphBuilder.CategoryGraph(
                 imageUrl = args.partialMediaData.imageUrl
             )) }
 
-            LaunchedEffect(args.partialMediaData) {
+            val mediaViewModel : MediaViewModel = viewModel<MediaViewModel> (
+                viewModelStoreOwner = backStackEntry,
+                factory = MediaViewModelFactory(MediaServiceImpl(), AccountServiceImpl()),
+            )
+
+            LaunchedEffect(args.partialMediaData) { // best loaded in init{} block?
                 state = mediaViewModel.obtainMediaById(args.partialMediaData)
             }
 
@@ -85,6 +106,12 @@ fun NavGraphBuilder.CategoryGraph(
             typeMap = mapOf(typeOf<Category>() to navTypeOf<Category>())
         ) { backStackEntry ->
             val args = backStackEntry.toRoute<MoreMedia>()
+
+            val mediaViewModel : MediaViewModel = viewModel<MediaViewModel> (
+                viewModelStoreOwner = backStackEntry,
+                factory = MediaViewModelFactory(MediaServiceImpl(), AccountServiceImpl()),
+            )
+
             val state = mediaViewModel.uiState.collectAsState()
 
             MoreMedia(
@@ -105,8 +132,14 @@ fun NavGraphBuilder.CategoryGraph(
             typeMap = mapOf(typeOf<MediaId>() to navTypeOf<MediaId>())
         ) { backStackEntry ->
             val args = backStackEntry.toRoute<NoteScreen>() // gets id
+            val context = LocalContext.current
 
-            LaunchedEffect(args.id) {
+            val noteViewModel : NoteViewModel = viewModel<NoteViewModel> (
+                viewModelStoreOwner = backStackEntry,
+                factory = NoteViewModelFactory(context)
+            )
+
+            LaunchedEffect(args.id) { // // best loaded in init{} block?
                 noteViewModel.setMedia(args.id)
             }
 

@@ -5,6 +5,7 @@ import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
 import androidx.navigation.toRoute
+import com.example.spektar.data.model.User
 import com.example.spektar.ui.common.ErrorScreen
 import com.example.spektar.ui.navigation.utils.navTypeOf
 import com.example.spektar.ui.profileScreen.ProfileScreen
@@ -13,22 +14,22 @@ import kotlin.reflect.typeOf
 
 fun NavGraphBuilder.CommonGraph(
     navController : NavController,
-    profileViewModel: ProfileViewModel,
     selectedIconProvider: () -> Int,
     onBottomBarClick: (Int) -> Unit
 ) {
     composable<ProfileScreen> {
-        val state = profileViewModel.state.collectAsState()
+        // integrate profileViewModel: ProfileViewModel,
+        val state = User() // temporary
 
         ProfileScreen(
             onBottomBarItemClick = onBottomBarClick,
             selectedIcon = selectedIconProvider(),
 
             onEvent = { event ->
-                profileViewModel.onEvent((event))
+                // profileViewModel.onEvent((event)) // temporary
             },
 
-            state = state.value
+            state = state // temporary
         )
     }
 

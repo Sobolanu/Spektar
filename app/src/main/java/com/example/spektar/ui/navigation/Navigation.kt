@@ -9,15 +9,12 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.rememberNavController
-import com.example.spektar.ui.mediaScreens.MediaViewModel
 import com.example.spektar.ui.navigation.bottomBarNavigation.bottomBarNavigation
 import com.example.spektar.ui.navigation.graphs.authGraph.AuthGraph
 import com.example.spektar.ui.navigation.graphs.authGraph.UserLoginScreen
 import com.example.spektar.ui.navigation.graphs.categoryGraph.CategoryGraph
 import com.example.spektar.ui.navigation.graphs.common.CommonGraph
 import com.example.spektar.ui.navigation.graphs.settingsGraph.SettingsGraph
-import com.example.spektar.ui.notesScreen.NoteViewModel
-import com.example.spektar.ui.profileScreen.ProfileViewModel
 import com.example.spektar.ui.settingsScreen.DataStoreViewModel
 
 /*
@@ -27,10 +24,7 @@ i don't have time to migrate to Navigation3) type-safe navigation, which is also
 
 @Composable
 fun SpektarNavigation(
-    mediaViewModel: MediaViewModel,
     dataStoreViewModel: DataStoreViewModel,
-    noteViewModel: NoteViewModel,
-    profileViewModel: ProfileViewModel
 ) {
     val navController = rememberNavController()
     // used to specify the currently selected icon in the app's bottom bar
@@ -46,14 +40,10 @@ fun SpektarNavigation(
     ) {
         AuthGraph(
             navController = navController,
-            // this has clean viewModels and stuff, rest don't cause hard to implement :(
         )
 
         CategoryGraph(
             navController = navController,
-            mediaViewModel = mediaViewModel,
-            noteViewModel = noteViewModel,
-
             onBottomBarClick = { index -> // where selectedIcon gets changed
                 if(selectedIcon != index) {
                     selectedIcon = index
@@ -77,7 +67,6 @@ fun SpektarNavigation(
 
         CommonGraph(
             navController = navController,
-            profileViewModel = profileViewModel,
             onBottomBarClick = { index ->
                 if(selectedIcon != index) {
                     selectedIcon = index

@@ -8,6 +8,8 @@ import com.example.spektar.ui.mediaScreens.MediaUiData
 import com.example.spektar.data.repository.globalCategoryList
 import com.example.spektar.domain.model.services.AccountService
 import com.example.spektar.domain.model.services.MediaService
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
@@ -36,14 +38,14 @@ class MediaViewModel (
     fun onEvent(event: MediaEvent) {
         when(event) {
             is MediaEvent.ObtainMediaById -> {
-                viewModelScope.launch {
+                CoroutineScope(Dispatchers.IO).launch {
                     val result = obtainMediaById(event.media)
                     _media.value = result
                 }
             }
 
             is MediaEvent.SearchForMedia -> {
-                viewModelScope.launch {
+                CoroutineScope(Dispatchers.IO).launch {
                     val result = mediaService.searchByName(event.name)
                     _search.value = result
                 }
@@ -52,7 +54,7 @@ class MediaViewModel (
     }
 
     init {
-        viewModelScope.launch {
+        CoroutineScope(Dispatchers.IO).launch {
             val categories = mediaService.getAllCategories()
 
             accountService.sessionFlow.collect { session ->
