@@ -33,22 +33,13 @@ data class MediaLookupRow(
     val media_name: String
 )
 
-
 class MediaServiceImpl : MediaService {
-
-    // DO NOT UNDER ANY CIRCUMSTANCES GET RID OF THE NON-EXPERIMENTAL FUNCTIONS
-    // WITHOUT THEM THE CODE BREAKS FOR SOME REASON AND I DON'T KNOW HOW TO FIX IT
-    override suspend fun fillCategory(categoryName: String) : List<MediaPreview> {
-        return MediaRepository.getAllMediaInCategory(categoryName)
-    }
-
     override suspend fun searchByName(name: String): List<MediaPreview> {
         val data = SupabaseClientProvider.db
             .from("media_lookup")
             .select(Columns.list("id_uuid", "image_url", "media_name")) {
                 filter {
-                    // replace "Crime and Punishment" with name.
-                    textSearch("media_name", "Crime And Punishment", TextSearchType.PHRASETO)
+                    textSearch("media_name", name, TextSearchType.PHRASETO)
                 }
             }
             .decodeList<MediaLookupRow>()
@@ -57,7 +48,7 @@ class MediaServiceImpl : MediaService {
     }
 
 
-    override suspend fun EXPERIMENTALfillCategory(
+    override suspend fun fillCategory(
         accessToken: String,
         userId: String,
         categoryName: String,
@@ -78,7 +69,7 @@ class MediaServiceImpl : MediaService {
 
         if(recommendedMedia != null && categoryIndex != -1) {
             val mediaIds = recommendedMedia.results[categoryIndex].map { it.media_id }
-            val mediaData = MediaRepository.EXPERIMENTALgetAllMediaInCategory(categoryName, mediaIds)
+            val mediaData = MediaRepository.getAllMediaInCategory(categoryName, mediaIds)
 
             mediaData.forEachIndexed { index, preview ->
                 preview.copy(id_uuid = mediaIds[index])
@@ -145,7 +136,7 @@ class MediaServiceImpl : MediaService {
 
                 contentType(ContentType.Application.Json)
                 setBody(Json.encodeToString(payload))
-                println("AFTER setBody, payload.id=${payload.id}")
+                // println("AFTER setBody, payload.id=${payload.id}")
             }
 
             val bodyText = resp.bodyAsText()

@@ -22,6 +22,7 @@ import androidx.compose.material.icons.filled.AddCircleOutline
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardColors
 import androidx.compose.material3.CenterAlignedTopAppBar
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -64,7 +65,7 @@ fun CategoryScreen(
     onMoreClick: (Category) -> Unit,
     onBottomBarItemClick: (Int) -> Unit,
     selectedIcon: Int,
-    state: MediaUiData
+    state: MediaUiState
 ) {
     val scrollBehavior = enterAlwaysScrollBehavior()
     var showSearchDialog by remember {mutableStateOf(false)}
@@ -110,7 +111,7 @@ fun CategoryScreen(
 fun CategoryScreenContent(
     onImageClick: (MediaDetails) -> Unit,
     onMoreClick: (Category) -> Unit,
-    uiState: MediaUiData,
+    uiState: MediaUiState,
     modifier: Modifier = Modifier,
 ) {
     val categories = uiState.categories

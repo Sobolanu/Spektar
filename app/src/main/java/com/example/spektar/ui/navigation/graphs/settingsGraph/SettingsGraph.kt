@@ -11,7 +11,7 @@ import com.example.spektar.ui.navigation.utils.safeNavigate
 import com.example.spektar.ui.settingsScreen.Access
 import com.example.spektar.ui.settingsScreen.DataStoreViewModel
 import com.example.spektar.ui.settingsScreen.SettingsScreen
-import com.example.spektar.ui.settingsScreen.themeScreen.ThemeScreen
+import com.example.spektar.ui.settingsScreen.ThemeScreen
 
 fun NavGraphBuilder.SettingsGraph(
     navController : NavController,

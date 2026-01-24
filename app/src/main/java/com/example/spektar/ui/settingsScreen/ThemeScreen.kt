@@ -1,4 +1,4 @@
-package com.example.spektar.ui.settingsScreen.themeScreen
+package com.example.spektar.ui.settingsScreen
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
@@ -26,7 +26,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.example.spektar.R
-import com.example.spektar.ui.settingsScreen.DataStoreViewModel
 import com.example.spektar.ui.common.components.BottomBar
 import kotlinx.coroutines.launch
 import com.example.spektar.ui.common.components.SettingsSubScreenItem

@@ -3,9 +3,11 @@ package com.example.spektar.ui.userAuthScreens.loginScreen
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
-import com.example.spektar.ui.userAuthScreens.states.SignInRequest
 import com.example.spektar.domain.model.services.AccountService
 import com.example.spektar.ui.userAuthScreens.AuthEvent
+import com.example.spektar.ui.userAuthScreens.states.SignInState
+import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.update
@@ -13,27 +15,31 @@ import kotlinx.coroutines.launch
 
 // introduce login with username?
 class SignInViewModel(
-    private val accountService: AccountService
+    private val accountService: AccountService,
+    private val ioDispatcher: CoroutineDispatcher = Dispatchers.IO
 ) : ViewModel() {
-     private val _signInRequest = MutableStateFlow(SignInRequest())
-     val signInRequest: StateFlow<SignInRequest> get() = _signInRequest
+     private val _signInState = MutableStateFlow(SignInState())
+     val signInState: StateFlow<SignInState> get() = _signInState
 
-    fun onEvent(event : AuthEvent) { // should this be a suspend fun?
+    fun onEvent(event : AuthEvent) {
         when(event) {
             is AuthEvent.SetEmail -> {
-                _signInRequest.update { it.copy(
+                _signInState.update { it.copy(
                     email = event.newEmail
                 )}
             }
+
             is AuthEvent.SetPassword -> {
-                _signInRequest.update { it.copy(
+                _signInState.update { it.copy(
                     password = event.newPassword
                 )}
             }
+
             is AuthEvent.SignIn -> {
-                viewModelScope.launch {
-                    accountService.signIn(signInRequest.value)
+                viewModelScope.launch(ioDispatcher) {
+                    accountService.signIn(signInState.value)
                 }
+
             }
 
             is AuthEvent.SetUsername -> { } // probably nothing too though i will add log-in via username

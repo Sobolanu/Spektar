@@ -7,8 +7,7 @@ import com.example.spektar.domain.model.SpecificMedia
 import com.example.spektar.ui.mediaScreens.Category
 
 interface MediaService {
-    suspend fun fillCategory(categoryName: String): List<MediaPreview>
-    suspend fun EXPERIMENTALfillCategory(accessToken: String, userId: String, categoryName: String): List<MediaPreview>?
+    suspend fun fillCategory(accessToken: String, userId: String, categoryName: String): List<MediaPreview>?
     fun getAllCategories() : List<Category>
 
     suspend fun searchByName(name: String) : List<MediaPreview>

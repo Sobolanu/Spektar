@@ -4,14 +4,17 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import com.example.spektar.data.model.media.MediaPreview
 import com.example.spektar.domain.model.SpecificMedia
-import com.example.spektar.ui.mediaScreens.MediaUiData
 import com.example.spektar.data.repository.globalCategoryList
 import com.example.spektar.domain.model.services.AccountService
 import com.example.spektar.domain.model.services.MediaService
-import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 
 
@@ -25,27 +28,34 @@ import kotlinx.coroutines.launch
 
 class MediaViewModel (
     private val mediaService: MediaService,
-    private val accountService: AccountService
+    private val accountService: AccountService,
+    private val ioDispatcher: CoroutineDispatcher = Dispatchers.IO
 ) : ViewModel() {
     private val _search = MutableStateFlow(emptyList<MediaPreview>())
-
-    val search: StateFlow<List<MediaPreview>> get() = _search
-    private val _uiState = MutableStateFlow(MediaUiData())
-    val uiState: StateFlow<MediaUiData> get() = _uiState
     private val _media = MutableStateFlow<SpecificMedia?>(null)
-    val media: StateFlow<SpecificMedia?> = _media // combine this into uiState some time
+    private val _categories = MutableStateFlow<List<Category>>(emptyList())
+    private val _recommendedMedia = MutableStateFlow<List<List<MediaPreview>?>>(List(4) { emptyList() })
+
+    val uiState = combine(_search, _categories, _recommendedMedia, _media) { search, categories, recommendedMedia, media ->
+        MediaUiState(
+            medias = recommendedMedia,
+            searchMedias = search,
+            categories = categories,
+            media = media,
+        )
+    }.stateIn(scope = viewModelScope, started = SharingStarted.WhileSubscribed(5000), initialValue = MediaUiState())
 
     fun onEvent(event: MediaEvent) {
         when(event) {
             is MediaEvent.ObtainMediaById -> {
-                CoroutineScope(Dispatchers.IO).launch {
+                viewModelScope.launch(ioDispatcher) {
                     val result = obtainMediaById(event.media)
                     _media.value = result
                 }
             }
 
             is MediaEvent.SearchForMedia -> {
-                CoroutineScope(Dispatchers.IO).launch {
+                viewModelScope.launch(ioDispatcher) {
                     val result = mediaService.searchByName(event.name)
                     _search.value = result
                 }
@@ -54,23 +64,21 @@ class MediaViewModel (
     }
 
     init {
-        CoroutineScope(Dispatchers.IO).launch {
-            val categories = mediaService.getAllCategories()
+        viewModelScope.launch(ioDispatcher) {
+            _categories.value = mediaService.getAllCategories()
 
-            accountService.sessionFlow.collect { session ->
+            accountService.sessionFlow.collectLatest { session ->
                 if (session != null) {
                     val userId = accountService.retrieveUserId()
                     val recommendedMedia = globalCategoryList.map {
-                        mediaService.EXPERIMENTALfillCategory(
+                        mediaService.fillCategory(
                             session.accessToken,
                             userId,
                             it.mediaCategory.lowercase()
                         )
                     }
-                    _uiState.value = _uiState.value.copy(
-                        medias = recommendedMedia,
-                        categories = categories
-                    )
+
+                    _recommendedMedia.value = recommendedMedia
                 }
             }
         }

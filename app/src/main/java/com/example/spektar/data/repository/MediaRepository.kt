@@ -7,15 +7,7 @@ import io.github.jan.supabase.postgrest.query.Columns
 import io.github.jan.supabase.postgrest.query.filter.FilterOperator
 
 object MediaRepository {
-    // don't delete, deleting makes everything break and give me "session not found"
-    suspend fun getAllMediaInCategory(category: String): List<MediaPreview> {
-        return SupabaseClientProvider.db.from(category)
-            .select(Columns.list("id_uuid", "name", "imageUrl"))
-            .decodeList<MediaPreview>() // will return a list of SpecificMedia, where only the id_uuid, name and imageUrl properties are non-null.
-    }
-
-    // top-to-bottom order of database applies when it should listen to your mediaIds order
-    suspend fun EXPERIMENTALgetAllMediaInCategory(category: String, mediaIds: List<String>): List<MediaPreview> {
+    suspend fun getAllMediaInCategory(category: String, mediaIds: List<String>): List<MediaPreview> {
         val rows = SupabaseClientProvider.db.from(category)
             .select(Columns.list("id_uuid", "name", "imageUrl")) {
                 filter {

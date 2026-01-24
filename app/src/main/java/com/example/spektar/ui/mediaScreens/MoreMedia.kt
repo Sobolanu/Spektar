@@ -39,7 +39,7 @@ fun MoreMedia(
     onImageClick: (MediaDetails) -> Unit,
     selectedIcon: Int,
     category: Category,
-    state: MediaUiData
+    state: MediaUiState
 ) { // grid screen, use LazyVerticalGrid.
 
     val scrollBehavior = enterAlwaysScrollBehavior()

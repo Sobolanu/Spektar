@@ -2,7 +2,7 @@ package com.example.spektar.ui.userAuthScreens.states
 
 import java.io.File
 
-data class SignUpRequest(
+data class SignUpState(
     val username: String = "",
     val email: String = "",
     val password: String = "",

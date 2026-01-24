@@ -5,6 +5,9 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import com.example.spektar.data.model.User
 import com.example.spektar.domain.model.services.AccountService
+import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
@@ -17,7 +20,8 @@ import kotlinx.coroutines.launch
  */
 
 class ProfileViewModel(
-    private val accountService: AccountService
+    private val accountService: AccountService,
+    private val ioDispatcher: CoroutineDispatcher = Dispatchers.IO
 ) : ViewModel() {
 
     val _state = MutableStateFlow(User())
@@ -28,7 +32,7 @@ class ProfileViewModel(
     }
 
     fun loadData() {
-        viewModelScope.launch {
+        viewModelScope.launch(ioDispatcher) {
             accountService.sessionFlow.collect { session ->
                 if (session != null) {
                     val fullUserData = accountService.retrieveUserDataWithId(session.user!!.id) // i hope this always will pass
@@ -37,7 +41,7 @@ class ProfileViewModel(
                         id = fullUserData.id,
                         username = fullUserData.username,
                         email =  session.user!!.email!!,
-                        avatar_url = fullUserData.avatar_url?.let { accountService.makeUseableStorageUrl(it) },
+                        avatar_url = fullUserData.avatar_url?.let { accountService.storageUrl(it) },
                         accountCreationDate = session.user!!.createdAt.toString()
                     )
                 } else {
@@ -50,13 +54,13 @@ class ProfileViewModel(
     fun onEvent(event: ProfileEvent) {
         when(event) {
             ProfileEvent.deleteAccount -> {
-                viewModelScope.launch {
+                viewModelScope.launch(ioDispatcher) {
                     accountService.deleteAccount() // add confirmation?
                 }
             }
 
             ProfileEvent.resetPassword -> {
-                viewModelScope.launch {
+                viewModelScope.launch(ioDispatcher){
                     /* accountService.changePassword(
                         userId = TODO(),
                         oldPassword = " ", // obtained from state
@@ -70,13 +74,13 @@ class ProfileViewModel(
             }
 
             ProfileEvent.signOut -> {
-                viewModelScope.launch {
+                viewModelScope.launch(ioDispatcher) {
                     accountService.signOut()
                 }
             }
 
             is ProfileEvent.updateAvatar -> {
-                viewModelScope.launch {
+                viewModelScope.launch(ioDispatcher) {
                     accountService.updateAvatar(event.userId, event.newAvatar, event.username)
                 }
             }

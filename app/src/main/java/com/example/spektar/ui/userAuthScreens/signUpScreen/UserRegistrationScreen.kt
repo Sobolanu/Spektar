@@ -37,13 +37,12 @@ import androidx.compose.ui.unit.dp
 import coil.compose.rememberAsyncImagePainter
 import com.example.spektar.R
 import com.example.spektar.ui.userAuthScreens.AuthEvent
-import com.example.spektar.ui.userAuthScreens.states.SignUpRequest
+import com.example.spektar.ui.userAuthScreens.states.SignUpState
 import java.io.File
 
-// val file = uri.toFile()
 @Composable
 fun UserRegistrationScreen(
-    state: SignUpRequest,
+    state: SignUpState,
     onSignUp : () -> Unit,
     onEvent: (AuthEvent) -> Unit
 ) {
@@ -61,10 +60,10 @@ fun UserRegistrationScreen(
             val painter = if (selectedImageUri != null) {
                 rememberAsyncImagePainter(selectedImageUri)
             } else {
-                painterResource(R.drawable.ic_launcher_foreground) // add default gray profile
+                painterResource(R.drawable.blank_profile_picture) // add default gray profile
             }
 
-            ImagePicker(  // make this look nice
+            ImagePicker(
                 onImageSelected = { uri ->
                     selectedImageUri = uri
                     val image = context.copyUriToFile(uri)
@@ -83,7 +82,7 @@ fun UserRegistrationScreen(
                     contentDescription = "Username",
                 ) },
                 placeholder = { Text("Username") },
-                modifier = Modifier.padding(bottom = 12.dp)
+                modifier = Modifier.padding(vertical = 8.dp)
             )
 
             TextField(
@@ -96,7 +95,7 @@ fun UserRegistrationScreen(
                     contentDescription = "Email",
                 ) },
                 placeholder = { Text("Email") },
-                modifier = Modifier.padding(bottom = 12.dp)
+                modifier = Modifier.padding(vertical = 8.dp)
             )
 
             TextField(
@@ -109,7 +108,7 @@ fun UserRegistrationScreen(
                     contentDescription = "Password",
                 ) },
                 placeholder = { Text("Password") },
-                modifier = Modifier.padding(bottom = 12.dp)
+                modifier = Modifier.padding(vertical = 8.dp)
             )
 
             Row(
@@ -119,7 +118,7 @@ fun UserRegistrationScreen(
                 Button(
                     onClick = {
                         onEvent(AuthEvent.SignUp(state))
-                        onSignUp() // move to login screen and show an indicator for "email has been sent to your mail account, confirm to use the app"
+                        onSignUp()
                     }
                 ) {
                     Text(

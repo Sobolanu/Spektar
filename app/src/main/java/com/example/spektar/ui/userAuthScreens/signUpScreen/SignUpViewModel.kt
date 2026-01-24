@@ -5,47 +5,50 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import com.example.spektar.domain.model.services.AccountService
 import com.example.spektar.ui.userAuthScreens.AuthEvent
+import com.example.spektar.ui.userAuthScreens.states.SignUpState
+import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.launch
-import com.example.spektar.ui.userAuthScreens.states.SignUpRequest
 import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.launch
 
 class SignUpViewModel(
-    private val accountService: AccountService
+    private val accountService: AccountService,
+    private val ioDispatcher: CoroutineDispatcher = Dispatchers.IO
 ) : ViewModel() {
 
-    private val _signUpRequest = MutableStateFlow(SignUpRequest())
-    val signUpRequest: StateFlow<SignUpRequest> get() = _signUpRequest
+    private val _signUpState = MutableStateFlow(SignUpState())
+    val signUpState: StateFlow<SignUpState> get() = _signUpState
 
     fun onEvent(event: AuthEvent) {
         when(event) {
             is AuthEvent.SetAvatar -> {
-                _signUpRequest.update { it.copy(
+                _signUpState.update { it.copy(
                     avatar = event.avatar
                 )}
             }
             is AuthEvent.SetEmail -> {
-                _signUpRequest.update { it.copy(
+                _signUpState.update { it.copy(
                     email = event.newEmail
                 )}
             }
             is AuthEvent.SetPassword -> {
-                _signUpRequest.update { it.copy(
+                _signUpState.update { it.copy(
                     password = event.newPassword
                 )}
             }
             is AuthEvent.SetUsername -> {
-                _signUpRequest.update { it.copy(
+                _signUpState.update { it.copy(
                     username = event.newUsername
                 )}
             }
             is AuthEvent.SignUp -> {
-                viewModelScope.launch {
-                    accountService.signUp(signUpRequest.value)
+                viewModelScope.launch(ioDispatcher) {
+                    accountService.signUp(signUpState.value)
                 }
             }
-            is AuthEvent.SignIn -> { } // empty
+            is AuthEvent.SignIn -> { } // keep empty, as you cannot go to signIn from this ViewModel.
         }
     }
 }

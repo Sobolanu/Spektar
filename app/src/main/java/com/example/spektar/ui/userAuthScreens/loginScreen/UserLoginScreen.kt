@@ -41,14 +41,14 @@ import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import com.example.spektar.R
 import com.example.spektar.ui.userAuthScreens.AuthEvent
-import com.example.spektar.ui.userAuthScreens.states.SignInRequest
+import com.example.spektar.ui.userAuthScreens.states.SignInState
 import kotlinx.coroutines.delay
 
 @Composable
 fun UserLoginScreen(
     onSignInClick: () -> Unit,
     onTextClick: () -> Unit,
-    state : SignInRequest,
+    state : SignInState,
     showEmailPopUp : Boolean,
     onEvent: (AuthEvent) -> Unit
 ) {
@@ -157,7 +157,6 @@ fun UserLoginScreen(
                 )
 
                 Text(
-                    // figure out some nice color for this text to signify it's importance.
                     modifier = Modifier.clickable(
                         onClick = onTextClick
                     ),

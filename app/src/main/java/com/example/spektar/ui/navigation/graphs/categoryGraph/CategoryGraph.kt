@@ -1,23 +1,18 @@
 package com.example.spektar.ui.navigation.graphs.categoryGraph
 
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.platform.LocalContext
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.navigation
 import androidx.navigation.toRoute
-import androidx.room.Room
-import androidx.test.core.app.ApplicationProvider.getApplicationContext
-import com.example.spektar.data.local.NoteDatabase
-import com.example.spektar.data.local.dao.MediaDao
-import com.example.spektar.data.local.dao.NoteDao
 import com.example.spektar.data.model.media.MediaPreview
 import com.example.spektar.data.model.roomModels.MediaId
 import com.example.spektar.data.remote.AccountServiceImpl
@@ -35,8 +30,6 @@ import com.example.spektar.ui.navigation.utils.safeNavigate
 import com.example.spektar.ui.notesScreen.NoteScreen
 import com.example.spektar.ui.notesScreen.NoteViewModel
 import com.example.spektar.ui.notesScreen.NoteViewModelFactory
-import java.security.AccessController.getContext
-import kotlin.getValue
 import kotlin.reflect.typeOf
 
 fun NavGraphBuilder.CategoryGraph(
@@ -46,11 +39,15 @@ fun NavGraphBuilder.CategoryGraph(
 ) {
     navigation<Media>(startDestination = CategoryScreen) {
         composable<CategoryScreen> { backStackEntry ->
+            val parentEntry = remember(backStackEntry) {
+                navController.getBackStackEntry(Media::class)
+            }
+
             val mediaViewModel : MediaViewModel = viewModel<MediaViewModel> (
-                viewModelStoreOwner = backStackEntry,
+                viewModelStoreOwner = parentEntry,
                 factory = MediaViewModelFactory(MediaServiceImpl(), AccountServiceImpl()),
             )
-            val state = mediaViewModel.uiState.collectAsState()
+            val state = mediaViewModel.uiState.collectAsStateWithLifecycle()
 
             CategoryScreen(
                 onEvent = { event ->
@@ -107,12 +104,16 @@ fun NavGraphBuilder.CategoryGraph(
         ) { backStackEntry ->
             val args = backStackEntry.toRoute<MoreMedia>()
 
+            val parentEntry = remember(backStackEntry) {
+                navController.getBackStackEntry(Media::class)
+            }
+
             val mediaViewModel : MediaViewModel = viewModel<MediaViewModel> (
-                viewModelStoreOwner = backStackEntry,
+                viewModelStoreOwner = parentEntry,
                 factory = MediaViewModelFactory(MediaServiceImpl(), AccountServiceImpl()),
             )
 
-            val state = mediaViewModel.uiState.collectAsState()
+            val state = mediaViewModel.uiState.collectAsStateWithLifecycle()
 
             MoreMedia(
                 goToProfile = { navController.safeNavigate(ProfileScreen) },
@@ -143,7 +144,7 @@ fun NavGraphBuilder.CategoryGraph(
                 noteViewModel.setMedia(args.id)
             }
 
-            val state = noteViewModel.state.collectAsState()
+            val state = noteViewModel.state.collectAsStateWithLifecycle()
             NoteScreen(
                 state = state.value,
                 mediaId = args.id,
