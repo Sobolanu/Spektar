@@ -35,7 +35,6 @@ class MediaViewModel (
     private val _media = MutableStateFlow<SpecificMedia?>(null)
     private val _categories = MutableStateFlow<List<Category>>(emptyList())
     private val _recommendedMedia = MutableStateFlow<List<List<MediaPreview>?>>(List(4) { emptyList() })
-
     val uiState = combine(_search, _categories, _recommendedMedia, _media) { search, categories, recommendedMedia, media ->
         MediaUiState(
             medias = recommendedMedia,

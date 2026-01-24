@@ -21,20 +21,20 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContent {
-            val dataStoreViewModel : DataStoreViewModel by viewModels {
+            val dataStoreViewModel: DataStoreViewModel by viewModels {
                 DataStoreViewModelFactory(applicationContext.dataStore)
             }
 
-            val dynamicColorState by dataStoreViewModel.readThemeSettings("dynamic_color").collectAsState(initial = false)
-            val darkThemeState by dataStoreViewModel.readThemeSettings("dark_scheme").collectAsState(initial = isSystemInDarkTheme())
+            val dynamicColorState by dataStoreViewModel.readThemeSettings("dynamic_color")
+                .collectAsState(initial = false)
+            val darkThemeState by dataStoreViewModel.readThemeSettings("dark_scheme")
+                .collectAsState(initial = isSystemInDarkTheme())
 
             SpektarTheme(
                 dynamicColor = dynamicColorState,
                 darkTheme = darkThemeState
             ) {
-                SpektarNavigation(
-                    dataStoreViewModel = dataStoreViewModel
-                )
+                SpektarNavigation()
             }
         }
     }

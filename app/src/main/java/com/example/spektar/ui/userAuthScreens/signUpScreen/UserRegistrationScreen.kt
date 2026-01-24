@@ -33,6 +33,7 @@ import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import coil.compose.rememberAsyncImagePainter
 import com.example.spektar.R
@@ -81,7 +82,7 @@ fun UserRegistrationScreen(
                     Icons.Filled.AccountCircle,
                     contentDescription = "Username",
                 ) },
-                placeholder = { Text("Username") },
+                placeholder = { Text(stringResource(R.string.username)) },
                 modifier = Modifier.padding(vertical = 8.dp)
             )
 
@@ -94,7 +95,7 @@ fun UserRegistrationScreen(
                     Icons.Filled.Email,
                     contentDescription = "Email",
                 ) },
-                placeholder = { Text("Email") },
+                placeholder = { Text(stringResource(R.string.email)) },
                 modifier = Modifier.padding(vertical = 8.dp)
             )
 
@@ -107,7 +108,7 @@ fun UserRegistrationScreen(
                     Icons.Filled.Key,
                     contentDescription = "Password",
                 ) },
-                placeholder = { Text("Password") },
+                placeholder = { Text(stringResource(R.string.password)) },
                 modifier = Modifier.padding(vertical = 8.dp)
             )
 
@@ -122,7 +123,7 @@ fun UserRegistrationScreen(
                     }
                 ) {
                     Text(
-                        "Continue"
+                        stringResource(R.string.create_account)
                     )
 
                     Icon(

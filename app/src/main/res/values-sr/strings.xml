@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name"> Spektar </string>
+    <string name="dynamic_color_title">Dinamičke boje</string>
+    <string name="dynamic_color_info_box_text">Dinamičke boje povezuje boje sa pozadine telefona i aplikacijom. Dinamičke boje moraju biti upaljene u postavkama uređaja.</string>
+    <string name="light_dark_scheme_title">Svijetli/Tamni način</string>
+    <string name="light_dark_scheme_info_box_text"> Automatski način za aplikaciju je svijetli način, ali pri dodiru će se prebaciti na tamni način.</string>
+    <string name="theme_screen_top_bar_text">Tema i Pristupačnost</string>
+    <string name="settings_screen_title">Postavke</string>
+    <string name="reduce_motion_title">Smanjenje kretanja</string>
+    <string name="reduce_motion_info_box_text">Pri dodiru, animacije u aplikaciji će se poništiti da bi se poboljšalo iskustvo za osobe osjetljive na mučninu.</string>
+    <string name="app_greeting">Dobro došli u Spektar</string>
+    <string name="logo_description">Logo Spektar aplikacije.</string>
+    <string name="email">Email</string>
+    <string name="password">Šifra</string>
+    <string name="sign_in">Prijava</string>
+    <string name="registration_prompt">Nemate nalog?</string>
+    <string name="register">Napravite nalog.</string>
+    <string name="username">Korisničko ime</string>
+    <string name="create_account">Nastavi</string>
+    <string name="customization">Uređivanje</string>
+    <string name="theme_accessibility"><![CDATA[Tema & Pristupačnost]]></string>
+    <string name="language">Jezik</string>
+    <string name="account">Profil</string>
+    <string name="profile_settings">Postavke profila</string>
+    <string name="support">Podrška</string>
+    <string name="help_support"><![CDATA[Pomoć & Podrška]]></string>
+    <string name="donate">Donacije</string>
+    <string name="snackbar_unsaved_changes">Postavke nisu sačuvane. Sačuvati sada?</string>
+    <string name="languages">Jezici</string>
+    <string name="english">Engleski</string>
+    <string name="serbian">Srpski</string>
+</resources>

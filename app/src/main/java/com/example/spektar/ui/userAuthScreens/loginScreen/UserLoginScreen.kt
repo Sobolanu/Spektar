@@ -36,6 +36,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
@@ -79,7 +80,7 @@ fun UserLoginScreen(
                 exit = shrinkHorizontally() + fadeOut()
             ) {
                 Text(
-                    text = "Welcome to Spektar.",
+                    text = stringResource(R.string.app_greeting),
                     style = MaterialTheme.typography.headlineLarge,
                 )
             }
@@ -95,7 +96,7 @@ fun UserLoginScreen(
 
             Image(
                 painterResource(R.drawable.ic_launcher_background), // placeholder for now, add logo of the app
-                contentDescription = "Spektar logo."
+                contentDescription = stringResource(R.string.logo_description)
             )
 
             Spacer(
@@ -113,7 +114,7 @@ fun UserLoginScreen(
                         contentDescription = "Email",
                     )
                 },
-                placeholder = { Text("Email") },
+                placeholder = { Text(stringResource(R.string.email)) },
                 modifier = Modifier.padding(bottom = 12.dp)
             )
 
@@ -129,7 +130,7 @@ fun UserLoginScreen(
                         contentDescription = "Password",
                     )
                 },
-                placeholder = { Text("Password") },
+                placeholder = { Text(stringResource(R.string.password)) },
                 modifier = Modifier.padding(bottom = 12.dp)
             )
 
@@ -140,7 +141,7 @@ fun UserLoginScreen(
                 }
             ) {
                 Text(
-                    "Sign in"
+                    stringResource(R.string.sign_in)
                 )
             }
 
@@ -153,7 +154,7 @@ fun UserLoginScreen(
             ) {
                 Text(
                     modifier = Modifier.padding(end = 8.dp),
-                    text = "Don't have an account?"
+                    text = stringResource(R.string.registration_prompt)
                 )
 
                 Text(
@@ -161,7 +162,7 @@ fun UserLoginScreen(
                         onClick = onTextClick
                     ),
 
-                    text = "Register now."
+                    text = stringResource(R.string.register)
                 )
 
                 if (showEmail) {

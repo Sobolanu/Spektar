@@ -1,36 +1,48 @@
 package com.example.spektar.ui.common
 
-import androidx.compose.material3.SnackbarDuration
-import androidx.compose.material3.SnackbarResult
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.rememberCoroutineScope
-import com.example.spektar.ui.profileScreen.ProfileEvent
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.launch
-/*
-@Composable
-fun SnackBar(
-    onConfirmEvent: () -> Unit,
-    onDismissEvent: () -> Unit,
-    scope: CoroutineScope = rememberCoroutineScope(),
+import androidx.compose.runtime.LaunchedEffect
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.compose.LocalLifecycleOwner
+import androidx.lifecycle.repeatOnLifecycle
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.channels.Channel
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.receiveAsFlow
+import kotlinx.coroutines.withContext
 
-    text: String,
-    event: () -> Unit,
+data class SnackbarEvent(
+    val message: String,
+    val action: SnackbarAction? = null
+)
+
+data class SnackbarAction(
+    val name: String,
+    val action: () -> Unit
+)
+
+object SnackbarController {
+    private val _events = Channel<SnackbarEvent>()
+    val events = _events.receiveAsFlow()
+
+    suspend fun sendEvent(event: SnackbarEvent) {
+        _events.send(event)
+    }
+}
+
+@Composable
+fun <T> ObserveAsEvents(
+    flow: Flow<T>,
+    key1: Any? = null,
+    key2: Any? = null,
+    onEvent: (T) -> Unit,
 ) {
-    scope.launch {
-        val result = snackbarHostState.showSnackbar(
-            message = text,
-            actionLabel = "Save",
-            duration = SnackbarDuration.Indefinite
-        )
-        when(result) {
-            SnackbarResult.ActionPerformed -> {
-                onEvent(ProfileEvent.updateAvatar(state.id,image, state.username))
-            }
-            SnackbarResult.Dismissed -> {
-                /* Handle snackbar dismissed */
+    val lifecycleOwner = LocalLifecycleOwner.current
+    LaunchedEffect(lifecycleOwner.lifecycle, key1, key2, flow) {
+        lifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
+            withContext(Dispatchers.Main.immediate) {
+                flow.collect(onEvent)
             }
         }
     }
 }
-*/

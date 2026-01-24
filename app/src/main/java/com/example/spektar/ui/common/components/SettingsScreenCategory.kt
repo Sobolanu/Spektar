@@ -1,8 +1,9 @@
 package com.example.spektar.ui.common.components
 
+import androidx.annotation.StringRes
 import androidx.compose.ui.graphics.vector.ImageVector
 
 data class SettingsScreenCategory(
-    val titleOfCategory: String,
-    val tabs: List<Triple<ImageVector, String, Int>>,
+    @StringRes val titleRes: Int,
+    val tabs: List<Triple<ImageVector, Int, Int>>,
 )

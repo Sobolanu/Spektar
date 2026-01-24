@@ -11,8 +11,6 @@
         - questionnaire screen
         - splash screen - app logo somehow slowly gaining color
         - make a color palette cause material3 builder highk sucks?
-        - reusable snackbars
-        - translation for SRB
 
     TODO: ### BACK-END
 
@@ -25,7 +23,6 @@
         - sort out error handling
             - handle any potential errors from supabase and shit
             - ERRORS SHOULD BE HANDLED IN VIEWMODELS!!!
-        - optimize ViewModel perf (coroutines) and organize said ViewModels better
 
         do at very end of app
         - per-media notes: hyperlinks that lead to other notes and URLs and stuff?

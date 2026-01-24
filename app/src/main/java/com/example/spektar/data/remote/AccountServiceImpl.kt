@@ -156,7 +156,17 @@ class AccountServiceImpl : AccountService {
                 "username" to username
             )
         ) {
-            filter { eq("id", userId) }
+            filter { eq ("id", userId) }
+        }
+    }
+
+    override suspend fun resetUserSuggestions(userId: String) {
+        val emptyEmbedding = List(47, {0})
+
+        SupabaseClientProvider.db.from("profiles").update(
+            mapOf("user_embedding" to "$emptyEmbedding")
+        ) {
+            filter { eq ("id", userId) }
         }
     }
 }

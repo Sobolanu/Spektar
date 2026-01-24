@@ -8,4 +8,25 @@
     <string name="settings_screen_title">Settings</string>
     <string name="reduce_motion_title">Reduce Motion</string>
     <string name="reduce_motion_info_box_text">When toggled, app animations will be removed in order to improve the user experience for individuals with motion sickness.</string>
+    <string name="app_greeting">Welcome to Spektar</string>
+    <string name="logo_description">Spektar logo.</string>
+    <string name="email">Email</string>
+    <string name="password">Password</string>
+    <string name="sign_in">Sign in</string>
+    <string name="registration_prompt">Don\'t have an account?</string>
+    <string name="register">Register now.</string>
+    <string name="username">Username</string>
+    <string name="create_account">Continue</string>
+    <string name="customization">Customization</string>
+    <string name="theme_accessibility"><![CDATA[Theme & Accessibility]]></string>
+    <string name="language">Language</string>
+    <string name="account">Account</string>
+    <string name="profile_settings">Profile Settings</string>
+    <string name="support">Support</string>
+    <string name="help_support"><![CDATA[Help & Support]]></string>
+    <string name="donate">Donate</string>
+    <string name="snackbar_unsaved_changes">There are unsaved changes. Save now?</string>
+    <string name="languages">Languages</string>
+    <string name="english">English</string>
+    <string name="serbian">Serbian</string>
 </resources>

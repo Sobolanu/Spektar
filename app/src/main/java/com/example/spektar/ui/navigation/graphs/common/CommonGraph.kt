@@ -9,7 +9,10 @@ import androidx.navigation.compose.composable
 import androidx.navigation.toRoute
 import com.example.spektar.data.remote.AccountServiceImpl
 import com.example.spektar.ui.common.ErrorScreen
+import com.example.spektar.ui.navigation.graphs.authGraph.UserLoginScreen
 import com.example.spektar.ui.navigation.utils.navTypeOf
+import com.example.spektar.ui.navigation.utils.safeNavigate
+import com.example.spektar.ui.profileScreen.ProfileEvent
 import com.example.spektar.ui.profileScreen.ProfileScreen
 import com.example.spektar.ui.profileScreen.ProfileViewModel
 import com.example.spektar.ui.profileScreen.ProfileViewModelFactory
@@ -32,10 +35,14 @@ fun NavGraphBuilder.CommonGraph(
             selectedIcon = selectedIconProvider(),
 
             onEvent = { event ->
-                // profileViewModel.onEvent((event)) // temporary
+                profileViewModel.onEvent(event)
+
+                if(event == ProfileEvent.signOut || event == ProfileEvent.deleteAccount) {
+                    navController.safeNavigate(UserLoginScreen(false))
+                }
             },
 
-            state = state.value // temporary
+            state = state.value
         )
     }
 

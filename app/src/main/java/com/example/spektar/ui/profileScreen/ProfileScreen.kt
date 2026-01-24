@@ -1,6 +1,7 @@
 package com.example.spektar.ui.profileScreen
 
 import android.net.Uri
+import androidx.activity.result.PickVisualMediaRequest
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -17,6 +18,7 @@ import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.SnackbarResult
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextField
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
@@ -30,6 +32,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.window.Dialog
 import coil.compose.rememberAsyncImagePainter
 import com.example.spektar.data.model.User
 import com.example.spektar.ui.common.components.BottomBar
@@ -51,8 +54,9 @@ fun ProfileScreen(
     val snackbarHostState = remember { SnackbarHostState() }
     val scope = rememberCoroutineScope()
 
-    // confirmation box:
-    var showConfirmationBox by remember { mutableStateOf(false) }
+    // confirmation boxes:
+    var accountDeletionConfirmationBox by remember { mutableStateOf(false) }
+    var mediaRecommendationConfirmationBox by remember { mutableStateOf(false) }
 
     val painter = if (selectedImageUri != null) {
         rememberAsyncImagePainter(selectedImageUri)
@@ -80,7 +84,6 @@ fun ProfileScreen(
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Top
         ) {
-            // uploads to storage but not to userid folder pls fix
             ImagePicker(  // make this look nice
                 onImageSelected = { uri ->
                     selectedImageUri = uri
@@ -96,7 +99,7 @@ fun ProfileScreen(
                                 onEvent(ProfileEvent.updateAvatar(state.id,image, state.username))
                             }
                             SnackbarResult.Dismissed -> {
-                                /* Handle snackbar dismissed */
+                                // will do nothing then
                             }
                         }
                     }
@@ -111,29 +114,23 @@ fun ProfileScreen(
             )
 
             Button(
-                // should move you to start of the app aswell
                 onClick = { onEvent(ProfileEvent.signOut) }
             ) {
-                Text(
-                    "Sign out"
-                )
+                Text("Sign out")
             }
 
             Button(
-                // should move you to start of the app aswell
                 onClick = {
-                    showConfirmationBox = true
-                    // onEvent(ProfileEvent.deleteAccount)
+                    accountDeletionConfirmationBox = true
                 }
             ) {
-                // make this red
-                Text(
-                    "Delete account (onclick is empty for now)"
-                )
+                Text("Delete account (onclick is empty for now)")
             }
 
             Button(
-                onClick = { /* onEvent(ProfileEvent.resetUserSuggestions) */ }
+                onClick = {
+                    mediaRecommendationConfirmationBox = true
+                }
             ) {
                 Text(
                     "Reset media recommendations"
@@ -141,19 +138,31 @@ fun ProfileScreen(
             }
 
             Button(
-                onClick = { /* onEvent(ProfileEvent.resetPassword) */ }
+                onClick = {
+                    onEvent(ProfileEvent.resetPassword)
+                }
             ) {
                 Text(
                     "Reset password"
                 )
             }
 
-            if(showConfirmationBox) {
+            if(accountDeletionConfirmationBox) {
                 ProfileConfirmationDialog(
-                    text = "The action you are about to do is irreversible. Proceed anyway?",
-                    onContinueClick = { /* onEvent(ProfileEvent.deleteAccount) */ },
-                    // can't close/open :(
-                    onDismissClick = { showConfirmationBox = false },
+                    text = "You are about to delete your account. This action is not reversible. Are you absolutely sure?",
+                    onContinueClick = { onEvent(ProfileEvent.deleteAccount) },
+                    onDismissClick = { accountDeletionConfirmationBox = false }
+                )
+            }
+
+            if(mediaRecommendationConfirmationBox) {
+                ProfileConfirmationDialog(
+                    text = "You are about to reset your media recommendations. To re-obtain recommendations, you must fill out the questionnaire. Are you sure?",
+                    onContinueClick = {
+                        onEvent(ProfileEvent.resetUserSuggestions)
+                        mediaRecommendationConfirmationBox = false
+                    }, // implement dialogue that confirms you reset your recommendations
+                    onDismissClick = { mediaRecommendationConfirmationBox = false }
                 )
             }
         }

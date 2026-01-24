@@ -12,13 +12,17 @@ interface AccountService{
     suspend fun retrieveSession() : UserSession? // simply returns the current session
     suspend fun retrieveUserId() : String // returns the current user ID associated with the session
     suspend fun retrieveUserDataWithId(id : String) : User // obtains basic user information - name, avatar and id
+
     // user auth:
     suspend fun signIn(state: SignInState)
     suspend fun signUp(state: SignUpState)
     suspend fun signOut()
     suspend fun deleteAccount()
+
     // modification:
     suspend fun updateAvatar(userId: String, avatar: File, username: String)
     fun storageUrl(url: String) : String
     suspend fun changePassword(userId: String, oldPassword: String, newPassword: String)
+
+    suspend fun resetUserSuggestions(userId: String)
 }

@@ -42,9 +42,7 @@ class SignInViewModel(
 
             }
 
-            is AuthEvent.SetUsername -> { } // probably nothing too though i will add log-in via username
-            is AuthEvent.SetAvatar -> { } // nothing happens, you can't use avatars in the sign-in screen
-            is AuthEvent.SignUp -> { } // can't log in inside of SignUp.
+            else -> { } // nothing happens as most other events cannot happen in this screen
         }
     }
 }

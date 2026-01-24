@@ -6,7 +6,6 @@ import androidx.lifecycle.viewModelScope
 import com.example.spektar.data.model.User
 import com.example.spektar.domain.model.services.AccountService
 import kotlinx.coroutines.CoroutineDispatcher
-import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -28,17 +27,13 @@ class ProfileViewModel(
     val state : StateFlow<User> get() = _state
 
     init {
-        loadData()
-    }
-
-    fun loadData() {
         viewModelScope.launch(ioDispatcher) {
             accountService.sessionFlow.collect { session ->
                 if (session != null) {
-                    val fullUserData = accountService.retrieveUserDataWithId(session.user!!.id) // i hope this always will pass
+                    val fullUserData = accountService.retrieveUserDataWithId(session.user!!.id)
 
                     _state.value = User(
-                        id = fullUserData.id,
+                        id = session.user!!.id,
                         username = fullUserData.username,
                         email =  session.user!!.email!!,
                         avatar_url = fullUserData.avatar_url?.let { accountService.storageUrl(it) },
@@ -55,7 +50,7 @@ class ProfileViewModel(
         when(event) {
             ProfileEvent.deleteAccount -> {
                 viewModelScope.launch(ioDispatcher) {
-                    accountService.deleteAccount() // add confirmation?
+                    accountService.deleteAccount()
                 }
             }
 
@@ -70,7 +65,9 @@ class ProfileViewModel(
             }
 
             is ProfileEvent.resetUserSuggestions -> {
-
+                viewModelScope.launch(ioDispatcher) {
+                    accountService.resetUserSuggestions(state.value.id)
+                }
             }
 
             ProfileEvent.signOut -> {
@@ -86,7 +83,9 @@ class ProfileViewModel(
             }
 
             is ProfileEvent.updateUsername -> {
+                viewModelScope.launch(ioDispatcher) {
 
+                }
             }
         }
     }
