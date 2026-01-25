@@ -62,6 +62,10 @@ fun HomeScreen(
                 .padding(paddingValues)
         ) {
             item {
+                SplashScreen(
+                    onTimeout = { }
+                )
+
                 Image(
                     painterResource(R.drawable.app_logo_transparent), // placeholder for now, add logo of the app
                     contentDescription = stringResource(R.string.logo_description)

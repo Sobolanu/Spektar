@@ -4,7 +4,6 @@ import androidx.compose.animation.AnimatedContentTransitionScope
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.SnackbarDuration
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.SnackbarResult
@@ -17,9 +16,7 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
-import androidx.lifecycle.viewmodel.viewModelFactory
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.rememberNavController
 import com.example.spektar.data.remote.AccountServiceImpl
@@ -32,11 +29,8 @@ import com.example.spektar.ui.navigation.bottomBarNavigation.bottomBarNavigation
 import com.example.spektar.ui.navigation.graphs.authGraph.AuthGraph
 import com.example.spektar.ui.navigation.graphs.authGraph.UserLoginScreen
 import com.example.spektar.ui.navigation.graphs.categoryGraph.CategoryGraph
-import com.example.spektar.ui.navigation.graphs.categoryGraph.CategoryScreen
 import com.example.spektar.ui.navigation.graphs.common.CommonGraph
-import com.example.spektar.ui.navigation.graphs.common.HomeScreen
 import com.example.spektar.ui.navigation.graphs.settingsGraph.SettingsGraph
-import com.example.spektar.ui.navigation.graphs.settingsGraph.SettingsScreen
 import kotlinx.coroutines.launch
 
 /*
