@@ -7,7 +7,6 @@
             - this home screen would contain pieces of media you're currently consuming, and they'd
             have a progress counter (current progress is X, Y is max progress, optional daily goal for books)
 
-        - settings screen - theme previews, help&support screen with some app email
         - questionnaire screen
         - splash screen - app logo somehow slowly gaining color
         - make a color palette cause material3 builder highk sucks?
@@ -17,26 +16,7 @@
         - after splash screen designing, have the app auto log-on if you have made an account
         - regulate backStack and navigation (so, prevent a user from going all the way back to the login screen)
         - questionnaire (to fill out user's embedding), maybe some data-tracking for user embedding improvement
-
-        TODO: search implemented, remember you have "Crime And Punishment" as a placeholder.
-
         - sort out error handling
             - handle any potential errors from supabase and shit
             - ERRORS SHOULD BE HANDLED IN VIEWMODELS!!!
-
-        do at very end of app
-        - per-media notes: hyperlinks that lead to other notes and URLs and stuff?
  */
-
-errors:
-on sign-up, retrieve image_url after it finishes uploading
-
-edge function returns error 500 if you do the following steps:
-same with other shit aswell
-            - have a already existing account
-            - make another one
-            - log in on that one
-            - delete it
-            - then try to log in again on that old account
-            it could be because you deleted it in auth.users and not through the delete user func but point is you keep the session of the deleted account
-            that needs to be fixed

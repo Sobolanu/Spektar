@@ -25,10 +25,8 @@ class MainActivity : ComponentActivity() {
                 DataStoreViewModelFactory(applicationContext.dataStore)
             }
 
-            val dynamicColorState by dataStoreViewModel.readThemeSettings("dynamic_color")
-                .collectAsState(initial = false)
-            val darkThemeState by dataStoreViewModel.readThemeSettings("dark_scheme")
-                .collectAsState(initial = isSystemInDarkTheme())
+            val dynamicColorState by dataStoreViewModel.readThemeSettings("dynamic_color").collectAsState(initial = false)
+            val darkThemeState by dataStoreViewModel.readThemeSettings("dark_scheme").collectAsState(initial = isSystemInDarkTheme())
 
             SpektarTheme(
                 dynamicColor = dynamicColorState,

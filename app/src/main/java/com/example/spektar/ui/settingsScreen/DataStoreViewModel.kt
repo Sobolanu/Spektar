@@ -13,10 +13,13 @@ import kotlinx.coroutines.flow.map
 class DataStoreViewModel(
     private val dataStore: DataStore<Preferences>
 ) : ViewModel() {
-    fun readThemeSettings(key: String) : Flow<Boolean> {
-        val dataStoreKey = booleanPreferencesKey(key)
+    fun readThemeSettings(key: String): Flow<Boolean> {
         return dataStore.data.map { prefs ->
-            prefs[dataStoreKey] ?: false
+            when (key) {
+                "dark_scheme" -> prefs[booleanPreferencesKey(key)] ?: true // forcing dark mode initially
+                "dynamic_color" -> prefs[booleanPreferencesKey(key)] ?: false
+                else -> false
+            }
         }
     }
 }

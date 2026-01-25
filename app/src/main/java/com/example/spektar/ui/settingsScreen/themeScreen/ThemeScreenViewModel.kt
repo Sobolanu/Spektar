@@ -19,14 +19,9 @@ import kotlinx.coroutines.launch
 class ThemeViewModel(
     private val dataStore: DataStore<Preferences>
 ) : ViewModel() {
-
     private val _dynamicColorInfoBox = MutableStateFlow(false)
     private val _darkModeInfoBox = MutableStateFlow(false)
     private val _reduceMotionInfoBox = MutableStateFlow(false)
-
-    init {
-
-    }
 
     val uiState = combine(
         readThemeSettings("dynamic_color"),

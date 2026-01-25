@@ -41,10 +41,11 @@ fun SettingsSubScreenItem(
     showInfoBox: Boolean,
     onInfoBoxClick: (Boolean) -> Unit,
     onCheckedChangeConfirmed: (Boolean) -> Unit, // called only when snackbar confirmed
+    previewState: (Boolean?) -> Unit
 ) {
     // Local temporary state for UI toggle
     var pendingSwitchState by remember { mutableStateOf(switchState) }
-
+    var previewEffect by remember { mutableStateOf(switchState) }
     LaunchedEffect(switchState) {
         pendingSwitchState = switchState
     }
@@ -81,6 +82,9 @@ fun SettingsSubScreenItem(
             onCheckedChange = { newValue ->
                 // update local UI state so switch thumb moves
                 pendingSwitchState = newValue
+                previewEffect = newValue
+
+                previewState(previewEffect)
 
                 // show snackbar asking for confirmation
                 scope.launch {

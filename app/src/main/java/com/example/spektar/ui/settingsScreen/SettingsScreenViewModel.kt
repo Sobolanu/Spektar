@@ -14,10 +14,9 @@ enum class LanguageChangePhase {
 }
 
 data class LanguageState(
-    val selectedLanguage: String = "en",
+    val selectedLanguage: String = "sr",
     val phase: LanguageChangePhase = LanguageChangePhase.Idle
 )
-
 
 class SettingsViewModel(
     private val appLocaleManager: AppLocaleManager

@@ -32,7 +32,6 @@
     <string name="home">Home</string>
     <string name="questionnaire">Questionnaire</string>
     <string name="settings">Settings</string>
-    <string name="profile">Profile</string>
     <string name="back_arrow">Back arrow</string>
     <string name="current_language">Current language</string>
 </resources>
