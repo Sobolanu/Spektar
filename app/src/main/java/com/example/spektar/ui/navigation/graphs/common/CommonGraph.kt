@@ -1,6 +1,5 @@
 package com.example.spektar.ui.navigation.graphs.common
 
-import androidx.compose.runtime.collectAsState
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
@@ -8,6 +7,7 @@ import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
 import androidx.navigation.toRoute
 import com.example.spektar.data.remote.AccountServiceImpl
+import com.example.spektar.ui.HomeScreen
 import com.example.spektar.ui.common.ErrorScreen
 import com.example.spektar.ui.navigation.graphs.authGraph.UserLoginScreen
 import com.example.spektar.ui.navigation.utils.navTypeOf
@@ -43,6 +43,13 @@ fun NavGraphBuilder.CommonGraph(
             },
 
             state = state.value
+        )
+    }
+
+    composable<HomeScreen> {
+        HomeScreen(
+            onBottomBarItemClick = onBottomBarClick,
+            selectedIcon = selectedIconProvider(),
         )
     }
 

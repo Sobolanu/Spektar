@@ -30,7 +30,7 @@ class AppLocaleManager(
         }
     }
     fun getLanguageCode(): String {
-        // 1. Check for App-specific override
+        // check for app-specific override
         val appLanguage = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
             val localeManager = context.getSystemService(Context.LOCALE_SERVICE) as LocaleManager
             val locales: LocaleList = localeManager.applicationLocales
@@ -44,31 +44,17 @@ class AppLocaleManager(
             return appLanguage
         }
 
-        // 2. Fallback: Get the actual language the system is currently using
+        // or use system language
         val systemLocales = ConfigurationCompat.getLocales(context.resources.configuration)
         val systemLanguage = systemLocales.get(0)?.language ?: ""
 
-        // 3. Match against your supported list
+        // check to see if you have it in language list
         return if (appLanguages.any { it.code == systemLanguage }) {
             systemLanguage
         } else {
             getDefaultLanguageCode()
         }
     }
-
-    /*
-    fun getLanguageCode(): String {
-        val locale = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-            context.getSystemService(LocaleManager::class.java)
-                ?.applicationLocales
-                ?.get(0)
-        } else {
-            AppCompatDelegate.getApplicationLocales().get(0)
-        }
-        return locale?.language ?: getDefaultLanguageCode()
-    }
-
-     */
 
     private fun getDefaultLanguageCode(): String {
         return appLanguages.first().code

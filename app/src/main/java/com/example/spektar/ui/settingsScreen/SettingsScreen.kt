@@ -69,11 +69,13 @@ fun SettingsScreen(
         ModalNavigationDrawer(
             drawerState = drawerState,
             drawerContent = {
-                LanguageDrawerDemo(
-                    onEvent,
-                    state.selectedLanguage,
-                    onDismiss = { scope.launch { drawerState.close() } }
-                )
+                if (drawerState.isOpen) {
+                    LanguageDrawerDemo(
+                        onEvent,
+                        state.selectedLanguage,
+                        onDismiss = { scope.launch { drawerState.close() } }
+                    )
+                }
             }
         ) {
             Scaffold(
@@ -107,6 +109,7 @@ fun SettingsScreen(
                 }
             }
 
+            // is used to make the language pane slightly cleaner when changing languages
             AnimatedVisibility(
                 visible = state.phase != LanguageChangePhase.Idle,
                 enter = fadeIn(),
@@ -246,4 +249,3 @@ fun SettingsScreenTopBar() {
         modifier = Modifier.padding(bottom = 16.dp)
     )
 }
-

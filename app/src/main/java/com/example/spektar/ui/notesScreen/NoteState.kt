@@ -7,7 +7,7 @@ data class NoteState(
     // all notes for a media
     val notes: List<Note> = emptyList(),
     val currentMediaId: String? = null,
-    // sortType for all notes
+    // sortType for all notes, not used anywhere though
     val sortType: SortType = SortType.CONTENT_LENGTH,
 
     // note details:

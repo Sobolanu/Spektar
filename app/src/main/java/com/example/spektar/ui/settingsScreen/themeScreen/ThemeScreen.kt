@@ -5,10 +5,12 @@ import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.safeContentPadding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.BottomAppBar
@@ -20,10 +22,15 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.example.compose.SpektarTheme
@@ -65,7 +72,7 @@ fun ThemeScreen(
                     onEvent(ThemeEvent.dynamicColorToggle(newValue))
                 },
                 previewState = { effect ->
-
+                    onEvent(ThemeEvent.dynamicColorPreview(effect!!))
                 }
             )
 
@@ -79,7 +86,7 @@ fun ThemeScreen(
                     onEvent(ThemeEvent.darkModeToggle(newValue))
                 },
                 previewState = { effect ->
-
+                    onEvent(ThemeEvent.darkModePreview(effect!!))
                 }
             )
 
@@ -93,18 +100,18 @@ fun ThemeScreen(
                     onEvent(ThemeEvent.reduceMotionToggle(newValue))
                 },
                 previewState = { effect ->
-
+                    // nothing
                 }
             )
 
-            // sync preview changes with stuff there
+            Spacer(
+                modifier = Modifier.padding(vertical = 8.dp)
+            )
             ThemePreviewScreen(
-                "test",
-
-                )
-
-            // call a composable that represents a screen that previews the color scheme specified
-            // this should actually be the home screen
+                "Lorem ipsum dolor sit amet, consectetur adipiscing elit",
+                darkTheme = state.darkSchemePreview,
+                dynColor = state.dynamicColorPreview
+            )
         }
     }
 }
@@ -133,11 +140,13 @@ fun ThemeScreenTopBar() {
 @Composable
 fun ThemePreviewScreen(
     previewText: String,
-    size: Dp = 200.dp
+    darkTheme: Boolean,
+    dynColor: Boolean,
+    size: Dp = 250.dp
 ) {
     SpektarTheme(
-        darkTheme = false, // placeholder values, implement
-        dynamicColor = true,
+        darkTheme = darkTheme,
+        dynamicColor = dynColor,
     ) {
         Box(
             modifier = Modifier
@@ -157,11 +166,10 @@ fun ThemePreviewScreen(
                     Text(
                         text = "TopBar",
                         color = MaterialTheme.colorScheme.onPrimary,
-                        style = MaterialTheme.typography.titleSmall
+                        style = MaterialTheme.typography.titleSmall,
                     )
                 }
 
-                // Content
                 Box(
                     modifier = Modifier
                         .weight(1f)
@@ -172,7 +180,9 @@ fun ThemePreviewScreen(
                     Text(
                         text = previewText,
                         style = MaterialTheme.typography.bodyLarge,
-                        color = MaterialTheme.colorScheme.onSurface
+                        color = MaterialTheme.colorScheme.onSurface,
+                        textAlign = TextAlign.Justify,
+                        modifier = Modifier.padding(6.dp)
                     )
                 }
 

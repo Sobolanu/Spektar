@@ -20,7 +20,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -46,6 +45,7 @@ fun SettingsSubScreenItem(
     // Local temporary state for UI toggle
     var pendingSwitchState by remember { mutableStateOf(switchState) }
     var previewEffect by remember { mutableStateOf(switchState) }
+
     LaunchedEffect(switchState) {
         pendingSwitchState = switchState
     }
@@ -83,7 +83,6 @@ fun SettingsSubScreenItem(
                 // update local UI state so switch thumb moves
                 pendingSwitchState = newValue
                 previewEffect = newValue
-
                 previewState(previewEffect)
 
                 // show snackbar asking for confirmation
@@ -110,7 +109,7 @@ fun SettingsSubScreenItem(
             text = infoBoxText,
             Modifier
                 .fillMaxWidth()
-                .padding(horizontal = 8.dp)
+                .padding(horizontal = 6.dp)
                 .clip(RoundedCornerShape(15.dp))
                 .background(MaterialTheme.colorScheme.secondaryContainer)
         )

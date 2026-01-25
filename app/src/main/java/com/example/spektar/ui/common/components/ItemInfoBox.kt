@@ -7,10 +7,11 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 
 @Composable
-fun InfoBox( // add an animation that slowly opens this box
+fun InfoBox(
     text : String,
     modifier : Modifier
 ) {
@@ -21,6 +22,7 @@ fun InfoBox( // add an animation that slowly opens this box
     ) {
         Text(
             text = text,
+            textAlign = TextAlign.Justify,
             modifier = Modifier.padding(4.dp)
         )
     }

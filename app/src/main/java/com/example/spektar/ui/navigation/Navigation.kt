@@ -9,6 +9,7 @@ import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.SnackbarResult
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.remember
@@ -19,19 +20,13 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.rememberNavController
 import com.example.spektar.ui.common.ObserveAsEvents
 import com.example.spektar.ui.common.SnackbarController
-import com.example.spektar.ui.common.components.BottomBar
 import com.example.spektar.ui.navigation.bottomBarNavigation.bottomBarNavigation
 import com.example.spektar.ui.navigation.graphs.authGraph.AuthGraph
 import com.example.spektar.ui.navigation.graphs.authGraph.UserLoginScreen
 import com.example.spektar.ui.navigation.graphs.categoryGraph.CategoryGraph
 import com.example.spektar.ui.navigation.graphs.categoryGraph.CategoryScreen
-import com.example.spektar.ui.navigation.graphs.categoryGraph.MoreMedia
 import com.example.spektar.ui.navigation.graphs.common.CommonGraph
-import com.example.spektar.ui.navigation.graphs.common.ProfileScreen
 import com.example.spektar.ui.navigation.graphs.settingsGraph.SettingsGraph
-import com.example.spektar.ui.navigation.graphs.settingsGraph.SettingsScreen
-import com.example.spektar.ui.navigation.graphs.settingsGraph.ThemeScreen
-import com.example.spektar.ui.settingsScreen.DataStoreViewModel
 import kotlinx.coroutines.launch
 
 /*
@@ -50,17 +45,25 @@ fun SpektarNavigation() {
         snackbarHostState
     ) { event ->
         scope.launch {
-            snackbarHostState.currentSnackbarData?.dismiss()
-
             val result = snackbarHostState.showSnackbar(
                 message = event.message,
                 actionLabel = event.action?.name,
-                duration = SnackbarDuration.Indefinite
+                duration = event.duration
             )
 
-            if(result == SnackbarResult.ActionPerformed) {
+            SnackbarController.markDismissed()
+
+            if (result == SnackbarResult.ActionPerformed) {
                 event.action?.action?.invoke()
             }
+        }
+    }
+
+    // serves to remove snackbar upon navigation to a different screen
+    LaunchedEffect(navController) {
+        navController.addOnDestinationChangedListener { _, _, _ ->
+            snackbarHostState.currentSnackbarData?.dismiss()
+            SnackbarController.markDismissed()
         }
     }
 

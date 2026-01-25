@@ -1,5 +1,6 @@
 package com.example.spektar.ui.common
 
+import androidx.compose.material3.SnackbarDuration
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.lifecycle.Lifecycle
@@ -11,9 +12,13 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.withContext
 
+// took Phillip Lackners' Snackbar but modified it to maintain it's state across multiple switches being flipped
+// instead of reappearing on each flip.
+
 data class SnackbarEvent(
     val message: String,
-    val action: SnackbarAction? = null
+    val action: SnackbarAction? = null,
+    val duration: SnackbarDuration = SnackbarDuration.Indefinite
 )
 
 data class SnackbarAction(
@@ -25,8 +30,16 @@ object SnackbarController {
     private val _events = Channel<SnackbarEvent>()
     val events = _events.receiveAsFlow()
 
+    private var snackbarActive = false
     suspend fun sendEvent(event: SnackbarEvent) {
-        _events.send(event)
+        if (!snackbarActive) {
+            _events.send(event)
+            snackbarActive = true
+        }
+    }
+
+    fun markDismissed() {
+        snackbarActive = false
     }
 }
 

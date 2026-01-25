@@ -5,6 +5,9 @@ data class ThemeUiState(
     val darkSchemeEnabled: Boolean = false,
     val reduceMotionEnabled: Boolean = false,
 
+    val dynamicColorPreview: Boolean = false,
+    val darkSchemePreview: Boolean = false,
+
     val dynamicColorInfoBox: Boolean = false,
     val darkSchemeInfoBox: Boolean = false,
     val reduceMotionInfoBox: Boolean = false

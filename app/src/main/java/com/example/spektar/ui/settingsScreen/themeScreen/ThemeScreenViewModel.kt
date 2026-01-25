@@ -22,6 +22,22 @@ class ThemeViewModel(
     private val _dynamicColorInfoBox = MutableStateFlow(false)
     private val _darkModeInfoBox = MutableStateFlow(false)
     private val _reduceMotionInfoBox = MutableStateFlow(false)
+    private val _dynamicColorPreview = MutableStateFlow(false)
+    private val _darkSchemePreview = MutableStateFlow(false)
+
+    init {
+        // Initialize previews with persisted values
+        viewModelScope.launch {
+            readThemeSettings("dynamic_color").collect { value ->
+                _dynamicColorPreview.value = value
+            }
+        }
+        viewModelScope.launch {
+            readThemeSettings("dark_scheme").collect { value ->
+                _darkSchemePreview.value = value
+            }
+        }
+    }
 
     val uiState = combine(
         readThemeSettings("dynamic_color"),
@@ -29,7 +45,9 @@ class ThemeViewModel(
         readThemeSettings("reduce_motion"),
         _dynamicColorInfoBox,
         _darkModeInfoBox,
-        _reduceMotionInfoBox
+        _reduceMotionInfoBox,
+        _dynamicColorPreview,
+        _darkSchemePreview
     ) {
         ThemeUiState(
             dynamicColorEnabled = it[0],
@@ -37,7 +55,9 @@ class ThemeViewModel(
             reduceMotionEnabled = it[2],
             dynamicColorInfoBox = it[3],
             darkSchemeInfoBox = it[4],
-            reduceMotionInfoBox = it[5]
+            reduceMotionInfoBox = it[5],
+            dynamicColorPreview = it[6],
+            darkSchemePreview = it[7]
         )
     }.stateIn(scope = viewModelScope, started = SharingStarted.WhileSubscribed(5000), initialValue = ThemeUiState())
 
@@ -65,6 +85,14 @@ class ThemeViewModel(
 
             is ThemeEvent.reduceMotionToggle -> {
                 saveThemeSetting("reduce_motion", event.state)
+            }
+
+            is ThemeEvent.darkModePreview -> {
+                _darkSchemePreview.value = event.state
+            }
+
+            is ThemeEvent.dynamicColorPreview -> {
+                _dynamicColorPreview.value = event.state
             }
         }
     }

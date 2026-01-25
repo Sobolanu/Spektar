@@ -22,10 +22,6 @@ import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
-/*
-too tired to make this look good btw
- */
-
 @OptIn(ExperimentalCoroutinesApi::class)
 class NoteViewModel(
     private val noteDao: NoteDao,
@@ -60,7 +56,7 @@ class NoteViewModel(
         _currentMediaId.value = mediaId
     }
 
-    fun onEvent(event: NoteEvent, mediaId: String) {
+    fun onEvent(event: NoteEvent, mediaId: String) : Boolean? {
         when(event) {
             is NoteEvent.DeleteNote -> {
                 viewModelScope.launch {
@@ -72,8 +68,9 @@ class NoteViewModel(
                 val title = state.value.title
                 val text = state.value.text
 
-                if(title.isBlank() || text.isBlank()) {
-                    return // just leave because no data for inserting
+                val normalizedTitle = title.trim()
+                if (normalizedTitle.isBlank() || state.value.notes.any { it.title.equals(normalizedTitle, ignoreCase = true) }) {
+                    return true // cannot make a note if the title either is empty or already exists
                 }
 
                 val note = Note( // then set the mediaId column to the function parameter mediaId
@@ -124,6 +121,8 @@ class NoteViewModel(
                 _sortType.value = event.sortType
             }
         }
+
+        return null
     }
 }
 
@@ -138,21 +137,3 @@ class NoteViewModelFactory(private val context: Context) : ViewModelProvider.Fac
         return NoteViewModel(db.noteDao, db.mediaDao) as T
     }
 }
-
-/*
-@Suppress("UNCHECKED_CAST")
-class NoteViewModelFactory(
-    private val noteDao: NoteDao,
-    private val mediaDao: MediaDao
-) : ViewModelProvider.Factory {
-    override fun <T : ViewModel> create(modelClass: Class<T>): T {
-        if (modelClass.isAssignableFrom(NoteViewModel::class.java)) {
-            return NoteViewModel(
-                noteDao,
-                mediaDao,
-            ) as T
-        }
-        throw IllegalArgumentException("Unknown ViewModel class")
-    }
-}
- */

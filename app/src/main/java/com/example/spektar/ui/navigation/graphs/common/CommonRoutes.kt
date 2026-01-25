@@ -4,3 +4,5 @@ import kotlinx.serialization.Serializable
 
 @Serializable data class AppErrorScreen (val errorMessage: String)
 @Serializable object ProfileScreen
+
+@Serializable object HomeScreen

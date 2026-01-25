@@ -1,7 +1,7 @@
 // if you need any data to be transferred between two viewmodels you should share that through some repository
 // DONT DO ANYTHING WITH ERRORS UNTIL YOU FINISH THE APP!!!
 
-/* TODO:
+TODO:
     ### FRONT END
         - home screen
             - this home screen would contain pieces of media you're currently consuming, and they'd
@@ -13,10 +13,11 @@
 
     TODO: ### BACK-END
 
+        - send email confirmation
         - after splash screen designing, have the app auto log-on if you have made an account
         - regulate backStack and navigation (so, prevent a user from going all the way back to the login screen)
         - questionnaire (to fill out user's embedding), maybe some data-tracking for user embedding improvement
+
         - sort out error handling
             - handle any potential errors from supabase and shit
             - ERRORS SHOULD BE HANDLED IN VIEWMODELS!!!
- */
