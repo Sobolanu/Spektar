@@ -3,7 +3,10 @@ package com.example.spektar.ui.mediaScreens
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
@@ -98,9 +101,30 @@ fun MediaDetailsScreen(
                 Button(
                     onClick = {
                         onNoteButtonClick(state.id_uuid)
-                    }
+                    },
+                    modifier = Modifier.padding(8.dp)
                 ) {
                     Text("Notes")
+                }
+            }
+
+            item {
+                Column(
+                    horizontalAlignment = Alignment.Start,
+                    verticalArrangement = Arrangement.Center,
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    Text(
+                        text = "by ${state.credits}",
+                        modifier = Modifier.padding(horizontal = 16.dp),
+                        textAlign = TextAlign.Center
+                    )
+
+                    Text(
+                        text = "released on ${state.release_date}",
+                        modifier = Modifier.padding(horizontal = 16.dp),
+                        textAlign = TextAlign.Center
+                    )
                 }
             }
         }
@@ -109,7 +133,6 @@ fun MediaDetailsScreen(
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-
 fun DetailsPageTopBar(
     goToProfile: () -> Unit,
     onBackClick: () -> Unit,

@@ -16,6 +16,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Email
@@ -37,6 +38,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
@@ -64,7 +66,7 @@ fun UserLoginScreen(
     Scaffold(
         contentWindowInsets = WindowInsets(
             left = 16.dp,
-            top = 48.dp,
+            top = 72.dp,
             right = 16.dp,
             bottom = 16.dp
         )
@@ -73,6 +75,8 @@ fun UserLoginScreen(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(paddingValues),
+
+            horizontalArrangement = Arrangement.Center
         ) {
             AnimatedVisibility(
                 visible = visible,
@@ -82,25 +86,24 @@ fun UserLoginScreen(
                 Text(
                     text = stringResource(R.string.app_greeting),
                     style = MaterialTheme.typography.headlineMedium,
+                    textAlign = TextAlign.Justify
                 )
             }
         }
 
         Column(
             modifier = Modifier
-                .fillMaxSize(),
+                .fillMaxWidth()
+                .padding(paddingValues),
 
             verticalArrangement = Arrangement.Center,
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
 
             Image(
-                painterResource(R.drawable.ic_launcher_background), // placeholder for now, add logo of the app
-                contentDescription = stringResource(R.string.logo_description)
-            )
-
-            Spacer(
-                modifier = Modifier.padding(vertical = 16.dp)
+                painterResource(R.drawable.app_logo_transparent_old),
+                contentDescription = stringResource(R.string.logo_description),
+                modifier = Modifier.size(250.dp)
             )
 
             TextField(
@@ -188,7 +191,7 @@ fun ConfirmationDialog(
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
                 Text(
-                    "A confirmation mail has been sent to your email account. Please confirm before proceeding.",
+                    stringResource(R.string.email_confirmation),
                     fontSize = 18.sp
                 )
                 Spacer(Modifier.height(12.dp))

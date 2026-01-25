@@ -13,9 +13,7 @@ TODO:
 
     TODO: ### BACK-END
 
-        - send email confirmation
         - after splash screen designing, have the app auto log-on if you have made an account
-        - regulate backStack and navigation (so, prevent a user from going all the way back to the login screen)
         - questionnaire (to fill out user's embedding), maybe some data-tracking for user embedding improvement
 
         - sort out error handling

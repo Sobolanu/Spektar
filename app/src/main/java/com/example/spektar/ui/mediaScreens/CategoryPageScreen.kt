@@ -4,6 +4,7 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -22,7 +23,6 @@ import androidx.compose.material.icons.filled.AddCircleOutline
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardColors
 import androidx.compose.material3.CenterAlignedTopAppBar
-import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -31,7 +31,6 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextField
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.TopAppBarDefaults.enterAlwaysScrollBehavior
 import androidx.compose.material3.TopAppBarScrollBehavior
@@ -51,6 +50,7 @@ import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
 import com.example.spektar.data.model.media.MediaPreview
 import com.example.spektar.ui.common.components.BottomBar
+import com.example.spektar.ui.common.components.DebouncedTextField
 import com.example.spektar.ui.common.components.navigationBarIcons.topProfileIcon
 import com.example.spektar.ui.common.modifiers.cardWithShadowModifier
 import com.example.spektar.ui.common.modifiers.roundedCornerRow
@@ -75,7 +75,14 @@ fun CategoryScreen(
         modifier = Modifier
             .nestedScroll(scrollBehavior.nestedScrollConnection),
 
-        topBar = { CategoryPageTopBar(onEvent = onEvent, goToProfile, scrollBehavior = scrollBehavior) },
+        topBar = {
+            CategoryPageTopBar(
+                onEvent = onEvent,
+                goToProfile,
+                scrollBehavior = scrollBehavior,
+                onSearch = { showSearchDialog = true }
+            )
+        },
         bottomBar = {
             BottomBar(
                 onBottomBarItemClick = onBottomBarItemClick,
@@ -90,20 +97,15 @@ fun CategoryScreen(
             modifier = Modifier.padding(paddingValues),
         )
 
-        // implement the ui for this
-        /*
-        if(showSearchDialog) {
+        if (showSearchDialog) {
             SearchOverlay(
                 results = state.searchMedias,
-                onDismiss = {
-                    showSearchDialog = false
-                },
+                onDismiss = { showSearchDialog = false },
                 onSelect = { mediaPreview ->
-                    onImageClick( MediaDetails(partialMediaData = mediaPreview) )
+                    onImageClick(MediaDetails(partialMediaData = mediaPreview))
                 }
             )
         }
-         */
     }
 }
 
@@ -117,7 +119,9 @@ fun CategoryScreenContent(
 ) {
     val categories = uiState.categories
     LazyColumn( // LazyColumn loads only what is visible, scrollable is on by default
-        modifier = modifier.fillMaxSize().background(MaterialTheme.colorScheme.surface), // surface
+        modifier = modifier
+            .fillMaxSize()
+            .background(MaterialTheme.colorScheme.surface), // surface
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
         item(categories) {
@@ -216,7 +220,8 @@ fun LoadCategoryImages(
                     Image(
                         imageVector = Icons.Filled.AddCircleOutline,
                         contentDescription = "See more media",
-                        modifier = Modifier.weight(1f)
+                        modifier = Modifier
+                            .weight(1f)
                             .height(175.dp)
                             .width(125.dp)
                             .padding(horizontal = 8.dp)
@@ -229,10 +234,6 @@ fun LoadCategoryImages(
                         modifier = Modifier.padding(bottom = 8.dp)
                     )
                 }
-
-                // also add a sliding bar below this row
-                // add "more" image that matches size and that
-                // redirects to grid of images (as in, to more media)
             }
         }
     }
@@ -247,7 +248,8 @@ fun LoadCategoryImages(
 fun CategoryPageTopBar(
     onEvent: (MediaEvent) -> Unit,
     goToProfile: () -> Unit,
-    scrollBehavior: TopAppBarScrollBehavior
+    scrollBehavior: TopAppBarScrollBehavior,
+    onSearch: () -> Unit,
 ) {
     val iconButtonPressed by remember {mutableStateOf(false)}
     var text by remember { mutableStateOf("") }
@@ -259,25 +261,15 @@ fun CategoryPageTopBar(
             actionIconContentColor = MaterialTheme.colorScheme.onSecondaryContainer
         ),
 
-        /*
-        Text(
-                text = "Search",
-                style = MaterialTheme.typography.titleLarge,
-                modifier = Modifier
-                    .background(MaterialTheme.colorScheme.onSecondaryFixed, RoundedCornerShape(4.dp))
-                    .padding(4.dp)
-            )
-         */
         title = { // you can add colors
-            TextField(
-                value = text,
-                onValueChange = {
+            DebouncedTextField(
+                text = text,
+                onTextChange = {
                     text = it
-                    // maybe add slight delay delay(300)
-                    onEvent(MediaEvent.SearchForMedia(text))
                 },
-                placeholder = {
-                    Text("Search")
+                onEvent = {
+                    onEvent(MediaEvent.SearchForMedia(text))
+                    onSearch()
                 }
             )
         },
@@ -330,9 +322,7 @@ fun SearchOverlay(
                     ListItem(
                         headlineContent = { Text(item.name) },
                         supportingContent = { Text(item.id_uuid) }, // myb change
-                        leadingContent = {
-                            AsyncImage(model = item.imageUrl, contentDescription = null)
-                        },
+                        leadingContent = { AsyncImage(model = item.imageUrl, contentDescription = item.name) },
                         modifier = Modifier.clickable { onSelect(item) }
                     )
                 }

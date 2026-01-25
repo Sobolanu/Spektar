@@ -1,6 +1,8 @@
 package com.example.spektar.ui.navigation.bottomBarNavigation
 
 import androidx.navigation.NavController
+import com.example.spektar.ui.navigation.graphs.categoryGraph.CategoryScreen
+import com.example.spektar.ui.navigation.graphs.common.HomeScreen
 import com.example.spektar.ui.navigation.graphs.settingsGraph.SettingsScreen
 
 fun bottomBarNavigation(
@@ -8,8 +10,8 @@ fun bottomBarNavigation(
     index : Int
 ) {
     navController.navigate(when (index) {
-        0 -> SettingsScreen // all are Settings because i haven't made the rest yet
-        1 -> SettingsScreen
+        0 -> HomeScreen
+        1 -> CategoryScreen
         2 -> SettingsScreen
         else -> SettingsScreen
     } ) {

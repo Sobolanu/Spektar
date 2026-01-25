@@ -30,10 +30,12 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import coil.compose.rememberAsyncImagePainter
+import com.example.spektar.R
 import com.example.spektar.data.model.User
 import com.example.spektar.ui.common.components.BottomBar
 import com.example.spektar.ui.userAuthScreens.signUpScreen.ImagePicker
@@ -57,6 +59,10 @@ fun ProfileScreen(
     // confirmation boxes:
     var accountDeletionConfirmationBox by remember { mutableStateOf(false) }
     var mediaRecommendationConfirmationBox by remember { mutableStateOf(false) }
+
+    // sort out later
+    val tempText = stringResource(R.string.snackbar_unsaved_changes)
+    val tempTextTwo = stringResource(R.string.continue_dialog)
 
     val painter = if (selectedImageUri != null) {
         rememberAsyncImagePainter(selectedImageUri)
@@ -90,8 +96,8 @@ fun ProfileScreen(
                     val image = context.copyUriToFile(uri)
                     scope.launch {
                         val result = snackbarHostState.showSnackbar(
-                            message = "There are unsaved changes. Save now?",
-                            actionLabel = "Save",
+                            message = tempText,
+                            actionLabel = tempTextTwo,
                             duration = SnackbarDuration.Indefinite
                         )
                         when(result) {
@@ -116,7 +122,7 @@ fun ProfileScreen(
             Button(
                 onClick = { onEvent(ProfileEvent.signOut) }
             ) {
-                Text("Sign out")
+                Text(stringResource(R.string.sign_out))
             }
 
             Button(
@@ -124,7 +130,7 @@ fun ProfileScreen(
                     accountDeletionConfirmationBox = true
                 }
             ) {
-                Text("Delete account (onclick is empty for now)")
+                Text(stringResource(R.string.delete_account))
             }
 
             Button(
@@ -133,23 +139,23 @@ fun ProfileScreen(
                 }
             ) {
                 Text(
-                    "Reset media recommendations"
+                    stringResource(R.string.reset_media_recommendations)
                 )
             }
 
             Button(
                 onClick = {
-                    onEvent(ProfileEvent.resetPassword)
+                    // onEvent(ProfileEvent.resetPassword)
                 }
             ) {
                 Text(
-                    "Reset password"
+                    stringResource(R.string.reset_password)
                 )
             }
 
             if(accountDeletionConfirmationBox) {
                 ProfileConfirmationDialog(
-                    text = "You are about to delete your account. This action is not reversible. Are you absolutely sure?",
+                    text = stringResource(R.string.account_deletion),
                     onContinueClick = { onEvent(ProfileEvent.deleteAccount) },
                     onDismissClick = { accountDeletionConfirmationBox = false }
                 )
@@ -157,11 +163,11 @@ fun ProfileScreen(
 
             if(mediaRecommendationConfirmationBox) {
                 ProfileConfirmationDialog(
-                    text = "You are about to reset your media recommendations. To re-obtain recommendations, you must fill out the questionnaire. Are you sure?",
+                    text = stringResource(R.string.media_recommendation_dialog),
                     onContinueClick = {
                         onEvent(ProfileEvent.resetUserSuggestions)
                         mediaRecommendationConfirmationBox = false
-                    }, // implement dialogue that confirms you reset your recommendations
+                    },
                     onDismissClick = { mediaRecommendationConfirmationBox = false }
                 )
             }
@@ -180,7 +186,7 @@ fun ProfileScreenTopBar() {
         ),
 
         title = {
-            Text("Profile")
+            Text(stringResource(R.string.account))
         },
 
         modifier = Modifier.padding(bottom = 16.dp)
@@ -199,12 +205,12 @@ fun ProfileConfirmationDialog(
         text = { Text(text) },
         confirmButton = {
             Button(onClick = { onContinueClick() }) {
-                Text("Continue")
+                Text(stringResource(R.string.continue_dialog))
             }
         },
         dismissButton = {
             Button(onClick = { onDismissClick() }) {
-                Text("Dismiss")
+                Text(stringResource(R.string.dismiss))
             }
         }
     )

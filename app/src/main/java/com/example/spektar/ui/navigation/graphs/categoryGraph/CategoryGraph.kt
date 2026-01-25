@@ -36,24 +36,16 @@ fun NavGraphBuilder.CategoryGraph(
     navController: NavController,
     selectedIconProvider: () -> Int,
     onBottomBarClick: (Int) -> Unit,
+    mediaViewModel: MediaViewModel
 ) {
     navigation<Media>(startDestination = CategoryScreen) {
-        composable<CategoryScreen> { backStackEntry ->
-            val parentEntry = remember(backStackEntry) {
-                navController.getBackStackEntry(Media::class)
-            }
-
-            val mediaViewModel : MediaViewModel = viewModel<MediaViewModel> (
-                viewModelStoreOwner = parentEntry,
-                factory = MediaViewModelFactory(MediaServiceImpl(), AccountServiceImpl()),
-            )
+        composable<CategoryScreen> {
             val state = mediaViewModel.uiState.collectAsStateWithLifecycle()
 
             CategoryScreen(
                 onEvent = { event ->
                     mediaViewModel.onEvent(event)
                 },
-                // this must go to profile
                 goToProfile = { navController.safeNavigate(ProfileScreen)  },
                 onImageClick = { media ->
                     navController.safeNavigate(
@@ -80,12 +72,7 @@ fun NavGraphBuilder.CategoryGraph(
                 imageUrl = args.partialMediaData.imageUrl
             )) }
 
-            val mediaViewModel : MediaViewModel = viewModel<MediaViewModel> (
-                viewModelStoreOwner = backStackEntry,
-                factory = MediaViewModelFactory(MediaServiceImpl(), AccountServiceImpl()),
-            )
-
-            LaunchedEffect(args.partialMediaData) { // best loaded in init{} block?
+            LaunchedEffect(args.partialMediaData) {
                 state = mediaViewModel.obtainMediaById(args.partialMediaData)
             }
 
@@ -103,15 +90,6 @@ fun NavGraphBuilder.CategoryGraph(
             typeMap = mapOf(typeOf<Category>() to navTypeOf<Category>())
         ) { backStackEntry ->
             val args = backStackEntry.toRoute<MoreMedia>()
-
-            val parentEntry = remember(backStackEntry) {
-                navController.getBackStackEntry(Media::class)
-            }
-
-            val mediaViewModel : MediaViewModel = viewModel<MediaViewModel> (
-                viewModelStoreOwner = parentEntry,
-                factory = MediaViewModelFactory(MediaServiceImpl(), AccountServiceImpl()),
-            )
 
             val state = mediaViewModel.uiState.collectAsStateWithLifecycle()
 
@@ -140,7 +118,7 @@ fun NavGraphBuilder.CategoryGraph(
                 factory = NoteViewModelFactory(context)
             )
 
-            LaunchedEffect(args.id) { // // best loaded in init{} block?
+            LaunchedEffect(args.id) {
                 noteViewModel.setMedia(args.id)
             }
 

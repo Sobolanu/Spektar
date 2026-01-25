@@ -41,10 +41,9 @@ fun MoreMedia(
     selectedIcon: Int,
     category: Category,
     state: MediaUiState
-) { // grid screen, use LazyVerticalGrid.
+) {
 
     val scrollBehavior = enterAlwaysScrollBehavior()
-
     val index = when(category.mediaCategory) {
         "Shows" -> 0
         "Books" -> 1

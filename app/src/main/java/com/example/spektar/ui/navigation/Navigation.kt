@@ -14,19 +14,29 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.lifecycle.viewmodel.viewModelFactory
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.rememberNavController
+import com.example.spektar.data.remote.AccountServiceImpl
+import com.example.spektar.data.remote.MediaServiceImpl
 import com.example.spektar.ui.common.ObserveAsEvents
 import com.example.spektar.ui.common.SnackbarController
+import com.example.spektar.ui.mediaScreens.MediaViewModel
+import com.example.spektar.ui.mediaScreens.MediaViewModelFactory
 import com.example.spektar.ui.navigation.bottomBarNavigation.bottomBarNavigation
 import com.example.spektar.ui.navigation.graphs.authGraph.AuthGraph
 import com.example.spektar.ui.navigation.graphs.authGraph.UserLoginScreen
 import com.example.spektar.ui.navigation.graphs.categoryGraph.CategoryGraph
 import com.example.spektar.ui.navigation.graphs.categoryGraph.CategoryScreen
 import com.example.spektar.ui.navigation.graphs.common.CommonGraph
+import com.example.spektar.ui.navigation.graphs.common.HomeScreen
 import com.example.spektar.ui.navigation.graphs.settingsGraph.SettingsGraph
+import com.example.spektar.ui.navigation.graphs.settingsGraph.SettingsScreen
 import kotlinx.coroutines.launch
 
 /*
@@ -38,6 +48,9 @@ i don't have time to migrate to Navigation3) type-safe navigation, which is also
 fun SpektarNavigation() {
     val navController = rememberNavController()
     val snackbarHostState = remember { SnackbarHostState() }
+
+    // used to specify the currently selected icon in the app's bottom bar
+    var selectedIcon by rememberSaveable { mutableIntStateOf(0) }
 
     val scope = rememberCoroutineScope()
     ObserveAsEvents(
@@ -59,18 +72,33 @@ fun SpektarNavigation() {
         }
     }
 
+    val destinationList = listOf(
+        "com.example.spektar.ui.navigation.graphs.common.HomeScreen",
+        "com.example.spektar.ui.navigation.graphs.categoryGraph.CategoryScreen",
+        "com.example.spektar.ui.navigation.graphs.settingsGraph.SettingsScreen"
+    )
+
+
     // serves to remove snackbar upon navigation to a different screen
+    // and to set the correct selectedIcon for my bottom bars
     LaunchedEffect(navController) {
-        navController.addOnDestinationChangedListener { _, _, _ ->
+        navController.addOnDestinationChangedListener { _, destination, _ ->
             snackbarHostState.currentSnackbarData?.dismiss()
             SnackbarController.markDismissed()
+
+            when (destination.route) {
+                destinationList[0] -> { selectedIcon = 0 }
+                destinationList[1] -> { selectedIcon = 1 }
+                destinationList[2] -> { selectedIcon = 2 }
+            }
         }
     }
 
-    // used to specify the currently selected icon in the app's bottom bar
-    var selectedIcon by remember { mutableIntStateOf(0) }
+    // this viewModel is scoped to this activity because it's very expensive and i'd rather the data load at the very start.
+    val mediaViewModel : MediaViewModel = viewModel<MediaViewModel> (
+        factory = MediaViewModelFactory(MediaServiceImpl(), AccountServiceImpl()),
+    )
 
-    // start will be UserLoginScreen(false)
     Scaffold(
         snackbarHost = {
             SnackbarHost(
@@ -108,14 +136,14 @@ fun SpektarNavigation() {
             }
         ) {
             AuthGraph(
-                navController = navController,
+                navController = navController
             )
 
             CategoryGraph(
                 navController = navController,
-                onBottomBarClick = { index -> // where selectedIcon gets changed
+                mediaViewModel = mediaViewModel,
+                onBottomBarClick = { index ->
                     if (selectedIcon != index) {
-                        selectedIcon = index
                         bottomBarNavigation(navController, index)
                     }
                 },
@@ -126,7 +154,6 @@ fun SpektarNavigation() {
                 navController = navController,
                 onBottomBarClick = { index ->
                     if (selectedIcon != index) {
-                        selectedIcon = index
                         bottomBarNavigation(navController, index)
                     }
                 },
@@ -137,7 +164,6 @@ fun SpektarNavigation() {
                 navController = navController,
                 onBottomBarClick = { index ->
                     if (selectedIcon != index) {
-                        selectedIcon = index
                         bottomBarNavigation(navController, index)
                     }
                 },

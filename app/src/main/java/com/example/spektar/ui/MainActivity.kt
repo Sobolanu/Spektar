@@ -21,6 +21,7 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContent {
+            // this viewModel is scoped to activity-level as default for theme
             val dataStoreViewModel: DataStoreViewModel by viewModels {
                 DataStoreViewModelFactory(applicationContext.dataStore)
             }

@@ -14,5 +14,5 @@ data class SpecificMedia(
     val imageUrl: String = "",
     val description: String = "",
     val credits: String = "",
-    val releaseDate: String = ""
+    val release_date: String = ""
 )

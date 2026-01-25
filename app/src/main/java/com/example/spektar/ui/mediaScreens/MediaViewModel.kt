@@ -3,15 +3,15 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import com.example.spektar.data.model.media.MediaPreview
-import com.example.spektar.domain.model.SpecificMedia
 import com.example.spektar.data.repository.globalCategoryList
+import com.example.spektar.domain.model.SpecificMedia
 import com.example.spektar.domain.model.services.AccountService
 import com.example.spektar.domain.model.services.MediaService
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
-import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.stateIn

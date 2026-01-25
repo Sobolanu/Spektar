@@ -7,7 +7,7 @@ import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
 import androidx.navigation.toRoute
 import com.example.spektar.data.remote.AccountServiceImpl
-import com.example.spektar.ui.navigation.graphs.categoryGraph.CategoryScreen
+import com.example.spektar.ui.navigation.graphs.common.HomeScreen
 import com.example.spektar.ui.navigation.utils.navTypeOf
 import com.example.spektar.ui.navigation.utils.safeNavigate
 import com.example.spektar.ui.userAuthScreens.loginScreen.SignInViewModel
@@ -25,15 +25,16 @@ fun NavGraphBuilder.AuthGraph(
         typeMap = mapOf(typeOf<UserLoginScreen>() to navTypeOf<UserLoginScreen>())
     ) { backStackEntry ->
         val args = backStackEntry.toRoute<UserLoginScreen>()
-
         val signInViewModel: SignInViewModel = viewModel(
             factory = SignInViewModelFactory(accountService = AccountServiceImpl())
         )
-
         val uiState = signInViewModel.signInState.collectAsStateWithLifecycle()
 
         UserLoginScreen(
-            onSignInClick = { navController.safeNavigate(CategoryScreen) }, // placeholder route until i make home screen
+            // this just prevents people from going back to the login screen and whatnot
+            onSignInClick = { navController.navigate(HomeScreen) {
+                popUpTo(UserLoginScreen::class) { inclusive = true }
+            } },
             onTextClick = { navController.safeNavigate(UserRegistrationScreen) },
             state = uiState.value,
             onEvent = { authEvent ->

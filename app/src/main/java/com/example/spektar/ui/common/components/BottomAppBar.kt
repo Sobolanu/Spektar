@@ -21,21 +21,18 @@ fun BottomBar(
     onBottomBarItemClick: ( Int ) -> Unit,
     selectedIcon: Int,
 ) {
-    var selectedItemIndex by rememberSaveable { mutableStateOf(selectedIcon) }
-
     NavigationBar(
         containerColor = MaterialTheme.colorScheme.tertiaryContainer, // tertiary
         contentColor = MaterialTheme.colorScheme.onTertiaryContainer
     ) {
         bottomIcons.forEachIndexed{ index, item ->
             NavigationBarItem(
-                selected = (selectedItemIndex == index),
+                selected = (selectedIcon == index),
 
-                onClick = {
-                    if(selectedItemIndex != index) {
-                        selectedItemIndex = index
+                onClick = { // responsible for changing the selectedIcon
+                    if(selectedIcon != index) {
                         onBottomBarItemClick(index)
-                    } // responsible for changing the selectedIcon
+                    }
                 },
 
                 label = {
@@ -48,7 +45,7 @@ fun BottomBar(
 
                 icon = {
                     Icon(
-                        imageVector = if(index == selectedItemIndex) {
+                        imageVector = if(index == selectedIcon) {
                             item.selectedIcon
                         } else item.unselectedIcon,
                         contentDescription = stringResource(item.title)

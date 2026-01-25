@@ -39,4 +39,15 @@
     <string name="add_a_new_note">Dodaj novu bilješku.</string>
     <string name="add_note">Dodaj bilješku</string>
     <string name="titles_of_notes_must_be_unique">Naslovi bilješka moraju biti različiti.</string>
+    <string name="discover">Otkrijte</string>
+    <string name="email_confirmation">Email za potvrdu naloga vam je poslat na mail adresu. Potvrdite prije nastavljanja.</string>
+    <string name="continue_dialog">Nastavite</string>
+    <string name="dismiss">Odbaci</string>
+    <string name="sign_out">Odjava</string>
+    <string name="delete_account">Izbrisati nalog</string>
+    <string name="reset_media_recommendations">Obnovi preporuke za medije</string>
+    <string name="account_deletion">Ukoliko izbrišite nalog, neće se moći obnoviti. Jeste li sigurni?</string>
+    <string name="media_recommendation_dialog">Ukoliko obnovite preporuke, moraćete ponoviti upitnik. Jeste li sigurni?</string>
+    <string name="reset_password">Promjena šifre (trenutno ne radi)</string>
+    <string name="search">Pretraga</string>
 </resources>

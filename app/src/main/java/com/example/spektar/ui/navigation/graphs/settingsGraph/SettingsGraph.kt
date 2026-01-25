@@ -76,11 +76,11 @@ fun NavGraphBuilder.SettingsGraph(
         }
 
         composable<HelpSupportScreen> {
-            HomeScreen() // placeholder
+            // HomeScreen() // placeholder
         }
 
         composable<DonateScreen> {
-           HomeScreen() // placeholder
+           // HomeScreen() // placeholder
         }
     }
 }

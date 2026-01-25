@@ -2,7 +2,7 @@
 <resources>
     <string name="app_name"> Spektar </string>
     <string name="dynamic_color_title">Dinamičke boje</string>
-    <string name="dynamic_color_info_box_text">Dinamičke boje povezuje boje sa pozadine telefona i aplikacijom. Dinamičke boje moraju biti upaljene u postavkama uređaja.</string>
+    <string name="dynamic_color_info_box_text">"Dinamičke boje" povezuje boje sa pozadine telefona i aplikacijom. Dinamičke boje moraju biti upaljene u postavkama uređaja.</string>
     <string name="light_dark_scheme_title">Svijetli/Tamni način</string>
     <string name="light_dark_scheme_info_box_text"> Automatski način za aplikaciju je svijetli način, ali pri dodiru će se prebaciti na tamni način.</string>
     <string name="theme_screen_top_bar_text">Tema i Pristupačnost</string>
@@ -39,4 +39,15 @@
     <string name="add_a_new_note">Dodaj novu bilješku.</string>
     <string name="add_note">Dodaj bilješku</string>
     <string name="titles_of_notes_must_be_unique">Naslovi bilješka moraju biti različiti.</string>
+    <string name="discover">Otkrijte</string>
+    <string name="email_confirmation">Email za potvrdu naloga vam je poslat na mail adresu. Potvrdite prije nastavljanja.</string>
+    <string name="continue_dialog">Nastavi</string>
+    <string name="dismiss">Odbaci</string>
+    <string name="sign_out">Odjava</string>
+    <string name="delete_account">Izbrisati nalog</string>
+    <string name="reset_media_recommendations">Obnovi preporuke za medije</string>
+    <string name="account_deletion">Ukoliko izbrišite nalog, neće se moći obnoviti. Jeste li sigurni?</string>
+    <string name="media_recommendation_dialog">Ukoliko obnovite preporuke, moraćete ponoviti upitnik. Jeste li sigurni?</string>
+    <string name="reset_password">Promjena šifre (trenutno ne radi)</string>
+    <string name="search">Pretraga</string>
 </resources>

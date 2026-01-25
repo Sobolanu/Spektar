@@ -50,6 +50,8 @@ fun NavGraphBuilder.CommonGraph(
         HomeScreen(
             onBottomBarItemClick = onBottomBarClick,
             selectedIcon = selectedIconProvider(),
+
+            goToProfile = { navController.safeNavigate(ProfileScreen) }
         )
     }
 

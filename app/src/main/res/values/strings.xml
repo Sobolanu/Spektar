@@ -38,4 +38,15 @@
     <string name="add_a_new_note">Add a new note.</string>
     <string name="add_note">Add note</string>
     <string name="titles_of_notes_must_be_unique">Titles of notes must be unique.</string>
+    <string name="discover">Discover</string>
+    <string name="email_confirmation">A confirmation mail has been sent to your email account. Please confirm before proceeding.</string>
+    <string name="continue_dialog">Continue</string>
+    <string name="dismiss">Odbaci</string>
+    <string name="sign_out">Sign out</string>
+    <string name="delete_account">Delete account (does nothing for now)</string>
+    <string name="reset_media_recommendations">Reset media recommendations</string>
+    <string name="account_deletion">You are about to delete your account. This action is not reversible. Are you absolutely sure?</string>
+    <string name="media_recommendation_dialog">You are about to reset your media recommendations. To re-obtain recommendations, you must fill out the questionnaire. Are you sure?</string>
+    <string name="reset_password">Reset password (doesn\'t do anything right now)</string>
+    <string name="search">Search</string>
 </resources>
