@@ -1,13 +1,10 @@
 package com.example.spektar.ui
 
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -26,7 +23,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.unit.dp
 import com.example.spektar.R
 import com.example.spektar.ui.common.components.BottomBar
 import com.example.spektar.ui.common.components.navigationBarIcons.topProfileIcon
@@ -62,10 +58,6 @@ fun HomeScreen(
                 .padding(paddingValues)
         ) {
             item {
-                SplashScreen(
-                    onTimeout = { }
-                )
-
                 Image(
                     painterResource(R.drawable.app_logo_transparent), // placeholder for now, add logo of the app
                     contentDescription = stringResource(R.string.logo_description)

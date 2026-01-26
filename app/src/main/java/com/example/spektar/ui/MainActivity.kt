@@ -10,15 +10,27 @@ import androidx.activity.viewModels
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import com.example.compose.SpektarTheme
 import com.example.spektar.data.local.DataStore.dataStore
+import com.example.spektar.data.remote.AccountServiceImpl
 import com.example.spektar.ui.navigation.SpektarNavigation
 import com.example.spektar.ui.settingsScreen.DataStoreViewModel
 import com.example.spektar.ui.settingsScreen.DataStoreViewModelFactory
 
 class MainActivity : ComponentActivity() {
+    private val viewModel : MainViewModel by viewModels {
+        MainViewModelFactory(AccountServiceImpl())
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        installSplashScreen().apply {
+            setKeepOnScreenCondition {
+                !viewModel.isReady.value
+            }
+        }
+
         enableEdgeToEdge()
         setContent {
             // this viewModel is scoped to activity-level as default for theme
@@ -33,7 +45,9 @@ class MainActivity : ComponentActivity() {
                 dynamicColor = dynamicColorState,
                 darkTheme = darkThemeState
             ) {
-                SpektarNavigation()
+                SpektarNavigation(
+                    viewModel.userAuthenticated.value
+                )
             }
         }
     }

@@ -8,14 +8,12 @@ TODO:
             have a progress counter (current progress is X, Y is max progress, optional daily goal for books)
 
         - questionnaire screen
-        - splash screen - app logo somehow slowly gaining color
         - make a color palette cause material3 builder highk sucks?
 
     TODO: ### BACK-END
 
-        - after splash screen designing, have the app auto log-on if you have made an account
         - questionnaire (to fill out user's embedding), maybe some data-tracking for user embedding improvement
-
+        - user ratings
         - sort out error handling
             - handle any potential errors from supabase and shit
             - ERRORS SHOULD BE HANDLED IN VIEWMODELS!!!

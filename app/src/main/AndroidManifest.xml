@@ -11,7 +11,7 @@
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
-        android:theme="@style/Theme.Spektar">
+        android:theme="@style/Theme.App.Starting">>
         <service
             android:name="androidx.appcompat.app.AppLocalesMetadataHolderService"
             android:enabled="true"
@@ -24,8 +24,7 @@
             android:name=".ui.MainActivity"
             android:exported="true"
             android:hardwareAccelerated="true"
-            android:label="@string/app_name"
-            android:theme="@style/Theme.Spektar">
+            android:label="@string/app_name">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 

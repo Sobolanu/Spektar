@@ -1,5 +1,6 @@
 package com.example.spektar.ui.navigation
 
+import android.annotation.SuppressLint
 import androidx.compose.animation.AnimatedContentTransitionScope
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.layout.fillMaxSize
@@ -21,6 +22,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.rememberNavController
 import com.example.spektar.data.remote.AccountServiceImpl
 import com.example.spektar.data.remote.MediaServiceImpl
+import com.example.spektar.ui.HomeScreen
 import com.example.spektar.ui.common.ObserveAsEvents
 import com.example.spektar.ui.common.SnackbarController
 import com.example.spektar.ui.mediaScreens.MediaViewModel
@@ -30,6 +32,7 @@ import com.example.spektar.ui.navigation.graphs.authGraph.AuthGraph
 import com.example.spektar.ui.navigation.graphs.authGraph.UserLoginScreen
 import com.example.spektar.ui.navigation.graphs.categoryGraph.CategoryGraph
 import com.example.spektar.ui.navigation.graphs.common.CommonGraph
+import com.example.spektar.ui.navigation.graphs.common.HomeScreen
 import com.example.spektar.ui.navigation.graphs.settingsGraph.SettingsGraph
 import kotlinx.coroutines.launch
 
@@ -38,8 +41,11 @@ Navigation uses "modern" (used to be modern, however Navigation3 came out but i'
 i don't have time to migrate to Navigation3) type-safe navigation, which is also quite easy to work with.
  */
 
+@SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
-fun SpektarNavigation() {
+fun SpektarNavigation(
+    userAuthState: Boolean
+) {
     val navController = rememberNavController()
     val snackbarHostState = remember { SnackbarHostState() }
 
@@ -93,6 +99,12 @@ fun SpektarNavigation() {
         factory = MediaViewModelFactory(MediaServiceImpl(), AccountServiceImpl()),
     )
 
+    val start = if(userAuthState == true) {
+        HomeScreen
+    } else {
+        UserLoginScreen(false)
+    }
+
     Scaffold(
         snackbarHost = {
             SnackbarHost(
@@ -103,7 +115,7 @@ fun SpektarNavigation() {
     ) {
         NavHost(
             navController = navController,
-            startDestination = UserLoginScreen(false),
+            startDestination = start,
             enterTransition = {
                 slideIntoContainer(
                     AnimatedContentTransitionScope.SlideDirection.Start,
