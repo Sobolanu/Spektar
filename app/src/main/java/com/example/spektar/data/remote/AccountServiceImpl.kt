@@ -34,6 +34,7 @@ class AccountServiceImpl : AccountService {
                     is SessionStatus.Authenticated -> {
                         _sessionFlow.value = status.session
                     }
+
                     is SessionStatus.NotAuthenticated -> {
                         _sessionFlow.value = null
                     }

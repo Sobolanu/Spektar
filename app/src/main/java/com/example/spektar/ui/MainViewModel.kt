@@ -23,7 +23,7 @@ class MainViewModel(
 
     init {
         viewModelScope.launch {
-            if(accountService.retrieveSession() != null) {
+            if(accountService.sessionFlow != null) {
                 _userAuthenticated.value = true
             } else {
                 _userAuthenticated.value = false
