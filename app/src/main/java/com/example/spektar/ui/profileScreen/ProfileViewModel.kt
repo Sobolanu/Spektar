@@ -65,8 +65,10 @@ class ProfileViewModel(
             }
 
             is ProfileEvent.resetUserSuggestions -> {
+                val emptyEmbedding = List(47, { 0 })
+
                 viewModelScope.launch(ioDispatcher) {
-                    accountService.resetUserSuggestions(state.value.id)
+                    accountService.updateUserSuggestions(state.value.id, emptyEmbedding)
                 }
             }
 

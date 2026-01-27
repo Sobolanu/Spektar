@@ -28,6 +28,7 @@ interface AccountService{
     suspend fun updateAvatar(userId: String, avatar: File, username: String): Either<DataUploadFailure, Unit>
     fun storageUrl(url: String) : String
     suspend fun changePassword(userId: String, oldPassword: String, newPassword: String)
-
     suspend fun resetUserSuggestions(userId: String): Either<DataUploadFailure, Unit>
+
+    suspend fun updateUserSuggestions(userId: String, embedding: List<Int>) : Either<DataUploadFailure, Unit>
 }

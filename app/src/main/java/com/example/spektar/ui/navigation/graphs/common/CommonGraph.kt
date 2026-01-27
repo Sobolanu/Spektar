@@ -16,6 +16,9 @@ import com.example.spektar.ui.profileScreen.ProfileEvent
 import com.example.spektar.ui.profileScreen.ProfileScreen
 import com.example.spektar.ui.profileScreen.ProfileViewModel
 import com.example.spektar.ui.profileScreen.ProfileViewModelFactory
+import com.example.spektar.ui.questionnaireScreen.QuestionnaireScreen
+import com.example.spektar.ui.questionnaireScreen.QuestionnaireViewModel
+import com.example.spektar.ui.questionnaireScreen.QuestionnaireViewModelFactory
 import kotlin.reflect.typeOf
 
 fun NavGraphBuilder.CommonGraph(
@@ -51,7 +54,8 @@ fun NavGraphBuilder.CommonGraph(
             onBottomBarItemClick = onBottomBarClick,
             selectedIcon = selectedIconProvider(),
 
-            goToProfile = { navController.safeNavigate(ProfileScreen) }
+            goToProfile = { navController.safeNavigate(ProfileScreen) },
+            goToQuestionnaireScreen = {navController.safeNavigate(QuestionnaireScreen)}
         )
     }
 
@@ -60,5 +64,17 @@ fun NavGraphBuilder.CommonGraph(
     ) { backStackEntry ->
         val args = backStackEntry.toRoute<AppErrorScreen>()
         ErrorScreen(args.errorMessage)
+    }
+
+    composable<QuestionnaireScreen> {
+        val viewModel: QuestionnaireViewModel = viewModel<QuestionnaireViewModel>(
+            factory = QuestionnaireViewModelFactory(accountService = AccountServiceImpl())
+        )
+
+        QuestionnaireScreen(
+            onEvent = { event ->
+                viewModel.onEvent(event)
+            }
+        )
     }
 }

@@ -7,11 +7,9 @@ TODO:
             - this home screen would contain pieces of media you're currently consuming, and they'd
             have a progress counter (current progress is X, Y is max progress, optional daily goal for books)
 
-        - questionnaire screen
         - make a color palette cause material3 builder highk sucks?
 
     TODO: ### BACK-END
 
         - js fix sign-in after signing up
-        - questionnaire (to fill out user's embedding), maybe some data-tracking for user embedding improvement
         - user ratings (0-5 stars)

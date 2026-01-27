@@ -6,3 +6,5 @@ import kotlinx.serialization.Serializable
 @Serializable object ProfileScreen
 
 @Serializable object HomeScreen
+
+@Serializable object QuestionnaireScreen

@@ -257,12 +257,30 @@ class AccountServiceImpl : AccountService {
     }
 
 
+    // have as backup just in case
     override suspend fun resetUserSuggestions(userId: String) : Either<DataUploadFailure, Unit> = either {
         try {
             val emptyEmbedding = List(47, { 0 })
 
             SupabaseClientProvider.db.from("profiles").update(
                 mapOf("user_embedding" to "$emptyEmbedding")
+            ) {
+                filter { eq("id", userId) }
+            }
+
+            Either.Right(Unit)
+        } catch (e: Exception) {
+            Exception("Unknown Supabase DB error.")
+        }
+    }
+
+    override suspend fun updateUserSuggestions(
+        userId: String,
+        embedding: List<Int>
+    ): Either<DataUploadFailure, Unit> = either {
+        try {
+            SupabaseClientProvider.db.from("profiles").update(
+                mapOf("user_embedding" to "$embedding")
             ) {
                 filter { eq("id", userId) }
             }

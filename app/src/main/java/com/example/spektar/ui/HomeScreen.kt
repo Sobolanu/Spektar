@@ -5,6 +5,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.material3.Button
 import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -30,6 +31,7 @@ import com.example.spektar.ui.common.components.navigationBarIcons.topProfileIco
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun HomeScreen(
+    goToQuestionnaireScreen: () -> Unit,
     goToProfile: () -> Unit,
     selectedIcon: Int,
     onBottomBarItemClick: (Int) -> Unit
@@ -59,12 +61,20 @@ fun HomeScreen(
         ) {
             item {
                 Image(
-                    painterResource(R.drawable.app_logo_transparent), // placeholder for now, add logo of the app
+                    painterResource(R.drawable.app_logo_transparent_old),
                     contentDescription = stringResource(R.string.logo_description)
                 )
             }
 
-
+            item {
+                Button(
+                    onClick = { goToQuestionnaireScreen() }
+                ) {
+                    Text(
+                        stringResource(R.string.fill_out_questionnaire)
+                    )
+                }
+            }
         }
     }
 }

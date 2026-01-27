@@ -61,7 +61,6 @@ fun UserLoginScreen(
     showEmailPopUp : Boolean,
     onEvent: (AuthEvent) -> Unit
 ) {
-
     if(state.signInFinished) {
         onSignInClick()
     }
