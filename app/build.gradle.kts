@@ -105,4 +105,8 @@ dependencies {
 
     // SplashScreen
     implementation("androidx.core:core-splashscreen:1.2.0")
+
+    // Arrow
+    implementation(libs.arrow.core)
+    implementation(libs.arrow.fx.coroutines)
 }

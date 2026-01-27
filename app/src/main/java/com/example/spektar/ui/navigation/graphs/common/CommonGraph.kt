@@ -6,7 +6,7 @@ import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
 import androidx.navigation.toRoute
-import com.example.spektar.data.remote.AccountServiceImpl
+import com.example.spektar.data.remote.authService.AccountServiceImpl
 import com.example.spektar.ui.HomeScreen
 import com.example.spektar.ui.common.ErrorScreen
 import com.example.spektar.ui.navigation.graphs.authGraph.UserLoginScreen

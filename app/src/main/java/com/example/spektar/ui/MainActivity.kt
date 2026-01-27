@@ -13,7 +13,7 @@ import androidx.compose.runtime.getValue
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import com.example.compose.SpektarTheme
 import com.example.spektar.data.local.DataStore.dataStore
-import com.example.spektar.data.remote.AccountServiceImpl
+import com.example.spektar.data.remote.authService.AccountServiceImpl
 import com.example.spektar.ui.navigation.SpektarNavigation
 import com.example.spektar.ui.settingsScreen.DataStoreViewModel
 import com.example.spektar.ui.settingsScreen.DataStoreViewModelFactory

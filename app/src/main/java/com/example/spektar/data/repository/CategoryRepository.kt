@@ -3,6 +3,8 @@ package com.example.spektar.data.repository
 import androidx.compose.ui.graphics.Color
 import com.example.spektar.ui.mediaScreens.Category
 
+// hardcoded as opposed to fetched because fetching this from a db would be pointless
+
 private val shows = Category("Shows", Color(0xFF06783F))
 private val books = Category("Books", Color(0xFFFF5D60))
 private val games = Category("Games", Color(0xFFEFD07A))

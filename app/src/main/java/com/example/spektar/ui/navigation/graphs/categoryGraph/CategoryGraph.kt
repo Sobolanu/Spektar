@@ -15,14 +15,11 @@ import androidx.navigation.compose.navigation
 import androidx.navigation.toRoute
 import com.example.spektar.data.model.media.MediaPreview
 import com.example.spektar.data.model.roomModels.MediaId
-import com.example.spektar.data.remote.AccountServiceImpl
-import com.example.spektar.data.remote.MediaServiceImpl
 import com.example.spektar.domain.model.SpecificMedia
 import com.example.spektar.ui.mediaScreens.Category
 import com.example.spektar.ui.mediaScreens.CategoryScreen
 import com.example.spektar.ui.mediaScreens.MediaDetailsScreen
 import com.example.spektar.ui.mediaScreens.MediaViewModel
-import com.example.spektar.ui.mediaScreens.MediaViewModelFactory
 import com.example.spektar.ui.mediaScreens.MoreMedia
 import com.example.spektar.ui.navigation.graphs.common.ProfileScreen
 import com.example.spektar.ui.navigation.utils.navTypeOf
@@ -66,6 +63,7 @@ fun NavGraphBuilder.CategoryGraph(
         ) { backStackEntry ->
             val args = backStackEntry.toRoute<MediaDetails>()
 
+            // too slow, must be optimized
             var state by remember { mutableStateOf(SpecificMedia(
                 id_uuid = args.partialMediaData.id_uuid,
                 name = args.partialMediaData.name,

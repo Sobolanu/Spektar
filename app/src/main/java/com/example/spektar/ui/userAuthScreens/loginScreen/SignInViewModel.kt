@@ -37,7 +37,14 @@ class SignInViewModel(
 
             is AuthEvent.SignIn -> {
                 viewModelScope.launch(ioDispatcher) {
-                    accountService.signIn(signInState.value)
+                    accountService.signIn(signInState.value).fold(
+                        ifLeft = { failure ->
+                            // handle failure here
+                        },
+                        ifRight = { success ->
+                            // leave empty
+                        }
+                    )
                 }
 
             }

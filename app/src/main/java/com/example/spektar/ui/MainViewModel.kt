@@ -12,8 +12,7 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 
 class MainViewModel(
-    accountService: AccountService,
-    private val ioDispatcher: CoroutineDispatcher = Dispatchers.IO
+    accountService: AccountService
 ) : ViewModel() {
     private val _isReady = MutableStateFlow(false)
     val isReady = _isReady.asStateFlow()

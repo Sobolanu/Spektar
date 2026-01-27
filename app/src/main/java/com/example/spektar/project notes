@@ -13,7 +13,7 @@ TODO:
     TODO: ### BACK-END
 
         - questionnaire (to fill out user's embedding), maybe some data-tracking for user embedding improvement
-        - user ratings
+        - user ratings (0-5 stars)
         - sort out error handling
             - handle any potential errors from supabase and shit
             - ERRORS SHOULD BE HANDLED IN VIEWMODELS!!!

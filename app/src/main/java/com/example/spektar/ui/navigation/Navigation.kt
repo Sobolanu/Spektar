@@ -20,9 +20,8 @@ import androidx.compose.ui.Modifier
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.rememberNavController
-import com.example.spektar.data.remote.AccountServiceImpl
-import com.example.spektar.data.remote.MediaServiceImpl
-import com.example.spektar.ui.HomeScreen
+import com.example.spektar.data.remote.authService.AccountServiceImpl
+import com.example.spektar.data.remote.mediaService.MediaServiceImpl
 import com.example.spektar.ui.common.ObserveAsEvents
 import com.example.spektar.ui.common.SnackbarController
 import com.example.spektar.ui.mediaScreens.MediaViewModel

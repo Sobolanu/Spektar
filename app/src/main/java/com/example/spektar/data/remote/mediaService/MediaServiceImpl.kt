@@ -1,9 +1,10 @@
-package com.example.spektar.data.remote
+package com.example.spektar.data.remote.mediaService
 
 import com.example.spektar.data.model.edgeFunctionModels.EdgeResponse
 import com.example.spektar.data.model.edgeFunctionModels.IdPayload
 import com.example.spektar.data.model.media.MediaLookup
 import com.example.spektar.data.model.media.MediaPreview
+import com.example.spektar.data.remote.SupabaseClientProvider
 import com.example.spektar.domain.model.SpecificMedia
 import com.example.spektar.data.repository.MediaRepository
 import com.example.spektar.data.repository.globalCategoryList
@@ -34,6 +35,19 @@ data class MediaLookupRow(
 )
 
 class MediaServiceImpl : MediaService {
+
+    /* override suspend fun searchByName(name: String): List<MediaPreview> {
+        val data = SupabaseClientProvider.db
+            .from("media_lookup")
+            .select(Columns.list("id_uuid", "image_url", "media_name")) {
+                filter {
+                    textSearch("media_name", name, TextSearchType.PHRASETO)
+                }
+            }
+            .decodeList<MediaLookupRow>()
+
+        return data.map { MediaPreview(it.id_uuid, it.image_url, it.media_name) }
+    } */
     override suspend fun searchByName(name: String): List<MediaPreview> {
         val data = SupabaseClientProvider.db
             .from("media_lookup")

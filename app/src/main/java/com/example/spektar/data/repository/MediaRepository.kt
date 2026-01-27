@@ -7,6 +7,8 @@ import io.github.jan.supabase.postgrest.query.Columns
 import io.github.jan.supabase.postgrest.query.filter.FilterOperator
 
 object MediaRepository {
+    
+    // makes a List<MediaPreview> from my database.
     suspend fun getAllMediaInCategory(category: String, mediaIds: List<String>): List<MediaPreview> {
         val rows = SupabaseClientProvider.db.from(category)
             .select(Columns.list("id_uuid", "name", "imageUrl")) {
