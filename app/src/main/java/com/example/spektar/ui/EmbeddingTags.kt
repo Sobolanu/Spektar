@@ -62,10 +62,14 @@ fun removeWhiteSpace(menuName: String): String {
     return menuName.replace(" ", "_")
 }
 
+fun removeEmDashes(menuName: String): String {
+    return menuName.replace("-", "_")
+}
+
 // parse string name to enum index
 fun stringToEnumParser(tagName: String): Int {
     var parsedTag = tagName.uppercase()
-    parsedTag.replace('-', '_')
+    parsedTag = removeEmDashes(parsedTag)
     parsedTag = removeWhiteSpace(parsedTag)
 
     val a : Tags = enumValueOf(parsedTag)
