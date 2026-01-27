@@ -20,12 +20,15 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarDuration
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -37,8 +40,12 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import coil.compose.rememberAsyncImagePainter
 import com.example.spektar.R
+import com.example.spektar.ui.common.SnackbarAction
+import com.example.spektar.ui.common.SnackbarController
+import com.example.spektar.ui.common.SnackbarEvent
 import com.example.spektar.ui.userAuthScreens.AuthEvent
 import com.example.spektar.ui.userAuthScreens.states.SignUpState
+import kotlinx.coroutines.launch
 import java.io.File
 
 @Composable
@@ -55,13 +62,41 @@ fun UserRegistrationScreen(
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center
         ) {
-            var selectedImageUri by remember { mutableStateOf<Uri?>(null) }
+
+            if(state.signUpFinished) {
+                onSignUp()
+            }
+
             val context = LocalContext.current
+            val scope = rememberCoroutineScope()
+
+            var selectedImageUri by remember {
+                mutableStateOf<Uri?>(Uri.parse( "android.resource://${context.packageName}/${R.drawable.blank_profile_picture}" ))
+            }
+
+            if(state.snackBarText != null) {
+                scope.launch {
+                    SnackbarController.sendEvent(
+                        SnackbarEvent(
+                            message = state.snackBarText,
+                            action = SnackbarAction("", { }), // empty on purpose
+                            duration = SnackbarDuration.Short
+                        )
+                    )
+                }
+            }
 
             val painter = if (selectedImageUri != null) {
                 rememberAsyncImagePainter(selectedImageUri)
             } else {
                 painterResource(R.drawable.blank_profile_picture) // add default gray profile
+            }
+
+            LaunchedEffect(selectedImageUri) {
+                selectedImageUri?.let { uri ->
+                    val image = context.copyUriToFile(uri)
+                    onEvent(AuthEvent.SetAvatar(image))
+                }
             }
 
             ImagePicker(
@@ -70,6 +105,7 @@ fun UserRegistrationScreen(
                     val image = context.copyUriToFile(uri)
                     onEvent(AuthEvent.SetAvatar(image))
                 },
+
                 painter = painter
             )
 
@@ -117,9 +153,12 @@ fun UserRegistrationScreen(
                 horizontalArrangement = Arrangement.End
             ) {
                 Button(
+                    enabled = !state.signUpFinished,
+
                     onClick = {
-                        onEvent(AuthEvent.SignUp(state))
-                        onSignUp()
+                        if(state.email != "" && state.password != "") {
+                            onEvent(AuthEvent.SignUp(state))
+                        }
                     }
                 ) {
                     Text(
@@ -136,7 +175,6 @@ fun UserRegistrationScreen(
     }
 }
 
-// launcher.launch("image/*") inside of your onClick
 @Composable
 fun ImagePicker(
     onImageSelected: (Uri) -> Unit,
@@ -158,7 +196,7 @@ fun ImagePicker(
             painter = painter,
             contentDescription = "Your profile picture",
             modifier = Modifier
-                .size(175.dp), // make circular maybe?
+                .size(175.dp),
 
             contentScale = ContentScale.Crop
         )

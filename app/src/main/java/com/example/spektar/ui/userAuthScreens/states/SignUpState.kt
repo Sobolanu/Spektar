@@ -6,5 +6,8 @@ data class SignUpState(
     val username: String = "",
     val email: String = "",
     val password: String = "",
-    var avatar : File? = null
+    var avatar : File? = null,
+
+    val snackBarText: String? = null,
+    val signUpFinished: Boolean = false
 )

@@ -19,6 +19,7 @@ interface UserAuthFailure : AuthFailure {
     data object WeakPassword: UserAuthFailure
     data object UserAlreadyExists: UserAuthFailure
     data object EmailExists: UserAuthFailure
+    data object UsernameAlreadyExists: UserAuthFailure
 
     // for sign in
     data object UserNotFound: UserAuthFailure

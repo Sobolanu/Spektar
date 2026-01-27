@@ -25,6 +25,7 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarDuration
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
@@ -33,6 +34,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -43,9 +45,13 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import com.example.spektar.R
+import com.example.spektar.ui.common.SnackbarAction
+import com.example.spektar.ui.common.SnackbarController
+import com.example.spektar.ui.common.SnackbarEvent
 import com.example.spektar.ui.userAuthScreens.AuthEvent
 import com.example.spektar.ui.userAuthScreens.states.SignInState
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 
 @Composable
 fun UserLoginScreen(
@@ -55,8 +61,26 @@ fun UserLoginScreen(
     showEmailPopUp : Boolean,
     onEvent: (AuthEvent) -> Unit
 ) {
+
+    if(state.signInFinished) {
+        onSignInClick()
+    }
+
+    val scope = rememberCoroutineScope()
     var visible by remember { mutableStateOf(false) }
     var showEmail by remember { mutableStateOf(showEmailPopUp) }
+
+    if(state.snackBarText != null) {
+        scope.launch {
+            SnackbarController.sendEvent(
+                SnackbarEvent(
+                    message = state.snackBarText,
+                    action = SnackbarAction("", { }), // empty on purpose
+                    duration = SnackbarDuration.Short
+                )
+            )
+        }
+    }
 
     LaunchedEffect(Unit) {
         delay(100) // hardcoded 100ms delay
@@ -138,9 +162,11 @@ fun UserLoginScreen(
             )
 
             Button(
+                enabled = !state.signInFinished,
                 onClick = {
-                    onEvent(AuthEvent.SignIn(state))
-                    onSignInClick()
+                    if(state.email != "" && state.password != "") {
+                        onEvent(AuthEvent.SignIn(state))
+                    }
                 }
             ) {
                 Text(

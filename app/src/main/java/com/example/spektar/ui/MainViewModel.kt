@@ -4,8 +4,6 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import com.example.spektar.domain.model.services.AccountService
-import kotlinx.coroutines.CoroutineDispatcher
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -22,7 +20,7 @@ class MainViewModel(
 
     init {
         viewModelScope.launch {
-            if(accountService.sessionFlow != null) {
+            if(accountService.sessionFlow.value != null) {
                 _userAuthenticated.value = true
             } else {
                 _userAuthenticated.value = false

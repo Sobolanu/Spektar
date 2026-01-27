@@ -3,11 +3,13 @@ package com.example.spektar.ui.userAuthScreens.signUpScreen
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
+import com.example.spektar.data.remote.authService.UserAuthFailure
 import com.example.spektar.domain.model.services.AccountService
 import com.example.spektar.ui.userAuthScreens.AuthEvent
 import com.example.spektar.ui.userAuthScreens.states.SignUpState
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.update
@@ -43,14 +45,38 @@ class SignUpViewModel(
                     username = event.newUsername
                 )}
             }
+
             is AuthEvent.SignUp -> {
                 viewModelScope.launch(ioDispatcher) {
                     accountService.signUp(signUpState.value).fold(
                         ifLeft = { failure ->
-                            // handle failure here
+                            val errorMessage = when(failure) {
+                                is UserAuthFailure.UnexpectedFailure -> "Unexpected authentication failure. Please try again."
+                                is UserAuthFailure.ValidationFailed -> "User validation failed. Please try again."
+                                is UserAuthFailure.RequestTimeout -> "Request timed out. Please try again."
+                                is UserAuthFailure.WeakPassword -> "Password is weak. Are you sure you want to continue?"
+                                is UserAuthFailure.UserAlreadyExists -> "User already exists."
+                                is UserAuthFailure.EmailExists -> "Email is already used by another account."
+                                is UserAuthFailure.EmailAddressInvalid -> "Email address is invalid. Check if it exists."
+                                else -> { "Unexpected authentication error." }
+                            }
+
+                            _signUpState.update { it.copy(
+                                snackBarText = errorMessage
+                            ) }
+
+                            delay(100)
+
+                            _signUpState.update{ it.copy(
+                                snackBarText = null
+                            )}
                         },
-                        ifRight = { success ->
-                            // leave empty
+
+                        ifRight = {
+                            _signUpState.update{ it.copy(
+                                snackBarText = null,
+                                signUpFinished = true
+                            )}
                         }
                     )
                 }

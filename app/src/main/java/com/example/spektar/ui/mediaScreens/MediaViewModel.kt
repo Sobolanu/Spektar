@@ -3,6 +3,8 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import com.example.spektar.data.model.media.MediaPreview
+import com.example.spektar.data.remote.authService.SessionFailure
+import com.example.spektar.data.remote.authService.UserAuthFailure
 import com.example.spektar.data.repository.globalCategoryList
 import com.example.spektar.domain.model.SpecificMedia
 import com.example.spektar.domain.model.services.AccountService
@@ -35,12 +37,15 @@ class MediaViewModel (
     private val _media = MutableStateFlow<SpecificMedia?>(null)
     private val _categories = MutableStateFlow<List<Category>>(emptyList())
     private val _recommendedMedia = MutableStateFlow<List<List<MediaPreview>?>>(List(4) { emptyList() })
-    val uiState = combine(_search, _categories, _recommendedMedia, _media) { search, categories, recommendedMedia, media ->
+
+    private val _snackbarText = MutableStateFlow<String?>(null)
+    val uiState = combine(_search, _categories, _recommendedMedia, _media, _snackbarText) { search, categories, recommendedMedia, media, snackbarText ->
         MediaUiState(
             medias = recommendedMedia,
             searchMedias = search,
             categories = categories,
             media = media,
+            snackBarText = snackbarText
         )
     }.stateIn(scope = viewModelScope, started = SharingStarted.WhileSubscribed(5000), initialValue = MediaUiState())
 
@@ -62,22 +67,41 @@ class MediaViewModel (
         }
     }
 
+    /*
+    AuthErrorCode.SessionNotFound -> SessionFailure.SessionNotFound
+                        AuthErrorCode.SessionExpired -> SessionFailure.SessionExpired
+                        AuthErrorCode.RequestTimeout -> SessionFailure.RequestTimeout
+     */
     init {
         viewModelScope.launch(ioDispatcher) {
             _categories.value = mediaService.getAllCategories()
 
             accountService.sessionFlow.collectLatest { session ->
                 if (session != null) {
-                    val userId = accountService.retrieveUserId()
-                    val recommendedMedia = globalCategoryList.map {
-                        mediaService.fillCategory(
-                            session.accessToken,
-                            userId,
-                            it.mediaCategory.lowercase()
-                        )
-                    }
+                    accountService.retrieveUserId().fold(
+                        ifLeft = { failure ->
+                            val errorMessage = when(failure) {
+                                is SessionFailure.SessionNotFound -> "Session not found, please log in again."
+                                is SessionFailure.SessionExpired -> "Session expired, please log in again."
+                                is SessionFailure.RequestTimeout -> "Request timed out, please retry."
+                                else -> {"Unknown authentication error."}
+                            }
 
-                    _recommendedMedia.value = recommendedMedia
+                            _snackbarText.value = errorMessage
+                        },
+                        ifRight = { success ->
+                            val userId = success
+                            val recommendedMedia = globalCategoryList.map {
+                                mediaService.fillCategory(
+                                    session.accessToken,
+                                    userId,
+                                    it.mediaCategory.lowercase()
+                                )
+                            }
+
+                            _recommendedMedia.value = recommendedMedia
+                        }
+                    )
                 }
             }
         }

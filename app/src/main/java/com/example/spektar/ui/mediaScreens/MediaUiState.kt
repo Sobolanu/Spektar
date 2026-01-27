@@ -8,4 +8,5 @@ data class MediaUiState (
     val searchMedias: List<MediaPreview> = emptyList(),
     val categories: List<Category> = emptyList(),
     val media: SpecificMedia? = null,
+    val snackBarText: String? = null
 )

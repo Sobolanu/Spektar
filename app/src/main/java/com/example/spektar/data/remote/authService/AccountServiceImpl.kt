@@ -1,7 +1,6 @@
 package com.example.spektar.data.remote.authService
 
 import arrow.core.Either
-import arrow.core.raise.context.raise
 import arrow.core.raise.either
 import com.example.spektar.data.model.User
 import com.example.spektar.data.remote.SupabaseClientProvider
@@ -10,15 +9,13 @@ import com.example.spektar.ui.userAuthScreens.states.SignInState
 import com.example.spektar.ui.userAuthScreens.states.SignUpState
 import io.github.jan.supabase.auth.exception.AuthErrorCode
 import io.github.jan.supabase.auth.exception.AuthRestException
-import io.github.jan.supabase.auth.exception.AuthWeakPasswordException
 import io.github.jan.supabase.auth.providers.builtin.Email
 import io.github.jan.supabase.auth.status.SessionStatus
 import io.github.jan.supabase.auth.user.UserSession
 import io.github.jan.supabase.postgrest.from
 import io.github.jan.supabase.postgrest.postgrest
 import io.github.jan.supabase.postgrest.query.Columns
-import io.github.jan.supabase.postgrest.result.PostgrestResult
-import io.github.jan.supabase.storage.FileUploadResponse
+import io.github.jan.supabase.postgrest.query.Count
 import io.github.jan.supabase.storage.upload
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -28,6 +25,7 @@ import kotlinx.coroutines.launch
 import kotlinx.serialization.json.buildJsonObject
 import kotlinx.serialization.json.put
 import java.io.File
+
 
 class AccountServiceImpl : AccountService {
 
@@ -44,8 +42,11 @@ class AccountServiceImpl : AccountService {
                         _sessionFlow.value = status.session
                     }
 
-                    // would be the non-authenticated case and the case where it's retrieving data btw
-                    else -> { _sessionFlow.value = null }
+                    is SessionStatus.NotAuthenticated -> {
+                        _sessionFlow.value = null
+                    }
+
+                    else -> { }
                 }
             }
         }
@@ -98,7 +99,7 @@ class AccountServiceImpl : AccountService {
                 email = state.email
                 password = state.password
             }
-
+            println("Sign in successful.")
             Either.Right(Unit)
         } catch (e: AuthRestException) {
             val failure = when(e.errorCode) {
@@ -120,6 +121,28 @@ class AccountServiceImpl : AccountService {
     override suspend fun signUp(
         state: SignUpState
     ) : Either<UserAuthFailure, Unit> = either {
+        try {
+            val resp = SupabaseClientProvider.db.from("profiles")
+                .select(columns = Columns.list(listOf("username"))) {
+                    limit(1)
+                    count(Count.EXACT)
+                    filter { eq("username", state.username) }
+                }
+
+            val existingUserCount = resp.countOrNull()
+
+            if (existingUserCount != null && existingUserCount > 0) {
+                throw RuntimeException("Username already exists")
+            }
+
+        } catch (e: RuntimeException) {
+            val usernameFailure = UserAuthFailure.UsernameAlreadyExists
+            raise(usernameFailure)
+        } catch (e: Exception) {
+            println("Exception says: ${e.cause} \n")
+            Exception("Something is wrong with the request to sign up. Exact error is: \n ${e.message}")
+        }
+
         try {
             SupabaseClientProvider.auth.signUpWith(Email) {
                 email = state.email
@@ -143,11 +166,9 @@ class AccountServiceImpl : AccountService {
 
             raise(failure)
         }
-
         val userIdResult = retrieveUserId()
-
         userIdResult.fold(
-            ifLeft = { it ->
+            ifLeft = {
                 Either.Left(it)
             },
 
@@ -165,7 +186,7 @@ class AccountServiceImpl : AccountService {
                     }
                 } catch(e: Throwable) {
                     println("Exception says: ${e.cause} \n")
-                    Exception("Something is wrong with the request to delete an account. Exact error is: \n ${e.message}")
+                    Exception("Something is wrong with the request to sign up. Exact error is: \n ${e.message}")
                 }
 
             }
