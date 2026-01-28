@@ -45,8 +45,6 @@ import com.example.spektar.ui.notesScreen.NoteEvent
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
-// refer to https://www.youtube.com/watch?v=bOd3wO0uFr8&t=1453s for good UI design i suppose?
-
 @Composable
 fun NoteScreen(
     state: NoteState,
@@ -59,7 +57,6 @@ fun NoteScreen(
         val maxTabIndex = state.notes.size // because you always add one extra tab
         selectedTabIndex = selectedTabIndex.coerceIn(0..maxTabIndex)
     }
-
 
     Scaffold(
         topBar = {

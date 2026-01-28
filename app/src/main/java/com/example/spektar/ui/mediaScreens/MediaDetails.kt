@@ -12,19 +12,26 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.TextAutoSize
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Star
+import androidx.compose.material.icons.filled.StarBorder
 import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -32,7 +39,9 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.window.Dialog
 import coil.compose.AsyncImage
+import com.example.spektar.data.remote.mediaService.FullMediaData
 import com.example.spektar.domain.model.SpecificMedia
 import com.example.spektar.ui.common.components.navigationBarIcons.topProfileIcon
 import com.example.spektar.ui.common.components.navigationBarIcons.topBackArrowIcon
@@ -41,9 +50,13 @@ import com.example.spektar.ui.common.components.navigationBarIcons.topBackArrowI
 fun MediaDetailsScreen(
     goToProfile: () -> Unit,
     onBackClick: () -> Unit,
+    leaveReview: (String, Int, String) -> Unit,
     onNoteButtonClick: (String) -> Unit,
-    state: SpecificMedia,
+    saveMedia: (SpecificMedia) -> Unit,
+    state: FullMediaData,
 ) {
+    var openDialog by remember { mutableStateOf(false) }
+
     Scaffold(
         topBar = { DetailsPageTopBar(goToProfile, onBackClick) },
     ) { paddingValues ->
@@ -56,6 +69,16 @@ fun MediaDetailsScreen(
             verticalArrangement = Arrangement.Top,
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
+            if(openDialog) {
+                item {
+                    ReviewDialog(
+                        onDismiss = { openDialog = !openDialog },
+                        onSubmit = { rating, message ->
+                            leaveReview(state.id_uuid, rating, message)
+                        }
+                    )
+                }
+            }
             item {
                 AsyncImage(
                     modifier = Modifier
@@ -70,10 +93,24 @@ fun MediaDetailsScreen(
                     model = state.imageUrl,
                     contentDescription = "Image of the media ${state.name}"
                 )
+
+                Row(horizontalArrangement = Arrangement.Center) {
+                    (1..5).forEach { star ->
+                        Icon(
+                            imageVector = if (star <= state.average_rating) Icons.Default.Star else Icons.Default.StarBorder,
+                            contentDescription = "${state.name} is rated at ${state.average_rating}",
+                            tint = if (star <= state.average_rating) Color(0xFFFFD700) else Color.Gray,
+                            modifier = Modifier.padding(end = 8.dp)
+                        )
+                    }
+
+                    Text(
+                        text = "(${state.rating_count})",
+                        color = Color.Gray,
+                        style = MaterialTheme.typography.labelSmall
+                    )
+                }
             }
-
-            // review thingamajig
-
             item {
                 Text(
                     modifier = Modifier.padding(vertical = 24.dp),
@@ -124,6 +161,26 @@ fun MediaDetailsScreen(
                         text = "released on ${state.release_date}",
                         modifier = Modifier.padding(horizontal = 16.dp),
                         textAlign = TextAlign.Center
+                    )
+                }
+            }
+
+            item {
+                Button(
+                    onClick = { /* saveMedia(state) */ }
+                ) {
+                    Text(
+                        "Save media"
+                    )
+                }
+            }
+
+            item {
+                Button(
+                    onClick = { openDialog = true }
+                ) {
+                    Text(
+                        "Leave a review"
                     )
                 }
             }
@@ -182,4 +239,62 @@ fun DetailsPageTopBar(
             }
         }
     )
+}
+
+@Composable
+fun ReviewDialog(
+    onDismiss: () -> Unit,
+    onSubmit: (rating: Int, message: String) -> Unit
+) {
+    var rating by remember { mutableStateOf(0) }
+    var message by remember { mutableStateOf("") }
+
+    Dialog(onDismissRequest = onDismiss) {
+        Surface(
+            shape = RoundedCornerShape(12.dp),
+            modifier = Modifier.padding(16.dp)
+        ) {
+            Column(
+                modifier = Modifier.padding(16.dp),
+                verticalArrangement = Arrangement.spacedBy(12.dp)
+            ) {
+                Text(
+                    text = "Leave a Review",
+                    style = MaterialTheme.typography.titleMedium
+                )
+
+                Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                    (1..5).forEach { star ->
+                        IconButton(onClick = { rating = star }) {
+                            Icon(
+                                imageVector = if (star <= rating) Icons.Default.Star else Icons.Default.StarBorder,
+                                contentDescription = "Rate $star stars",
+                                tint = if (star <= rating) Color(0xFFFFD700) else Color.Gray
+                            )
+                        }
+                    }
+                }
+
+                OutlinedTextField(
+                    value = message,
+                    onValueChange = { message = it },
+                    label = { Text("Your message") },
+                    modifier = Modifier.fillMaxWidth(),
+                    maxLines = 4
+                )
+
+                Row(
+                    horizontalArrangement = Arrangement.End,
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    TextButton(onClick = onDismiss) {
+                        Text("Cancel")
+                    }
+                    Button(onClick = { onSubmit(rating, message) }) {
+                        Text("Submit")
+                    }
+                }
+            }
+        }
+    }
 }

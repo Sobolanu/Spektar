@@ -1,4 +1,4 @@
-package com.example.spektar.ui.mediaScreens
+package com.example.spektar.ui.archiveScreen
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -27,42 +27,29 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
+import com.example.spektar.data.model.media.MediaPreview
+import com.example.spektar.domain.model.SpecificMedia
 import com.example.spektar.ui.common.components.BottomBar
 import com.example.spektar.ui.common.components.navigationBarIcons.topProfileIcon
 import com.example.spektar.ui.common.modifiers.cardWithShadowModifier
+import com.example.spektar.ui.mediaScreens.Category
+import com.example.spektar.ui.mediaScreens.MediaUiState
 import com.example.spektar.ui.navigation.graphs.categoryGraph.MediaDetails
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun MoreMedia(
+fun ArchiveScreen(
     goToProfile: () -> Unit,
     onBottomBarItemClick : (Int) -> Unit,
     onImageClick: (MediaDetails) -> Unit,
     selectedIcon: Int,
-    category: Category,
-    state: MediaUiState
+    state: List<SpecificMedia>?
 ) {
     val scrollBehavior = enterAlwaysScrollBehavior()
-    val index = when(category.mediaCategory) {
-        "Shows" -> 0
-        "Books" -> 1
-        "Games" -> 2
-        "Movies" -> 3
-        else -> -1
-    }
-
-    if(index == -1) {
-        IllegalArgumentException("Invalid category passed to screen MoreMedia.")
-    }
-
-    if(state.medias[index] == null) {
-        IllegalArgumentException("Failed to retrieve media at screen MoreMedia.")
-    }
 
     Scaffold(
-        topBar = { MoreMediaPageTopBar(goToProfile, scrollBehavior = scrollBehavior) },
+        topBar = { ArchivePageTopBar(goToProfile, scrollBehavior = scrollBehavior) },
         bottomBar = { BottomBar(onBottomBarItemClick = onBottomBarItemClick, selectedIcon) },
-        containerColor = category.categoryColor
     ) { paddingValues ->
         LazyVerticalGrid(
             modifier = Modifier.padding(paddingValues),
@@ -70,26 +57,38 @@ fun MoreMedia(
             verticalArrangement = Arrangement.Center,
             horizontalArrangement = Arrangement.Center,
         ) {
-            items(state.medias[index]!!.size) { media ->
-                Card(
-                    onClick = { onImageClick(MediaDetails(partialMediaData = state.medias[index]!![media])) },
+            if(state.isNullOrEmpty()) {
 
-                    colors = CardColors( // sort card colors by category
-                        containerColor = MaterialTheme.colorScheme.tertiaryContainer,
-                        contentColor = MaterialTheme.colorScheme.onTertiaryContainer,
-                        disabledContainerColor = MaterialTheme.colorScheme.tertiaryFixedDim,
-                        disabledContentColor = MaterialTheme.colorScheme.onTertiaryFixed
-                    ),
+                item {
+                    Text("Add some media to this archive!")
+                }
 
-                    modifier = cardWithShadowModifier
-                ){
-                    AsyncImage(
-                        model = state.medias[index]!![media].imageUrl,
-                        contentDescription = state.medias[index]!![media].name,
-                        modifier = Modifier
-                            .size(175.dp)
-                            .padding(horizontal = 8.dp)
-                    )
+            } else {
+                items(state.size) { media ->
+                    Card(
+                        onClick = { onImageClick(MediaDetails(partialMediaData = MediaPreview(
+                            state[media].id_uuid,
+                            state[media].imageUrl,
+                            state[media].name)))
+                        },
+
+                        colors = CardColors(
+                            containerColor = MaterialTheme.colorScheme.tertiaryContainer,
+                            contentColor = MaterialTheme.colorScheme.onTertiaryContainer,
+                            disabledContainerColor = MaterialTheme.colorScheme.tertiaryFixedDim,
+                            disabledContentColor = MaterialTheme.colorScheme.onTertiaryFixed
+                        ),
+
+                        modifier = cardWithShadowModifier
+                    ){
+                        AsyncImage(
+                            model = state[media].imageUrl,
+                            contentDescription = state[media].name,
+                            modifier = Modifier
+                                .size(175.dp)
+                                .padding(horizontal = 8.dp)
+                        )
+                    }
                 }
             }
         }
@@ -98,7 +97,7 @@ fun MoreMedia(
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun MoreMediaPageTopBar(
+fun ArchivePageTopBar(
     goToProfile: () -> Unit,
     scrollBehavior: TopAppBarScrollBehavior
 ) {
@@ -113,7 +112,7 @@ fun MoreMediaPageTopBar(
 
         title = { // you can add colors
             Text(
-                text = "Search",
+                text = "Archived media",
                 style = MaterialTheme.typography.titleLarge,
                 modifier = Modifier
                     .background(MaterialTheme.colorScheme.onSecondaryFixed, RoundedCornerShape(4.dp))

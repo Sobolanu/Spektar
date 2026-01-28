@@ -24,64 +24,73 @@ class SignUpViewModel(
     val signUpState: StateFlow<SignUpState> get() = _signUpState
 
     fun onEvent(event: AuthEvent) {
-        when(event) {
+        when (event) {
             is AuthEvent.SetAvatar -> {
-                _signUpState.update { it.copy(
-                    avatar = event.avatar
-                )}
+                _signUpState.update {
+                    it.copy(
+                        avatar = event.avatar
+                    )
+                }
             }
+
             is AuthEvent.SetEmail -> {
-                _signUpState.update { it.copy(
-                    email = event.newEmail
-                )}
+                _signUpState.update {
+                    it.copy(
+                        email = event.newEmail
+                    )
+                }
             }
+
             is AuthEvent.SetPassword -> {
-                _signUpState.update { it.copy(
-                    password = event.newPassword
-                )}
+                _signUpState.update {
+                    it.copy(
+                        password = event.newPassword
+                    )
+                }
             }
+
             is AuthEvent.SetUsername -> {
-                _signUpState.update { it.copy(
-                    username = event.newUsername
-                )}
+                _signUpState.update {
+                    it.copy(
+                        username = event.newUsername
+                    )
+                }
             }
 
             is AuthEvent.SignUp -> {
                 viewModelScope.launch(ioDispatcher) {
-                    accountService.signUp(signUpState.value).fold(
-                        ifLeft = { failure ->
-                            val errorMessage = when(failure) {
-                                is UserAuthFailure.UnexpectedFailure -> "Unexpected authentication failure. Please try again."
-                                is UserAuthFailure.ValidationFailed -> "User validation failed. Please try again."
-                                is UserAuthFailure.RequestTimeout -> "Request timed out. Please try again."
-                                is UserAuthFailure.WeakPassword -> "Password is weak. Are you sure you want to continue?"
-                                is UserAuthFailure.UserAlreadyExists -> "User already exists."
-                                is UserAuthFailure.EmailExists -> "Email is already used by another account."
-                                is UserAuthFailure.EmailAddressInvalid -> "Email address is invalid. Check if it exists."
-                                else -> { "Unexpected authentication error." }
+                    _signUpState.update { it.copy(isLoading = true, snackBarText = null) }
+                    try {
+                        accountService.signUp(signUpState.value).fold(
+                            ifLeft = { failure ->
+                                val errorMessage = when (failure) {
+                                    is UserAuthFailure.UnexpectedFailure -> "Unexpected authentication failure. Please try again."
+                                    is UserAuthFailure.ValidationFailed -> "User validation failed. Please try again."
+                                    is UserAuthFailure.RequestTimeout -> "Request timed out. Please try again."
+                                    is UserAuthFailure.WeakPassword -> "Password is weak. Are you sure you want to continue?"
+                                    is UserAuthFailure.UserAlreadyExists -> "User already exists."
+                                    is UserAuthFailure.EmailExists -> "Email is already used by another account."
+                                    is UserAuthFailure.EmailAddressInvalid -> "Email address is invalid. Check if it exists."
+                                    else -> "Unexpected authentication error."
+                                }
+
+                                _signUpState.update { it.copy(snackBarText = errorMessage) }
+                                delay(100)
+                                _signUpState.update { it.copy(snackBarText = null) }
+                            },
+                            ifRight = {
+                                // Only set signUpFinished after upload/profile update completed in signUp()
+                                _signUpState.update { it.copy(signUpFinished = true) }
                             }
-
-                            _signUpState.update { it.copy(
-                                snackBarText = errorMessage
-                            ) }
-
-                            delay(100)
-
-                            _signUpState.update{ it.copy(
-                                snackBarText = null
-                            )}
-                        },
-
-                        ifRight = {
-                            _signUpState.update{ it.copy(
-                                snackBarText = null,
-                                signUpFinished = true
-                            )}
-                        }
-                    )
+                        )
+                    } finally {
+                        // keep this to ensure spinner hides if something else goes wrong
+                        _signUpState.update { it.copy(isLoading = false) }
+                    }
                 }
             }
-            is AuthEvent.SignIn -> { } // keep empty, as you cannot go to signIn from this ViewModel.
+
+            else -> {}
         }
     }
 }

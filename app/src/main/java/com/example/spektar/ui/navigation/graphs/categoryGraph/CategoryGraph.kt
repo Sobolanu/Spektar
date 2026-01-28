@@ -15,7 +15,14 @@ import androidx.navigation.compose.navigation
 import androidx.navigation.toRoute
 import com.example.spektar.data.model.media.MediaPreview
 import com.example.spektar.data.model.roomModels.MediaId
+import com.example.spektar.data.remote.authService.AccountServiceImpl
+import com.example.spektar.data.remote.mediaService.FullMediaData
+import com.example.spektar.data.remote.mediaService.MediaServiceImpl
 import com.example.spektar.domain.model.SpecificMedia
+import com.example.spektar.ui.archiveScreen.ArchiveEvent
+import com.example.spektar.ui.archiveScreen.ArchiveScreen
+import com.example.spektar.ui.archiveScreen.ArchiveViewModel
+import com.example.spektar.ui.archiveScreen.ArchiveViewModelFactory
 import com.example.spektar.ui.mediaScreens.Category
 import com.example.spektar.ui.mediaScreens.CategoryScreen
 import com.example.spektar.ui.mediaScreens.MediaDetailsScreen
@@ -61,10 +68,11 @@ fun NavGraphBuilder.CategoryGraph(
         composable<MediaDetails>(
             typeMap = mapOf(typeOf<MediaPreview>() to navTypeOf<MediaPreview>())
         ) { backStackEntry ->
+            val parentEntry = remember(backStackEntry) { navController.getBackStackEntry(Media::class)}
             val args = backStackEntry.toRoute<MediaDetails>()
+            val context = LocalContext.current
 
-            // too slow, must be optimized
-            var state by remember { mutableStateOf(SpecificMedia(
+            var state by remember { mutableStateOf(FullMediaData(
                 id_uuid = args.partialMediaData.id_uuid,
                 name = args.partialMediaData.name,
                 imageUrl = args.partialMediaData.imageUrl
@@ -74,13 +82,32 @@ fun NavGraphBuilder.CategoryGraph(
                 state = mediaViewModel.obtainMediaById(args.partialMediaData)
             }
 
+            val archiveViewModel : ArchiveViewModel = viewModel<ArchiveViewModel> (
+                viewModelStoreOwner = parentEntry,
+                factory = ArchiveViewModelFactory(
+                    context,
+                    MediaServiceImpl(),
+                    AccountServiceImpl(),
+                )
+            )
+
             MediaDetailsScreen(
                 goToProfile = { navController.safeNavigate(MoreMedia) },
                 onBackClick = { navController.popBackStack() },
                 onNoteButtonClick = {
                     navController.safeNavigate(NoteScreen(it)) // pass id here
                 },
-                state = state
+                state = state,
+                saveMedia = { media ->
+                    archiveViewModel.onEvent(ArchiveEvent.saveMedia(media))
+                },
+                leaveReview = { mediaId, rating, message ->
+                    archiveViewModel.onEvent(ArchiveEvent.mediaReview(
+                        mediaId = mediaId,
+                        rating = rating,
+                        message = message
+                    ))
+                }
             )
         }
 
@@ -127,6 +154,34 @@ fun NavGraphBuilder.CategoryGraph(
                 onEvent = { event, mediaId ->
                     noteViewModel.onEvent(event, mediaId)
                 }
+            )
+        }
+
+        composable<ArchiveScreen> { backStackEntry ->
+            val parentEntry = remember(backStackEntry) { navController.getBackStackEntry(Media::class)}
+
+            val context = LocalContext.current
+            val archiveViewModel : ArchiveViewModel = viewModel<ArchiveViewModel> (
+                viewModelStoreOwner = parentEntry,
+                factory = ArchiveViewModelFactory(
+                    context,
+                    MediaServiceImpl(),
+                    AccountServiceImpl(),
+                )
+            )
+
+            val state = archiveViewModel.archivedMedias.collectAsStateWithLifecycle()
+
+            ArchiveScreen(
+                goToProfile = { navController.safeNavigate(ProfileScreen) },
+                onBottomBarItemClick = onBottomBarClick,
+                state = state.value,
+                selectedIcon = selectedIconProvider(),
+                onImageClick = { media ->
+                    navController.safeNavigate(
+                        MediaDetails(media.partialMediaData)
+                    )
+                },
             )
         }
     }

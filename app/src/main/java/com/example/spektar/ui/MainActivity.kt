@@ -46,7 +46,7 @@ class MainActivity : ComponentActivity() {
                 darkTheme = darkThemeState
             ) {
                 SpektarNavigation(
-                    viewModel.userAuthenticated.value
+                    userAuthState = viewModel.userAuthenticated.value,
                 )
             }
         }

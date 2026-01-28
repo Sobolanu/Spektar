@@ -3,6 +3,7 @@ package com.example.spektar.domain.model.services
 import com.example.spektar.data.model.edgeFunctionModels.EdgeResponse
 import com.example.spektar.data.model.media.MediaLookup
 import com.example.spektar.data.model.media.MediaPreview
+import com.example.spektar.data.remote.mediaService.FullMediaData
 import com.example.spektar.domain.model.SpecificMedia
 import com.example.spektar.ui.mediaScreens.Category
 
@@ -13,6 +14,7 @@ interface MediaService {
     suspend fun searchByName(name: String) : List<MediaPreview>
 
     suspend fun obtainCategoryWithMediaId(mediaId: String) : MediaLookup?
-    suspend fun obtainDataByMediaId(partialMediaData: MediaPreview) : SpecificMedia
+    suspend fun obtainDataByMediaId(partialMediaData: MediaPreview) : FullMediaData
     suspend fun fetchTopMediaMatches(bearerToken: String, userId: String): EdgeResponse?
+    suspend fun leaveReview(userId: String, mediaId: String, review: Int, message: String)
 }

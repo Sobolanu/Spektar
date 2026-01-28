@@ -118,9 +118,8 @@ class AccountServiceImpl : AccountService {
         }
     }
 
-    override suspend fun signUp(
-        state: SignUpState
-    ) : Either<UserAuthFailure, Unit> = either {
+    override suspend fun signUp(state: SignUpState): Either<UserAuthFailure, Unit> = either {
+        // 1) check username uniqueness (your existing code)
         try {
             val resp = SupabaseClientProvider.db.from("profiles")
                 .select(columns = Columns.list(listOf("username"))) {
@@ -128,33 +127,25 @@ class AccountServiceImpl : AccountService {
                     count(Count.EXACT)
                     filter { eq("username", state.username) }
                 }
-
             val existingUserCount = resp.countOrNull()
-
             if (existingUserCount != null && existingUserCount > 0) {
-                throw RuntimeException("Username already exists")
+                raise(UserAuthFailure.UsernameAlreadyExists)
             }
-
         } catch (e: RuntimeException) {
-            val usernameFailure = UserAuthFailure.UsernameAlreadyExists
-            raise(usernameFailure)
+            raise(UserAuthFailure.UsernameAlreadyExists)
         } catch (e: Exception) {
-            println("Exception says: ${e.cause} \n")
-            Exception("Something is wrong with the request to sign up. Exact error is: \n ${e.message}")
+            raise(UserAuthFailure.UnexpectedFailure)
         }
 
+        // 2) create auth user
         try {
             SupabaseClientProvider.auth.signUpWith(Email) {
                 email = state.email
                 password = state.password
-                data = buildJsonObject {
-                    put("username", state.username)
-                }
+                data = buildJsonObject { put("username", state.username) }
             }
-
-            Either.Right(Unit)
         } catch (e: AuthRestException) {
-            val failure = when(e.errorCode) {
+            val failure = when (e.errorCode) {
                 AuthErrorCode.UnexpectedFailure -> UserAuthFailure.UnexpectedFailure
                 AuthErrorCode.ValidationFailed -> UserAuthFailure.ValidationFailed
                 AuthErrorCode.RequestTimeout -> UserAuthFailure.RequestTimeout
@@ -163,35 +154,41 @@ class AccountServiceImpl : AccountService {
                 AuthErrorCode.EmailExists -> UserAuthFailure.EmailExists
                 else -> UserAuthFailure.ErrorOccurred(e)
             }
-
             raise(failure)
         }
+
+        // 3) get user id
         val userIdResult = retrieveUserId()
         userIdResult.fold(
-            ifLeft = {
-                Either.Left(it)
-            },
-
+            ifLeft = { raise(UserAuthFailure.UnexpectedFailure) },
             ifRight = { userId ->
-                updateAvatar(userId, state.avatar!!, state.username)
-
-                try {
-                    SupabaseClientProvider.db.from("profiles").update(
-                        mapOf(
-                            "avatar_url" to "${userId}/${state.avatar!!.name}",
-                            "username" to state.username
-                        )
-                    ) {
-                        filter { eq ("id", userId)}
+                // 4) upload avatar and update profile — await and check result
+                val uploadResult = updateAvatar(userId, state.avatar!!, state.username)
+                uploadResult.fold(
+                    ifLeft = { raise(UserAuthFailure.UnexpectedFailure) },
+                    ifRight = {
+                        // 5) update profile row (if you still need to update again)
+                        try {
+                            SupabaseClientProvider.db.from("profiles").update(
+                                mapOf(
+                                    "avatar_url" to "${userId}/${state.avatar!!.name}",
+                                    "username" to state.username
+                                )
+                            ) {
+                                filter { eq("id", userId) }
+                            }
+                        } catch (e: Exception) {
+                            raise(UserAuthFailure.UnexpectedFailure)
+                        }
                     }
-                } catch(e: Throwable) {
-                    println("Exception says: ${e.cause} \n")
-                    Exception("Something is wrong with the request to sign up. Exact error is: \n ${e.message}")
-                }
-
+                )
             }
         )
+
+        // 6) only now return success
+        Either.Right(Unit)
     }
+
 
     override suspend fun signOut() {
         try {
@@ -237,25 +234,25 @@ class AccountServiceImpl : AccountService {
         avatar: File,
         username: String
     ): Either<DataUploadFailure, Unit> = either {
-        try{
+        try {
             SupabaseClientProvider.storage.from("avatars")
                 .upload("${userId}/${avatar.name}", avatar) { upsert = true }
 
+            // optional: verify upload response if API returns status
             SupabaseClientProvider.db.from("profiles").update(
                 mapOf(
                     "avatar_url" to "${userId}/${avatar.name}",
                     "username" to username
                 )
             ) {
-                filter { eq ("id", userId) }
+                filter { eq("id", userId) }
             }
 
             Either.Right(Unit)
         } catch (e: Exception) {
-            Exception("Unknown Supabase DB error.")
+            raise(DataUploadFailure.RequestTimeout) // map to your DataUploadFailure
         }
     }
-
 
     // have as backup just in case
     override suspend fun resetUserSuggestions(userId: String) : Either<DataUploadFailure, Unit> = either {

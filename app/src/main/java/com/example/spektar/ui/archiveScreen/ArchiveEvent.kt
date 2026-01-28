@@ -1,0 +1,10 @@
+package com.example.spektar.ui.archiveScreen
+
+import com.example.spektar.domain.model.SpecificMedia
+
+interface ArchiveEvent {
+    data class saveMedia(val media: SpecificMedia) : ArchiveEvent
+    data class removeMedia(val media: SpecificMedia) : ArchiveEvent
+
+    data class mediaReview(val mediaId: String, val rating: Int, val message: String) : ArchiveEvent
+}

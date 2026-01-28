@@ -6,9 +6,11 @@ import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
@@ -18,6 +20,7 @@ import androidx.compose.material.icons.filled.Email
 import androidx.compose.material.icons.filled.Key
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarDuration
@@ -55,120 +58,134 @@ fun UserRegistrationScreen(
     onEvent: (AuthEvent) -> Unit
 ) {
     Scaffold { paddingValues ->
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(paddingValues),
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.Center
+        Box(
+            modifier = Modifier.fillMaxSize(),
+            contentAlignment = Alignment.Center
         ) {
-
-            if(state.signUpFinished) {
-                onSignUp()
-            }
-
-            val context = LocalContext.current
-            val scope = rememberCoroutineScope()
-
-            var selectedImageUri by remember {
-                mutableStateOf<Uri?>(Uri.parse( "android.resource://${context.packageName}/${R.drawable.blank_profile_picture}" ))
-            }
-
-            if(state.snackBarText != null) {
-                scope.launch {
-                    SnackbarController.sendEvent(
-                        SnackbarEvent(
-                            message = state.snackBarText,
-                            action = SnackbarAction("", { }), // empty on purpose
-                            duration = SnackbarDuration.Short
-                        )
-                    )
-                }
-            }
-
-            val painter = if (selectedImageUri != null) {
-                rememberAsyncImagePainter(selectedImageUri)
+            if(state.isLoading) {
+                CircularProgressIndicator()
             } else {
-                painterResource(R.drawable.blank_profile_picture) // add default gray profile
-            }
-
-            LaunchedEffect(selectedImageUri) {
-                selectedImageUri?.let { uri ->
-                    val image = context.copyUriToFile(uri)
-                    onEvent(AuthEvent.SetAvatar(image))
+                if(state.signUpFinished) {
+                    onSignUp()
                 }
-            }
 
-            ImagePicker(
-                onImageSelected = { uri ->
-                    selectedImageUri = uri
-                    val image = context.copyUriToFile(uri)
-                    onEvent(AuthEvent.SetAvatar(image))
-                },
+                Column(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(paddingValues),
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    verticalArrangement = Arrangement.Center
+                ) {
+                    val context = LocalContext.current
+                    val scope = rememberCoroutineScope()
 
-                painter = painter
-            )
+                    var selectedImageUri by remember {
+                        mutableStateOf<Uri?>(Uri.parse("android.resource://${context.packageName}/${R.drawable.blank_profile_picture}"))
+                    }
 
-            TextField(
-                value = state.username,
-                onValueChange = { newUsername ->
-                    onEvent(AuthEvent.SetUsername(newUsername))
-                },
-                leadingIcon = { Icon(
-                    Icons.Filled.AccountCircle,
-                    contentDescription = "Username",
-                ) },
-                placeholder = { Text(stringResource(R.string.username)) },
-                modifier = Modifier.padding(vertical = 8.dp)
-            )
-
-            TextField(
-                value = state.email,
-                onValueChange = { newEmail ->
-                    onEvent(AuthEvent.SetEmail(newEmail))
-                },
-                leadingIcon = { Icon(
-                    Icons.Filled.Email,
-                    contentDescription = "Email",
-                ) },
-                placeholder = { Text(stringResource(R.string.email)) },
-                modifier = Modifier.padding(vertical = 8.dp)
-            )
-
-            TextField(
-                value = state.password,
-                onValueChange = { newPassword ->
-                    onEvent(AuthEvent.SetPassword(newPassword))
-                },
-                leadingIcon = { Icon(
-                    Icons.Filled.Key,
-                    contentDescription = "Password",
-                ) },
-                placeholder = { Text(stringResource(R.string.password)) },
-                modifier = Modifier.padding(vertical = 8.dp)
-            )
-
-            Row(
-                modifier = Modifier.padding(paddingValues),
-                horizontalArrangement = Arrangement.End
-            ) {
-                Button(
-                    enabled = !state.signUpFinished,
-
-                    onClick = {
-                        if(state.email != "" && state.password != "") {
-                            onEvent(AuthEvent.SignUp(state))
+                    if (state.snackBarText != null) {
+                        scope.launch {
+                            SnackbarController.sendEvent(
+                                SnackbarEvent(
+                                    message = state.snackBarText,
+                                    action = SnackbarAction("", { }), // empty on purpose
+                                    duration = SnackbarDuration.Short
+                                )
+                            )
                         }
                     }
-                ) {
-                    Text(
-                        stringResource(R.string.create_account)
+
+                    val painter = if (selectedImageUri != null) {
+                        rememberAsyncImagePainter(selectedImageUri)
+                    } else {
+                        painterResource(R.drawable.blank_profile_picture) // add default gray profile
+                    }
+
+                    LaunchedEffect(selectedImageUri) {
+                        selectedImageUri?.let { uri ->
+                            val image = context.copyUriToFile(uri)
+                            onEvent(AuthEvent.SetAvatar(image))
+                        }
+                    }
+
+                    ImagePicker(
+                        onImageSelected = { uri ->
+                            selectedImageUri = uri
+                            val image = context.copyUriToFile(uri)
+                            onEvent(AuthEvent.SetAvatar(image))
+                        },
+
+                        painter = painter
                     )
 
-                    Icon(
-                        imageVector = Icons.AutoMirrored.Filled.ArrowForward,
-                        contentDescription = "Make an account"
+                    TextField(
+                        value = state.username,
+                        onValueChange = { newUsername ->
+                            onEvent(AuthEvent.SetUsername(newUsername))
+                        },
+                        leadingIcon = {
+                            Icon(
+                                Icons.Filled.AccountCircle,
+                                contentDescription = "Username",
+                            )
+                        },
+                        placeholder = { Text(stringResource(R.string.username)) },
+                        modifier = Modifier.padding(vertical = 8.dp)
                     )
+
+                    TextField(
+                        value = state.email,
+                        onValueChange = { newEmail ->
+                            onEvent(AuthEvent.SetEmail(newEmail))
+                        },
+                        leadingIcon = {
+                            Icon(
+                                Icons.Filled.Email,
+                                contentDescription = "Email",
+                            )
+                        },
+                        placeholder = { Text(stringResource(R.string.email)) },
+                        modifier = Modifier.padding(vertical = 8.dp)
+                    )
+
+                    TextField(
+                        value = state.password,
+                        onValueChange = { newPassword ->
+                            onEvent(AuthEvent.SetPassword(newPassword))
+                        },
+                        leadingIcon = {
+                            Icon(
+                                Icons.Filled.Key,
+                                contentDescription = "Password",
+                            )
+                        },
+                        placeholder = { Text(stringResource(R.string.password)) },
+                        modifier = Modifier.padding(vertical = 8.dp)
+                    )
+
+                    Row(
+                        modifier = Modifier.padding(paddingValues),
+                        horizontalArrangement = Arrangement.End
+                    ) {
+                        Button(
+                            enabled = !state.signUpFinished,
+
+                            onClick = {
+                                if (state.email != "" && state.password != "") {
+                                    onEvent(AuthEvent.SignUp(state))
+                                }
+                            }
+                        ) {
+                            Text(
+                                stringResource(R.string.create_account)
+                            )
+
+                            Icon(
+                                imageVector = Icons.AutoMirrored.Filled.ArrowForward,
+                                contentDescription = "Make an account"
+                            )
+                        }
+                    }
                 }
             }
         }

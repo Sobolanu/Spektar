@@ -10,6 +10,7 @@ import com.example.spektar.data.remote.authService.AccountServiceImpl
 import com.example.spektar.ui.HomeScreen
 import com.example.spektar.ui.common.ErrorScreen
 import com.example.spektar.ui.navigation.graphs.authGraph.UserLoginScreen
+import com.example.spektar.ui.navigation.graphs.categoryGraph.ArchiveScreen
 import com.example.spektar.ui.navigation.utils.navTypeOf
 import com.example.spektar.ui.navigation.utils.safeNavigate
 import com.example.spektar.ui.profileScreen.ProfileEvent
@@ -55,7 +56,8 @@ fun NavGraphBuilder.CommonGraph(
             selectedIcon = selectedIconProvider(),
 
             goToProfile = { navController.safeNavigate(ProfileScreen) },
-            goToQuestionnaireScreen = {navController.safeNavigate(QuestionnaireScreen)}
+            goToQuestionnaireScreen = {navController.safeNavigate(QuestionnaireScreen)},
+            goToArchiveScreen = { navController.safeNavigate(ArchiveScreen)}
         )
     }
 

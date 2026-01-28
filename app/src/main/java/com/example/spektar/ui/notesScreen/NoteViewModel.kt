@@ -1,17 +1,16 @@
 package com.example.spektar.ui.notesScreen
 
 import android.content.Context
-import com.example.spektar.data.model.roomModels.MediaId
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import androidx.room.Room
 import com.example.spektar.data.local.NoteDatabase
-import com.example.spektar.data.model.roomModels.Note
-import com.example.spektar.ui.notesScreen.NoteState
-import com.example.spektar.ui.settingsScreen.SortType
 import com.example.spektar.data.local.dao.MediaDao
 import com.example.spektar.data.local.dao.NoteDao
+import com.example.spektar.data.model.roomModels.MediaId
+import com.example.spektar.data.model.roomModels.Note
+import com.example.spektar.ui.settingsScreen.SortType
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted

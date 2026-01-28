@@ -25,6 +25,7 @@ import io.ktor.http.HttpHeaders
 import io.ktor.http.contentType
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.Json
+import kotlin.collections.mapOf
 
 // used in fun searchByName, same stuff as MediaPreview but i don't want to break anything.
 @Serializable
@@ -34,20 +35,29 @@ data class MediaLookupRow(
     val media_name: String
 )
 
+
+@Serializable
+data class RatingInsert(
+    val user_id: String,
+    val media_id: String,
+    val rating: Int,
+    val review_text: String?,
+    val media_type: String
+)
+
+@Serializable
+data class FullMediaData(
+    val id_uuid : String = "",
+    val name: String = "",
+    val imageUrl: String = "",
+    val description: String = "",
+    val credits: String = "",
+    val release_date: String = "",
+    val average_rating: Float = 0.0f,
+    val rating_count: Int = 0
+)
+
 class MediaServiceImpl : MediaService {
-
-    /* override suspend fun searchByName(name: String): List<MediaPreview> {
-        val data = SupabaseClientProvider.db
-            .from("media_lookup")
-            .select(Columns.list("id_uuid", "image_url", "media_name")) {
-                filter {
-                    textSearch("media_name", name, TextSearchType.PHRASETO)
-                }
-            }
-            .decodeList<MediaLookupRow>()
-
-        return data.map { MediaPreview(it.id_uuid, it.image_url, it.media_name) }
-    } */
     override suspend fun searchByName(name: String): List<MediaPreview> {
         val data = SupabaseClientProvider.db
             .from("media_lookup")
@@ -108,24 +118,18 @@ class MediaServiceImpl : MediaService {
             .decodeSingleOrNull<MediaLookup>()
     }
 
-    /*
-        the idea with this function is to obtain the data by the media ID, by first querying
-        the category the mediaId is in (through val lookup = ...), then it queries the media data.
-        Given this function runs in MediaDetails, you already have (id_uuid, name, imageUrl) from
-        CategoryPageScreen, therefore it'd be pointless to query that data again. Instead - we pass
-        it into this function, and only query missing data (description, credits, release_date).
-     */
-    override suspend fun obtainDataByMediaId(partialMediaData : MediaPreview) : SpecificMedia {
+    // used to query only important data and nothing else
+    override suspend fun obtainDataByMediaId(partialMediaData : MediaPreview) : FullMediaData {
         val lookup = obtainCategoryWithMediaId(partialMediaData.id_uuid)
 
         if(lookup != null) {
             val media = SupabaseClientProvider.db.from(lookup.category)
-                .select(Columns.list("description", "credits", "release_date")) {
+                .select(Columns.list("description", "credits", "release_date", "average_rating", "rating_count")) {
                     filter {
                         eq("id_uuid", partialMediaData.id_uuid)
                     }
                 }
-                .decodeSingleOrNull<SpecificMedia>()
+                .decodeSingleOrNull<FullMediaData>()
 
             if(media != null) {
                 return media.copy(
@@ -141,6 +145,23 @@ class MediaServiceImpl : MediaService {
         throw IllegalArgumentException("Invalid mediaId passed to function obtainDataByMediaId")
     }
 
+    override suspend fun leaveReview(userId: String, mediaId: String, review: Int, message: String) {
+        val category = obtainCategoryWithMediaId(mediaId)
+
+        if(category != null) {
+            val payload = RatingInsert(
+                user_id = userId,
+                media_id = mediaId,
+                rating = review,
+                review_text = message,
+                media_type = category.category.dropLast(1)
+            )
+
+            SupabaseClientProvider.db.from("ratings")
+                .insert (payload)
+        }
+    }
+
     override suspend fun fetchTopMediaMatches(bearerToken: String, userId: String): EdgeResponse? {
         val client = HttpClient(CIO)
         try {
@@ -150,7 +171,6 @@ class MediaServiceImpl : MediaService {
 
                 contentType(ContentType.Application.Json)
                 setBody(Json.encodeToString(payload))
-                // println("AFTER setBody, payload.id=${payload.id}")
             }
 
             val bodyText = resp.bodyAsText()

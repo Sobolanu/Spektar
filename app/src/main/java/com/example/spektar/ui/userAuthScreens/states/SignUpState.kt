@@ -9,5 +9,6 @@ data class SignUpState(
     var avatar : File? = null,
 
     val snackBarText: String? = null,
-    val signUpFinished: Boolean = false
+    val signUpFinished: Boolean = false,
+    val isLoading: Boolean = false
 )

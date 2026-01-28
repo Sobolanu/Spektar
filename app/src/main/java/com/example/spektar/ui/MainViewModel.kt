@@ -20,17 +20,17 @@ class MainViewModel(
 
     init {
         viewModelScope.launch {
-            if(accountService.sessionFlow.value != null) {
-                _userAuthenticated.value = true
-            } else {
-                _userAuthenticated.value = false
+            accountService.sessionFlow.collect { session ->
+                _userAuthenticated.value = (session != null)
             }
+        }
 
+        viewModelScope.launch {
             delay(3000)
-
             _isReady.value = true
         }
     }
+
 }
 
 @Suppress("UNCHECKED_CAST")

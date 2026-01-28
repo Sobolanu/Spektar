@@ -33,6 +33,7 @@ import com.example.spektar.ui.common.components.navigationBarIcons.topProfileIco
 fun HomeScreen(
     goToQuestionnaireScreen: () -> Unit,
     goToProfile: () -> Unit,
+    goToArchiveScreen: () -> Unit,
     selectedIcon: Int,
     onBottomBarItemClick: (Int) -> Unit
 ) {
@@ -64,6 +65,22 @@ fun HomeScreen(
                     painterResource(R.drawable.app_logo_transparent_old),
                     contentDescription = stringResource(R.string.logo_description)
                 )
+            }
+
+            item{
+                Text(
+                    "Populate your home screen by saving media!"
+                )
+            }
+
+            item{
+                Button(
+                    onClick = { goToArchiveScreen() }
+                ) {
+                    Text(
+                        "Go to archive"
+                    )
+                }
             }
 
             item {

@@ -4,29 +4,19 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import com.example.spektar.data.model.media.MediaPreview
 import com.example.spektar.data.remote.authService.SessionFailure
-import com.example.spektar.data.remote.authService.UserAuthFailure
+import com.example.spektar.data.remote.mediaService.FullMediaData
 import com.example.spektar.data.repository.globalCategoryList
 import com.example.spektar.domain.model.SpecificMedia
 import com.example.spektar.domain.model.services.AccountService
 import com.example.spektar.domain.model.services.MediaService
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
-
-
-// DO NOT UNDER ANY CIRCUMSTANCES GET RID OF THE NON-EXPERIMENTAL FUNCTIONS
-// WITHOUT THEM THE CODE BREAKS FOR SOME REASON AND I DON'T KNOW HOW TO FIX IT
-/*
-    defines some properties for a uiState variable
-
-    implement error handling when you have the energy to do so
-*/
 
 class MediaViewModel (
     private val mediaService: MediaService,
@@ -54,7 +44,14 @@ class MediaViewModel (
             is MediaEvent.ObtainMediaById -> {
                 viewModelScope.launch(ioDispatcher) {
                     val result = obtainMediaById(event.media)
-                    _media.value = result
+                    _media.value = SpecificMedia(
+                        id_uuid = result.id_uuid,
+                        name = result.name,
+                        imageUrl = result.imageUrl,
+                        description = result.description,
+                        credits = result.credits,
+                        release_date = result.release_date
+                    )
                 }
             }
 
@@ -67,11 +64,6 @@ class MediaViewModel (
         }
     }
 
-    /*
-    AuthErrorCode.SessionNotFound -> SessionFailure.SessionNotFound
-                        AuthErrorCode.SessionExpired -> SessionFailure.SessionExpired
-                        AuthErrorCode.RequestTimeout -> SessionFailure.RequestTimeout
-     */
     init {
         viewModelScope.launch(ioDispatcher) {
             _categories.value = mediaService.getAllCategories()
@@ -109,7 +101,7 @@ class MediaViewModel (
 
 
     // uiState obtains all values that are stored in the repositories.
-    suspend fun obtainMediaById(partialMediaData: MediaPreview) : SpecificMedia {
+    suspend fun obtainMediaById(partialMediaData: MediaPreview) : FullMediaData {
         return mediaService.obtainDataByMediaId(partialMediaData)
     }
 }
