@@ -76,6 +76,9 @@ fun NavGraphBuilder.CommonGraph(
         QuestionnaireScreen(
             onEvent = { event ->
                 viewModel.onEvent(event)
+            },
+            navigateToHome = {
+                navController.safeNavigate(HomeScreen)
             }
         )
     }

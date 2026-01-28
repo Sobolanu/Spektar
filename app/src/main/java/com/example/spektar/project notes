@@ -10,9 +10,8 @@ TODO:
         - make a color palette cause material3 builder highk sucks?
 
     TODO: ### BACK-END
-        "preporuke drugim" could be preview of a rating
+        "preporuke drugim" is message of rating
 
     issues:
-        questionnaire screen: fix dropdown states disappearing, put button in right place and add "yes/no" answers
         make search nicer
         fix sign-in after signing up (after you make an account and try to log in, it refuses to)

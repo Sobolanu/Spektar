@@ -13,6 +13,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.TextAutoSize
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.KeyboardArrowDown
 import androidx.compose.material.icons.filled.Star
 import androidx.compose.material.icons.filled.StarBorder
 import androidx.compose.material3.Button
@@ -94,6 +95,14 @@ fun MediaDetailsScreen(
                     contentDescription = "Image of the media ${state.name}"
                 )
 
+                Text(
+                    text = "(${state.rating_count})",
+                    color = Color.Gray,
+                    style = MaterialTheme.typography.labelSmall
+                )
+            }
+
+            item {
                 Row(horizontalArrangement = Arrangement.Center) {
                     (1..5).forEach { star ->
                         Icon(
@@ -103,14 +112,9 @@ fun MediaDetailsScreen(
                             modifier = Modifier.padding(end = 8.dp)
                         )
                     }
-
-                    Text(
-                        text = "(${state.rating_count})",
-                        color = Color.Gray,
-                        style = MaterialTheme.typography.labelSmall
-                    )
                 }
             }
+
             item {
                 Text(
                     modifier = Modifier.padding(vertical = 24.dp),

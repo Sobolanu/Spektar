@@ -77,8 +77,8 @@
     <string name="anonymous_age">Ne želim reći.</string>
     <string name="age_question">Koliko imate godina?</string>
     <string name="general_tags_question">Koji generalni tagovi najbolje opisuju vaš ukus?</string>
-    <string name="anime_prompt">Da li ste ljubitelj animea?</string>
-    <string name="video_game_question">Da li ste ljubitelj video igrica?</string>
+    <string name="anime_prompt">Ako gledate, koje vrste animea volite?</string>
+    <string name="video_game_question">Ako igrate, koje vrste video igrica volite?</string>
     <string name="finish_questionnaire">Završi upitnik</string>
     <string name="slice_of_life">Svakodnevnica</string>
     <string name="open_world">Otvoreni svijet</string>
@@ -90,4 +90,5 @@
     <string name="select_tags">Izaberi tagove</string>
     <string name="no_tags_selected">Nema izabranih tagova</string>
     <string name="fill_out_questionnaire">Ispuni upitnik</string>
+    <string name="questionnaire_filled_out">Upitnik ispunjen!</string>
 </resources>

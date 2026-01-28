@@ -1,12 +1,5 @@
 package com.example.spektar.ui.settingsScreen
 
-/*
-TODO: implement rest of categories and their subscreens
-
-this screen would need a ViewModel of some kind to survive config changes
-remember, the ViewModel should be responsible for preparing the data for loading stuff!
- */
-
 import androidx.activity.compose.BackHandler
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.fadeIn
@@ -41,6 +34,10 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.rememberDrawerState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.derivedStateOf
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -63,17 +60,17 @@ fun SettingsScreen(
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
     val scope = rememberCoroutineScope()
 
+    val drawerIsOpen by remember { derivedStateOf { drawerState.isOpen } }
+
     Box(modifier = Modifier.fillMaxSize()) {
         ModalNavigationDrawer(
             drawerState = drawerState,
             drawerContent = {
-                if (drawerState.isOpen) {
-                    LanguageDrawerDemo(
-                        onEvent,
-                        state.selectedLanguage,
-                        onDismiss = { scope.launch { drawerState.close() } }
-                    )
-                }
+                LanguageDrawerDemo(
+                    onEvent = onEvent,
+                    selectedLanguage = state.selectedLanguage,
+                    onDismiss = { scope.launch { drawerState.close() } }
+                )
             }
         ) {
             Scaffold(
@@ -86,50 +83,57 @@ fun SettingsScreen(
                 topBar = { SettingsScreenTopBar() },
                 contentWindowInsets = WindowInsets(left = 8.dp)
             ) { paddingValues ->
-                Column(
-                    modifier = Modifier
-                        .padding(paddingValues)
-                        .fillMaxSize()
-                        .background(MaterialTheme.colorScheme.background),
-                ) {
-                    SettingsScreenCategories.forEach { index ->
-                        SettingsCategory(
-                            category = index,
-                            navigateToScreen = { target ->
-                                if (target == Access.LANGUAGE_PANE.ordinal) {
-                                    scope.launch { drawerState.open() }
-                                } else {
-                                    navigateToScreen(target)
+                Box(modifier = Modifier.fillMaxSize()) {
+                    Column(
+                        modifier = Modifier
+                            .padding(paddingValues)
+                            .fillMaxSize()
+                            .background(MaterialTheme.colorScheme.background),
+                    ) {
+                        SettingsScreenCategories.forEach { index ->
+                            SettingsCategory(
+                                category = index,
+                                navigateToScreen = { target ->
+                                    if (target == Access.LANGUAGE_PANE.ordinal) {
+                                        scope.launch { drawerState.open() }
+                                    } else {
+                                        navigateToScreen(target)
+                                    }
                                 }
+                            )
+                        }
+                    }
+
+                    // overlay inside of content box so it doesn't apply to drawer
+                    AnimatedVisibility(
+                        visible = state.phase != LanguageChangePhase.Idle,
+                        enter = fadeIn(),
+                        exit = fadeOut(),
+                        modifier = Modifier.matchParentSize()
+                    ) {
+                        Box(
+                            modifier = Modifier
+                                .fillMaxSize()
+                                .background(MaterialTheme.colorScheme.background.copy(alpha = 0.8f)),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            if (state.phase == LanguageChangePhase.FadeIn || state.phase == LanguageChangePhase.Changing) {
+                                CircularProgressIndicator()
                             }
-                        )
+                        }
                     }
                 }
             }
-
-            // is used to make the language pane slightly cleaner when changing languages
-            AnimatedVisibility(
-                visible = state.phase != LanguageChangePhase.Idle,
-                enter = fadeIn(),
-                exit = fadeOut()
-            ) {
-                Box(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .background(MaterialTheme.colorScheme.background.copy(alpha = 0.8f)),
-                    contentAlignment = Alignment.Center
-                ) {
-                    if (state.phase == LanguageChangePhase.FadeIn || state.phase == LanguageChangePhase.Changing) {
-                        CircularProgressIndicator()
-                    }
-                }
-            }
-
         }
     }
-
-    BackHandler(enabled = drawerState.isOpen) {
+    BackHandler(enabled = drawerIsOpen) {
         scope.launch { drawerState.close() }
+    }
+
+    LaunchedEffect(state.phase) {
+        if (state.phase == LanguageChangePhase.Idle && drawerState.isOpen) {
+            drawerState.close()
+        }
     }
 }
 

@@ -41,13 +41,13 @@
     <string name="discover">Discover</string>
     <string name="email_confirmation">A confirmation mail has been sent to your email account. Please confirm before proceeding.</string>
     <string name="continue_dialog">Continue</string>
-    <string name="dismiss">Odbaci</string>
+    <string name="dismiss">Dismiss</string>
     <string name="sign_out">Sign out</string>
-    <string name="delete_account">Delete account (does nothing for now)</string>
+    <string name="delete_account">Delete account</string>
     <string name="reset_media_recommendations">Reset media recommendations</string>
     <string name="account_deletion">You are about to delete your account. This action is not reversible. Are you absolutely sure?</string>
     <string name="media_recommendation_dialog">You are about to reset your media recommendations. To re-obtain recommendations, you must fill out the questionnaire. Are you sure?</string>
-    <string name="reset_password">Reset password (doesn\'t do anything right now)</string>
+    <string name="reset_password">Reset password </string>
     <string name="search">Search</string>
     <string name="action">Action</string>
     <string name="fantasy">Fantasy</string>
@@ -76,8 +76,8 @@
     <string name="anonymous_age">I\'d rather not say</string>
     <string name="age_question">How old are you?</string>
     <string name="general_tags_question">What general tags describe your taste the best?</string>
-    <string name="anime_prompt">Do you like anime?</string>
-    <string name="video_game_question">Do you like video games?</string>
+    <string name="anime_prompt">If you like anime, what types do you like?</string>
+    <string name="video_game_question">If you play games, what types do you like?</string>
     <string name="finish_questionnaire">Finish questionnaire</string>
     <string name="slice_of_life">Slice of Life</string>
     <string name="open_world">Open world</string>
@@ -89,4 +89,5 @@
     <string name="select_tags">Select Tags</string>
     <string name="no_tags_selected">No tags selected</string>
     <string name="fill_out_questionnaire">Fill out questionnaire</string>
+    <string name="questionnaire_filled_out">Questionnaire filled out!</string>
 </resources>
