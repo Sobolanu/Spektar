@@ -1,13 +1,9 @@
-// if you need any data to be transferred between two viewmodels you should share that through some repository
-// DONT DO ANYTHING WITH ERRORS UNTIL YOU FINISH THE APP!!!
-
 TODO:
     ### FRONT END
         - home screen
             - this home screen would contain pieces of media you're currently consuming, and they'd
             have a progress counter (current progress is X, Y is max progress, optional daily goal for books)
-            - fix layout
-            - remember HorizontalDivider() exists!!!
+            only books saved in "archive"/saved would have a daily goal
 
     TODO: ### BACK-END
         "preporuke drugim" is message of rating

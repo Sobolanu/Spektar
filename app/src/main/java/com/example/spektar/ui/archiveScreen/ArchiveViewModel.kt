@@ -11,12 +11,21 @@ import com.example.spektar.data.model.roomModels.toSpecificMedia
 import com.example.spektar.domain.model.SpecificMedia
 import com.example.spektar.domain.model.services.AccountService
 import com.example.spektar.domain.model.services.MediaService
-import com.example.spektar.domain.model.toMedia
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
+import kotlinx.serialization.Serializable
+
+@Serializable
+data class DailyGoal(
+    val daily_goal_set : Boolean = false,
+    val dailyGoal : Int = 0, // as in, amount you want to watch/read
+    val totalSize : Int = 0 // as in, num of pages or episodes
+)
 
 class ArchiveViewModel (
     private val archiveDao: ArchiveDao,
@@ -27,17 +36,20 @@ class ArchiveViewModel (
         -> list.map { it.toSpecificMedia() }
     }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(), emptyList())
 
+    val _dailyGoalState = MutableStateFlow(DailyGoal())
+    val dailyGoalState = _dailyGoalState.asStateFlow()
+
     fun onEvent(event: ArchiveEvent) {
         when(event) {
             is ArchiveEvent.saveMedia -> {
                 viewModelScope.launch {
-                    archiveDao.insertMediaToArchive(event.media.toMedia())
+                    archiveDao.insertMediaToArchive(event.media)
                 }
             }
 
             is ArchiveEvent.removeMedia -> {
                 viewModelScope.launch {
-                    archiveDao.removeMediaFromArchive(event.media.toMedia())
+                    // archiveDao.removeMediaFromArchive(event.media.toMedia())
                 }
             }
 

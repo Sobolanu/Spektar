@@ -15,7 +15,11 @@ data class Media (
     val imageUrl: String,
     val description: String,
     val credits: String,
-    val release_date: String
+    val release_date: String,
+
+    val daily_goal_set : Boolean,
+    val dailyGoal : Int, // as in, amount you want to watch/read
+    val totalSize : Int // as in, num of pages or episodes
 )
 
 fun Media.toSpecificMedia(): SpecificMedia = SpecificMedia(

@@ -5,12 +5,18 @@ import androidx.activity.result.PickVisualMediaRequest
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowForwardIos
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarDuration
@@ -29,6 +35,7 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
@@ -119,38 +126,101 @@ fun ProfileScreen(
                 modifier = Modifier.padding(top = 6.dp),
             )
 
-            Button(
-                onClick = { onEvent(ProfileEvent.signOut) }
+            Column(
+                verticalArrangement = Arrangement.Center,
+                horizontalAlignment = Alignment.Start
             ) {
-                Text(stringResource(R.string.sign_out))
-            }
+                Button(
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = Color.Transparent,
+                        contentColor = MaterialTheme.colorScheme.onBackground
+                    ),
+                    onClick = { onEvent(ProfileEvent.signOut) },
+                ) {
+                    Text(
+                        stringResource(R.string.sign_out),
+                        style = MaterialTheme.typography.bodyLarge
+                    )
 
-            Button(
-                onClick = {
-                    accountDeletionConfirmationBox = true
-                }
-            ) {
-                Text(stringResource(R.string.delete_account))
-            }
+                    Spacer(modifier = Modifier.weight(1f))
 
-            Button(
-                onClick = {
-                    mediaRecommendationConfirmationBox = true
+                    Icon(
+                        imageVector = Icons.AutoMirrored.Filled.ArrowForwardIos,
+                        contentDescription = "Save media to archive",
+                    )
                 }
-            ) {
-                Text(
-                    stringResource(R.string.reset_media_recommendations)
-                )
-            }
 
-            Button(
-                onClick = {
-                    // onEvent(ProfileEvent.resetPassword)
+                HorizontalDivider(modifier = Modifier.padding(vertical = 4.dp))
+
+                Button(
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = Color.Transparent,
+                        contentColor = MaterialTheme.colorScheme.onBackground
+                    ),
+                    onClick = {
+                        accountDeletionConfirmationBox = true
+                    }
+                ) {
+                    Text(stringResource(R.string.delete_account),
+                        style = MaterialTheme.typography.bodyLarge
+                    )
+
+                    Spacer(modifier = Modifier.weight(1f))
+
+                    Icon(
+                        imageVector = Icons.AutoMirrored.Filled.ArrowForwardIos,
+                        contentDescription = "Save media to archive",
+                    )
                 }
-            ) {
-                Text(
-                    stringResource(R.string.reset_password)
-                )
+
+                HorizontalDivider(modifier = Modifier.padding(vertical = 4.dp))
+
+                Button(
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = Color.Transparent,
+                        contentColor = MaterialTheme.colorScheme.onBackground
+                    ),
+                    onClick = {
+                        mediaRecommendationConfirmationBox = true
+                    }
+                ) {
+                    Text(
+                        stringResource(R.string.reset_media_recommendations),
+                        style = MaterialTheme.typography.bodyLarge
+                    )
+
+                    Spacer(modifier = Modifier.weight(1f))
+
+                    Icon(
+                        imageVector = Icons.AutoMirrored.Filled.ArrowForwardIos,
+                        contentDescription = "Save media to archive",
+                    )
+                }
+
+                HorizontalDivider(modifier = Modifier.padding(vertical = 4.dp))
+
+                Button(
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = Color.Transparent,
+                        contentColor = MaterialTheme.colorScheme.onBackground
+                    ),
+
+                    onClick = {
+                        // onEvent(ProfileEvent.resetPassword)
+                    }
+                ) {
+                    Text(
+                        stringResource(R.string.reset_password),
+                        style = MaterialTheme.typography.bodyLarge
+                    )
+
+                    Spacer(modifier = Modifier.weight(1f))
+
+                    Icon(
+                        imageVector = Icons.AutoMirrored.Filled.ArrowForwardIos,
+                        contentDescription = "Save media to archive",
+                    )
+                }
             }
 
             if(accountDeletionConfirmationBox) {

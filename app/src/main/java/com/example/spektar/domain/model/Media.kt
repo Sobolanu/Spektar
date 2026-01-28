@@ -1,6 +1,5 @@
 package com.example.spektar.domain.model
 
-import com.example.spektar.data.model.roomModels.Media
 import kotlinx.serialization.Serializable
 
 /*
@@ -18,7 +17,7 @@ data class SpecificMedia(
     val release_date: String = ""
 )
 
-fun SpecificMedia.toMedia(): Media {
+/*fun SpecificMedia.toMedia(): Media {
     return Media(
         id_uuid = this.id_uuid,
         name = this.name,
@@ -27,4 +26,4 @@ fun SpecificMedia.toMedia(): Media {
         credits = this.credits,
         release_date = this.release_date
     )
-}
+} */

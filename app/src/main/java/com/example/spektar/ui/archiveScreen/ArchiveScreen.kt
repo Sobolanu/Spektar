@@ -32,8 +32,6 @@ import com.example.spektar.domain.model.SpecificMedia
 import com.example.spektar.ui.common.components.BottomBar
 import com.example.spektar.ui.common.components.navigationBarIcons.topProfileIcon
 import com.example.spektar.ui.common.modifiers.cardWithShadowModifier
-import com.example.spektar.ui.mediaScreens.Category
-import com.example.spektar.ui.mediaScreens.MediaUiState
 import com.example.spektar.ui.navigation.graphs.categoryGraph.MediaDetails
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -43,7 +41,7 @@ fun ArchiveScreen(
     onBottomBarItemClick : (Int) -> Unit,
     onImageClick: (MediaDetails) -> Unit,
     selectedIcon: Int,
-    state: List<SpecificMedia>?
+    state: List<SpecificMedia>?,
 ) {
     val scrollBehavior = enterAlwaysScrollBehavior()
 
@@ -58,11 +56,9 @@ fun ArchiveScreen(
             horizontalArrangement = Arrangement.Center,
         ) {
             if(state.isNullOrEmpty()) {
-
                 item {
                     Text("Add some media to this archive!")
                 }
-
             } else {
                 items(state.size) { media ->
                     Card(

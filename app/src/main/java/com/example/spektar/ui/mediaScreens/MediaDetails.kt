@@ -5,6 +5,7 @@ import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -13,11 +14,16 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.TextAutoSize
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowForwardIos
 import androidx.compose.material.icons.filled.KeyboardArrowDown
 import androidx.compose.material.icons.filled.Star
 import androidx.compose.material.icons.filled.StarBorder
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonColors
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.Checkbox
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -26,6 +32,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
+import androidx.compose.material3.TextField
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
@@ -42,8 +49,11 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import coil.compose.AsyncImage
+import com.example.spektar.R
+import com.example.spektar.data.model.roomModels.Media
 import com.example.spektar.data.remote.mediaService.FullMediaData
 import com.example.spektar.domain.model.SpecificMedia
+import com.example.spektar.ui.archiveScreen.ArchiveEvent
 import com.example.spektar.ui.common.components.navigationBarIcons.topProfileIcon
 import com.example.spektar.ui.common.components.navigationBarIcons.topBackArrowIcon
 
@@ -53,10 +63,13 @@ fun MediaDetailsScreen(
     onBackClick: () -> Unit,
     leaveReview: (String, Int, String) -> Unit,
     onNoteButtonClick: (String) -> Unit,
-    saveMedia: (SpecificMedia) -> Unit,
+    //saveMedia: (SpecificMedia) -> Unit,
+    saveMedia: (Media) -> Unit,
     state: FullMediaData,
+    isArchived: Boolean
 ) {
     var openDialog by remember { mutableStateOf(false) }
+    var openGoalDialog by remember { mutableStateOf(false) }
 
     Scaffold(
         topBar = { DetailsPageTopBar(goToProfile, onBackClick) },
@@ -73,9 +86,34 @@ fun MediaDetailsScreen(
             if(openDialog) {
                 item {
                     ReviewDialog(
-                        onDismiss = { openDialog = !openDialog },
+                        onDismiss = { openDialog = false },
                         onSubmit = { rating, message ->
                             leaveReview(state.id_uuid, rating, message)
+                        }
+                    )
+                }
+            }
+
+            if(openGoalDialog) {
+                item{
+                    DailyGoalDialog(
+                        onDismiss = { openGoalDialog = false },
+                        onSubmit = { setDailyGoal, dailyGoal, finalGoal ->
+                            saveMedia(
+                                Media(
+                                    id_uuid = state.id_uuid,
+                                    name = state.name,
+                                    imageUrl = state.imageUrl,
+                                    description = state.description,
+                                    credits = state.credits,
+                                    release_date = state.release_date,
+                                    daily_goal_set = setDailyGoal,
+                                    dailyGoal = dailyGoal,
+                                    totalSize = finalGoal
+                                )
+                            )
+
+                            openGoalDialog = false
                         }
                     )
                 }
@@ -139,21 +177,12 @@ fun MediaDetailsScreen(
             }
 
             item {
-                Button(
-                    onClick = {
-                        onNoteButtonClick(state.id_uuid)
-                    },
-                    modifier = Modifier.padding(8.dp)
-                ) {
-                    Text("Notes")
-                }
-            }
-
-            item {
                 Column(
-                    horizontalAlignment = Alignment.Start,
+                    horizontalAlignment = Alignment.CenterHorizontally,
                     verticalArrangement = Arrangement.Center,
-                    modifier = Modifier.fillMaxWidth()
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(top = 12.dp)
                 ) {
                     Text(
                         text = "by ${state.credits}",
@@ -167,25 +196,87 @@ fun MediaDetailsScreen(
                         textAlign = TextAlign.Center
                     )
                 }
+
+                Spacer(
+                    modifier = Modifier.padding(vertical = 8.dp)
+                )
             }
 
             item {
-                Button(
-                    onClick = { /* saveMedia(state) */ }
+                Column(
+                    verticalArrangement = Arrangement.Center,
+                    horizontalAlignment = Alignment.Start
                 ) {
-                    Text(
-                        "Save media"
-                    )
-                }
-            }
+                    Button(
+                        onClick = {
+                            onNoteButtonClick(state.id_uuid)
+                        },
+                        colors = ButtonDefaults.buttonColors(
+                            containerColor = Color.Transparent,
+                            contentColor = MaterialTheme.colorScheme.onBackground
+                        )
+                    ) {
+                        Text(
+                            "Notes",
+                            style = MaterialTheme.typography.bodyLarge
+                        )
 
-            item {
-                Button(
-                    onClick = { openDialog = true }
-                ) {
-                    Text(
-                        "Leave a review"
+                        Spacer(modifier = Modifier.weight(1f))
+
+                        Icon(
+                            imageVector = Icons.AutoMirrored.Filled.ArrowForwardIos,
+                            contentDescription = "Check notes",
+                        )
+                    }
+
+                    HorizontalDivider(modifier = Modifier.padding(vertical = 4.dp))
+
+                    Button(
+                        colors = ButtonDefaults.buttonColors(
+                            containerColor = Color.Transparent,
+                            contentColor = MaterialTheme.colorScheme.onBackground
+                        ),
+
+                        onClick = {
+                            openGoalDialog = true
+                        }
+                    ) {
+                        Text(
+                            "Save media",
+                            style = MaterialTheme.typography.bodyLarge
+                        )
+
+                        Spacer(modifier = Modifier.weight(1f))
+
+                        Icon(
+                            imageVector = Icons.AutoMirrored.Filled.ArrowForwardIos,
+                            contentDescription = "Save media to archive",
+                        )
+                    }
+
+                    HorizontalDivider(
+                        modifier = Modifier.padding(vertical = 8.dp)
                     )
+
+                    Button(
+                        onClick = { openDialog = true },
+                        colors = ButtonDefaults.buttonColors(
+                            containerColor = Color.Transparent,
+                            contentColor = MaterialTheme.colorScheme.onBackground
+                        )
+                    ) {
+                        Text(
+                            "Leave a review",
+                            style = MaterialTheme.typography.bodyLarge
+                        )
+
+                        Spacer(modifier = Modifier.weight(1f))
+
+                        Icon(
+                            imageVector = Icons.AutoMirrored.Filled.ArrowForwardIos,
+                            contentDescription = "Leave a review.",
+                        )
+                    }
                 }
             }
         }
@@ -243,6 +334,91 @@ fun DetailsPageTopBar(
             }
         }
     )
+}
+
+@Composable
+fun DailyGoalDialog(
+    onDismiss: () -> Unit,
+    onSubmit: (Boolean, Int, Int) -> Unit
+) {
+    var setDailyGoal by remember { mutableStateOf(false) }
+    var dailyGoal by remember { mutableStateOf("") }
+    var totalGoal by remember { mutableStateOf("") }
+
+    Dialog(onDismissRequest = onDismiss) {
+        Surface(
+            shape = RoundedCornerShape(12.dp),
+            modifier = Modifier.padding(16.dp)
+        ) {
+            Column(
+                modifier = Modifier
+                    .padding(16.dp),
+                verticalArrangement = Arrangement.spacedBy(12.dp),
+            ) {
+                Row(
+                    horizontalArrangement = Arrangement.Start,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Text(
+                        text = "Do you want to set a daily goal?",
+                    )
+
+                    Spacer(modifier = Modifier.weight(1f))
+
+                    Checkbox(
+                        checked = setDailyGoal,
+                        onCheckedChange = { it ->
+                            setDailyGoal = it
+                        }
+                    )
+                }
+
+                if(setDailyGoal) {
+                    Column(
+                        verticalArrangement = Arrangement.Center,
+                        horizontalAlignment = Alignment.Start
+                    ) {
+                        Text(
+                            text = "Set a daily goal (in pages or episodes):"
+                        )
+
+                        OutlinedTextField(
+                            value = dailyGoal,
+                            label = { Text("Daily goal") },
+                            onValueChange = {
+                                dailyGoal = it
+                            }
+                        )
+
+                        Text(
+                            text = "How long is the media (in pages or episodes):"
+                        )
+
+                        OutlinedTextField(
+                            value = totalGoal,
+                            label = { Text("Final goal") },
+                            onValueChange = {
+                                totalGoal = it
+                            }
+                        )
+                    }
+                }
+
+                Row(
+                    horizontalArrangement = Arrangement.End,
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    TextButton(onClick = onDismiss) {
+                        Text("Cancel")
+                    }
+
+                    Button(onClick = { onSubmit(setDailyGoal, dailyGoal.toInt(), totalGoal.toInt()) }) {
+                        Text("Submit")
+                    }
+                }
+            }
+        }
+    }
 }
 
 @Composable

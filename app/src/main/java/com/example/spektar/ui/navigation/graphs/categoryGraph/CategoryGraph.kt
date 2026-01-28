@@ -34,6 +34,7 @@ import com.example.spektar.ui.navigation.utils.safeNavigate
 import com.example.spektar.ui.notesScreen.NoteScreen
 import com.example.spektar.ui.notesScreen.NoteViewModel
 import com.example.spektar.ui.notesScreen.NoteViewModelFactory
+import kotlinx.coroutines.flow.any
 import kotlin.reflect.typeOf
 
 fun NavGraphBuilder.CategoryGraph(
@@ -91,6 +92,10 @@ fun NavGraphBuilder.CategoryGraph(
                 )
             )
 
+            val isArchived = archiveViewModel.archivedMedias.value.any { it ->
+                it.name == state.name
+            }
+
             MediaDetailsScreen(
                 goToProfile = { navController.safeNavigate(MoreMedia) },
                 onBackClick = { navController.popBackStack() },
@@ -98,16 +103,20 @@ fun NavGraphBuilder.CategoryGraph(
                     navController.safeNavigate(NoteScreen(it)) // pass id here
                 },
                 state = state,
+
                 saveMedia = { media ->
                     archiveViewModel.onEvent(ArchiveEvent.saveMedia(media))
                 },
+
                 leaveReview = { mediaId, rating, message ->
                     archiveViewModel.onEvent(ArchiveEvent.mediaReview(
                         mediaId = mediaId,
                         rating = rating,
                         message = message
                     ))
-                }
+                },
+
+                isArchived = isArchived
             )
         }
 
