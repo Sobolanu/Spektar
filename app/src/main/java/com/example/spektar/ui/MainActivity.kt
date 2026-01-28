@@ -11,6 +11,7 @@ import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.compose.SpektarTheme
 import com.example.spektar.data.local.DataStore.dataStore
 import com.example.spektar.data.remote.authService.AccountServiceImpl
@@ -46,7 +47,8 @@ class MainActivity : ComponentActivity() {
                 darkTheme = darkThemeState
             ) {
                 SpektarNavigation(
-                    userAuthState = viewModel.userAuthenticated.value,
+                    userAuthState = viewModel.userAuthenticated.collectAsStateWithLifecycle().value,
+                    userMustSignUp = viewModel.signUpObserver.collectAsStateWithLifecycle().value
                 )
             }
         }

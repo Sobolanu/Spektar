@@ -43,7 +43,8 @@ i don't have time to migrate to Navigation3) type-safe navigation, which is also
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
 fun SpektarNavigation(
-    userAuthState: Boolean
+    userAuthState: Boolean,
+    userMustSignUp: Boolean?
 ) {
     val navController = rememberNavController()
     val snackbarHostState = remember { SnackbarHostState() }
@@ -98,7 +99,10 @@ fun SpektarNavigation(
         factory = MediaViewModelFactory(MediaServiceImpl(), AccountServiceImpl()),
     )
 
-    val start = if(userAuthState == true) {
+    // if signUpObserver is false then user doesn't need to sign up
+    // else if it is true then user must sign up
+
+    val start = if(userAuthState && userMustSignUp == false) {
         HomeScreen
     } else {
         UserLoginScreen(false)

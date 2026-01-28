@@ -14,6 +14,7 @@ import java.io.File
 
 interface AccountService{
     val sessionFlow: StateFlow<UserSession?> // Makes the UserSession a flow for ease-of-use.
+    val signUpObserver: StateFlow<Boolean?>
     suspend fun retrieveSession() : UserSession? // simply returns the current session
     suspend fun retrieveUserId() : Either<SessionFailure, String> // returns the current user ID associated with the session
     suspend fun retrieveUserDataWithId(id : String) : User // obtains basic user information - name, avatar and id

@@ -21,6 +21,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import kotlinx.serialization.json.buildJsonObject
 import kotlinx.serialization.json.put
@@ -34,23 +35,31 @@ class AccountServiceImpl : AccountService {
     private val _sessionFlow = MutableStateFlow<UserSession?>(null)
     override val sessionFlow: StateFlow<UserSession?> get() =_sessionFlow
 
+    private val _signUpObserver = MutableStateFlow<Boolean?>(null)
+    override val signUpObserver: StateFlow<Boolean?> get() = _signUpObserver
+
     init {
         CoroutineScope(Dispatchers.Main).launch {
             SupabaseClientProvider.auth.sessionStatus.collect { status ->
                 when (status) {
                     is SessionStatus.Authenticated -> {
                         _sessionFlow.value = status.session
+                        if(_signUpObserver.value == null) {
+                            _signUpObserver.value = false // doesn't need to sign up
+                        }
                     }
 
                     is SessionStatus.NotAuthenticated -> {
                         _sessionFlow.value = null
+                        if(_signUpObserver.value == null) {
+                            _signUpObserver.value = true // must sign up
+                        }
                     }
 
                     else -> { }
                 }
             }
         }
-
     }
 
     override suspend fun retrieveSession(): UserSession? {
