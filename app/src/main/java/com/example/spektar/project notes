@@ -6,11 +6,8 @@ TODO:
         - home screen
             - this home screen would contain pieces of media you're currently consuming, and they'd
             have a progress counter (current progress is X, Y is max progress, optional daily goal for books)
-
-        - make a color palette cause material3 builder highk sucks?
+            - fix layout
+            - remember HorizontalDivider() exists!!!
 
     TODO: ### BACK-END
         "preporuke drugim" is message of rating
-
-    issues:
-        make search nicer

@@ -1,8 +1,15 @@
 package com.example.spektar.ui.mediaScreens
 
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.ExperimentalAnimationApi
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.slideInVertically
+import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -11,12 +18,16 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
+import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.AddCircleOutline
@@ -24,17 +35,17 @@ import androidx.compose.material3.Card
 import androidx.compose.material3.CardColors
 import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.ListItem
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextField
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.TopAppBarDefaults.enterAlwaysScrollBehavior
 import androidx.compose.material3.TopAppBarScrollBehavior
-import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -44,18 +55,74 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.nestedscroll.nestedScroll
+import androidx.compose.ui.platform.LocalFocusManager
+import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
+import com.example.spektar.R
 import com.example.spektar.data.model.media.MediaPreview
 import com.example.spektar.ui.common.components.BottomBar
-import com.example.spektar.ui.common.components.DebouncedTextField
 import com.example.spektar.ui.common.components.navigationBarIcons.topProfileIcon
 import com.example.spektar.ui.common.modifiers.cardWithShadowModifier
 import com.example.spektar.ui.common.modifiers.roundedCornerRow
 import com.example.spektar.ui.navigation.graphs.categoryGraph.MediaDetails
 
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalAnimationApi::class)
+@Composable
+fun CategoryScreen(
+    onEvent: (MediaEvent) -> Unit,
+    goToProfile: () -> Unit,
+    onImageClick: (MediaDetails) -> Unit,
+    onMoreClick: (Category) -> Unit,
+    onBottomBarItemClick: (Int) -> Unit,
+    selectedIcon: Int,
+    state: MediaUiState
+) {
+    val scrollBehavior = enterAlwaysScrollBehavior()
+    var showSearchDialog by remember { mutableStateOf(false) }
+
+    Scaffold(
+        modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
+        topBar = {
+            CategoryPageTopBar(
+                onEvent = onEvent,
+                goToProfile = goToProfile,
+                scrollBehavior = scrollBehavior,
+                onSearch = { showSearchDialog = true }
+            )
+        },
+        bottomBar = {
+            BottomBar(onBottomBarItemClick = onBottomBarItemClick, selectedIcon = selectedIcon)
+        }
+    ) { paddingValues ->
+        Box(modifier = Modifier
+            .fillMaxSize()
+            .padding(paddingValues)
+        ) {
+            CategoryScreenContent(
+                onImageClick = onImageClick,
+                uiState = state,
+                onMoreClick = onMoreClick,
+                modifier = Modifier.fillMaxSize()
+            )
+
+            AnimatedSearchOverlay(
+                visible = showSearchDialog,
+                results = state.searchMedias,
+                onDismiss = { showSearchDialog = false },
+                onSelect = { mediaPreview ->
+                    showSearchDialog = false
+                    onImageClick(MediaDetails(partialMediaData = mediaPreview))
+                }
+            )
+        }
+    }
+}
+
+
+/*
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 
@@ -108,7 +175,7 @@ fun CategoryScreen(
         }
     }
 }
-
+*/
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun CategoryScreenContent(
@@ -262,15 +329,15 @@ fun CategoryPageTopBar(
         ),
 
         title = { // you can add colors
-            DebouncedTextField(
-                text = text,
-                onTextChange = {
+            TextField(
+                value = text,
+                placeholder =  { Text(stringResource(R.string.search)) },
+                onValueChange = {
                     text = it
-                },
-                onEvent = {
+
                     onEvent(MediaEvent.SearchForMedia(text))
                     onSearch()
-                }
+                },
             )
         },
 
@@ -294,37 +361,96 @@ fun CategoryPageTopBar(
     )
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalAnimationApi::class)
 @Composable
-fun SearchOverlay(
+fun AnimatedSearchOverlay(
+    visible: Boolean,
     results: List<MediaPreview>,
     onDismiss: () -> Unit,
     onSelect: (MediaPreview) -> Unit
 ) {
-    val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
+    val focusManager = LocalFocusManager.current
+    val keyboardController = LocalSoftwareKeyboardController.current
+    val scrimColor = Color.Black.copy(alpha = 0.5f)
 
-    ModalBottomSheet(
-        onDismissRequest = { onDismiss() },
-        sheetState = sheetState
+    // root full-screen container only when visible (keeps it out of layout when hidden)
+    AnimatedVisibility(
+        visible = visible,
+        enter = fadeIn() + slideInVertically(initialOffsetY = { -it / 2 }),
+        exit = fadeOut() + slideOutVertically(targetOffsetY = { -it / 2 }),
+        modifier = Modifier.fillMaxSize()
     ) {
-        Column {
-            Row(
-                verticalAlignment = Alignment.CenterVertically,
-                modifier = Modifier.fillMaxWidth()
-            ) {
-                IconButton(onClick = { onDismiss() }) {
-                    Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back")
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .background(scrimColor)
+                .clickable(
+                    // consume clicks on scrim and dismiss
+                    indication = null,
+                    interactionSource = remember { MutableInteractionSource() }
+                ) {
+                    // hide keyboard and clear focus before dismissing
+                    keyboardController?.hide()
+                    focusManager.clearFocus()
+                    onDismiss()
                 }
-            }
+        ) {
+            // overlay content
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .wrapContentHeight()
+                    .align(Alignment.TopCenter)
+                    .background(MaterialTheme.colorScheme.surface, shape = RoundedCornerShape(bottomStart = 12.dp, bottomEnd = 12.dp))
+                    .padding(vertical = 8.dp)
+                    .clickable(indication = null, interactionSource = remember { MutableInteractionSource() }) { /* consume */ }
+                    .imePadding() // allow content to move with keyboard
+            ) {
+                // back button
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 8.dp, vertical = 4.dp)
+                ) {
+                    IconButton(onClick = {
+                        keyboardController?.hide()
+                        focusManager.clearFocus()
+                        onDismiss()
+                    }) {
+                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back")
+                    }
+                    Spacer(modifier = Modifier.width(8.dp))
+                    Text(text = "Search results", style = MaterialTheme.typography.titleMedium)
+                }
 
-            LazyColumn {
-                items(results) { item ->
-                    ListItem(
-                        headlineContent = { Text(item.name) },
-                        supportingContent = { Text(item.id_uuid) }, // myb change
-                        leadingContent = { AsyncImage(model = item.imageUrl, contentDescription = item.name) },
-                        modifier = Modifier.clickable { onSelect(item) }
-                    )
+                // results list
+                LazyColumn(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .heightIn(max = 420.dp)
+                ) {
+                    items(results) { item ->
+                        ListItem(
+                            headlineContent = { Text(item.name) },
+                            supportingContent = { Text(item.id_uuid) },
+                            leadingContent = {
+                                AsyncImage(
+                                    model = item.imageUrl,
+                                    contentDescription = item.name,
+                                    modifier = Modifier.size(64.dp)
+                                )
+                            },
+                            modifier = Modifier
+                                .clickable {
+                                    keyboardController?.hide()
+                                    focusManager.clearFocus()
+                                    onSelect(item)
+                                }
+                                .padding(horizontal = 8.dp)
+                        )
+                        HorizontalDivider()
+                    }
                 }
             }
         }
