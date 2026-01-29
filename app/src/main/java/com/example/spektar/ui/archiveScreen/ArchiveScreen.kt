@@ -28,7 +28,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
 import com.example.spektar.data.model.media.MediaPreview
-import com.example.spektar.domain.model.SpecificMedia
+import com.example.spektar.data.model.roomModels.Media
 import com.example.spektar.ui.common.components.BottomBar
 import com.example.spektar.ui.common.components.navigationBarIcons.topProfileIcon
 import com.example.spektar.ui.common.modifiers.cardWithShadowModifier
@@ -41,7 +41,8 @@ fun ArchiveScreen(
     onBottomBarItemClick : (Int) -> Unit,
     onImageClick: (MediaDetails) -> Unit,
     selectedIcon: Int,
-    state: List<SpecificMedia>?,
+    // state: List<SpecificMedia>?,
+    state: List<Media>
 ) {
     val scrollBehavior = enterAlwaysScrollBehavior()
 

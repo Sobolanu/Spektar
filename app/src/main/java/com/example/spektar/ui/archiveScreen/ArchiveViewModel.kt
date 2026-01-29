@@ -7,6 +7,7 @@ import androidx.lifecycle.viewModelScope
 import androidx.room.Room
 import com.example.spektar.data.local.ArchiveDatabase
 import com.example.spektar.data.local.dao.ArchiveDao
+import com.example.spektar.data.model.roomModels.Media
 import com.example.spektar.data.model.roomModels.toSpecificMedia
 import com.example.spektar.domain.model.SpecificMedia
 import com.example.spektar.domain.model.services.AccountService
@@ -32,9 +33,12 @@ class ArchiveViewModel (
     private val mediaService: MediaService,
     private val accountService: AccountService
 ) : ViewModel() {
-    val archivedMedias: StateFlow<List<SpecificMedia>> = archiveDao.getAllArchivedMedia().map { list
+    /* val archivedMedias: StateFlow<List<SpecificMedia>> = archiveDao.getAllArchivedMedia().map { list
         -> list.map { it.toSpecificMedia() }
-    }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(), emptyList())
+    }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(), emptyList()) */
+
+    val archivedMedias: StateFlow<List<Media>> = archiveDao.getAllArchivedMedia()
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(), emptyList())
 
     val _dailyGoalState = MutableStateFlow(DailyGoal())
     val dailyGoalState = _dailyGoalState.asStateFlow()

@@ -409,11 +409,11 @@ fun DailyGoalDialog(
                     modifier = Modifier.fillMaxWidth()
                 ) {
                     TextButton(onClick = onDismiss) {
-                        Text("Cancel")
+                        Text(stringResource(R.string.dismiss))
                     }
 
                     Button(onClick = { onSubmit(setDailyGoal, dailyGoal.toInt(), totalGoal.toInt()) }) {
-                        Text("Submit")
+                        Text(stringResource(R.string.continue_dialog))
                     }
                 }
             }

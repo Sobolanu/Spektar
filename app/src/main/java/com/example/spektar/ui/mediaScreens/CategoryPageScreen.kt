@@ -121,61 +121,6 @@ fun CategoryScreen(
     }
 }
 
-
-/*
-@OptIn(ExperimentalMaterial3Api::class)
-@Composable
-
-fun CategoryScreen(
-    onEvent: (MediaEvent) -> Unit,
-    goToProfile: () -> Unit,
-    onImageClick: (MediaDetails) -> Unit,
-    onMoreClick: (Category) -> Unit,
-    onBottomBarItemClick: (Int) -> Unit,
-    selectedIcon: Int,
-    state: MediaUiState
-) {
-    val scrollBehavior = enterAlwaysScrollBehavior()
-    var showSearchDialog by remember {mutableStateOf(false)}
-
-    Scaffold(
-        modifier = Modifier
-            .nestedScroll(scrollBehavior.nestedScrollConnection),
-
-        topBar = {
-            CategoryPageTopBar(
-                onEvent = onEvent,
-                goToProfile,
-                scrollBehavior = scrollBehavior,
-                onSearch = { showSearchDialog = true }
-            )
-        },
-        bottomBar = {
-            BottomBar(
-                onBottomBarItemClick = onBottomBarItemClick,
-                selectedIcon,
-            )
-        },
-    ) { paddingValues ->
-        CategoryScreenContent(
-            onImageClick = onImageClick,
-            uiState = state,
-            onMoreClick = onMoreClick,
-            modifier = Modifier.padding(paddingValues),
-        )
-
-        if (showSearchDialog) {
-            SearchOverlay(
-                results = state.searchMedias,
-                onDismiss = { showSearchDialog = false },
-                onSelect = { mediaPreview ->
-                    onImageClick(MediaDetails(partialMediaData = mediaPreview))
-                }
-            )
-        }
-    }
-}
-*/
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun CategoryScreenContent(

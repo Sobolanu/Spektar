@@ -1,5 +1,6 @@
 package com.example.spektar.ui.navigation.graphs.common
 
+import androidx.compose.ui.platform.LocalContext
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
@@ -7,7 +8,10 @@ import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
 import androidx.navigation.toRoute
 import com.example.spektar.data.remote.authService.AccountServiceImpl
+import com.example.spektar.data.remote.mediaService.MediaServiceImpl
 import com.example.spektar.ui.HomeScreen
+import com.example.spektar.ui.archiveScreen.ArchiveViewModel
+import com.example.spektar.ui.archiveScreen.ArchiveViewModelFactory
 import com.example.spektar.ui.common.ErrorScreen
 import com.example.spektar.ui.navigation.graphs.authGraph.UserLoginScreen
 import com.example.spektar.ui.navigation.graphs.categoryGraph.ArchiveScreen
@@ -50,14 +54,34 @@ fun NavGraphBuilder.CommonGraph(
         )
     }
 
-    composable<HomeScreen> {
+    composable<HomeScreen> { backStackEntry ->
+        val context = LocalContext.current
+
+        val archiveViewModel : ArchiveViewModel = viewModel<ArchiveViewModel> (
+            viewModelStoreOwner = backStackEntry,
+            factory = ArchiveViewModelFactory(
+                context,
+                MediaServiceImpl(),
+                AccountServiceImpl(),
+            )
+        )
+
+        /*val state = archiveViewModel.archivedMedias.value
+            .filter { media -> media.daily_goal_set } */
+
+        val medias = archiveViewModel.archivedMedias.collectAsStateWithLifecycle()
+        val state = medias.value.filter {
+            media -> media.daily_goal_set
+        }
+
         HomeScreen(
             onBottomBarItemClick = onBottomBarClick,
             selectedIcon = selectedIconProvider(),
 
             goToProfile = { navController.safeNavigate(ProfileScreen) },
             goToQuestionnaireScreen = {navController.safeNavigate(QuestionnaireScreen)},
-            goToArchiveScreen = { navController.safeNavigate(ArchiveScreen)}
+            goToArchiveScreen = { navController.safeNavigate(ArchiveScreen)},
+            state = state
         )
     }
 
