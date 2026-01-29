@@ -111,7 +111,7 @@ fun MoreMediaPageTopBar(
             actionIconContentColor = MaterialTheme.colorScheme.onSecondaryContainer
         ),
 
-        title = { // you can add colors
+        title = {
             Text(
                 text = "Search",
                 style = MaterialTheme.typography.titleLarge,
@@ -123,9 +123,9 @@ fun MoreMediaPageTopBar(
 
         scrollBehavior = scrollBehavior,
 
-        actions = { // profile icon basically
+        actions = {
             IconButton(
-                onClick = { goToProfile() } // figure out navigation to profile page
+                onClick = { goToProfile() }
             ) {
                 Icon(
                     imageVector = if (iconButtonPressed) {

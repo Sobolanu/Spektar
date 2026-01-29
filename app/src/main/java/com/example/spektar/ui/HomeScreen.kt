@@ -1,7 +1,9 @@
 package com.example.spektar.ui
 
+import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -12,6 +14,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CenterAlignedTopAppBar
@@ -21,8 +24,11 @@ import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.TopAppBarDefaults.enterAlwaysScrollBehavior
 import androidx.compose.material3.TopAppBarScrollBehavior
@@ -30,24 +36,31 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.window.Dialog
 import coil.compose.AsyncImage
 import com.example.spektar.R
+import com.example.spektar.data.model.roomModels.Media
+import com.example.spektar.ui.archiveScreen.ArchiveEvent
 import com.example.spektar.ui.common.components.BottomBar
 import com.example.spektar.ui.common.components.navigationBarIcons.topProfileIcon
-import com.example.spektar.data.model.roomModels.Media
+import kotlin.math.roundToInt
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun HomeScreen(
     goToQuestionnaireScreen: () -> Unit,
     goToProfile: () -> Unit,
+    onEvent: (ArchiveEvent) -> Unit,
     goToArchiveScreen: () -> Unit,
     selectedIcon: Int,
     onBottomBarItemClick: (Int) -> Unit,
@@ -90,12 +103,18 @@ fun HomeScreen(
                 item {
                     Text(
                         "Save a few medias to populate the home screen!",
-                        style = MaterialTheme.typography.headlineMedium
+                        style = MaterialTheme.typography.headlineMedium,
+                        textAlign = TextAlign.Center
                     )
                 }
             } else {
                 items(state) {
-                    HomePageMedia(it)
+                    HomePageMedia(
+                        it,
+                        onEvent = { progress, id ->
+                            onEvent(ArchiveEvent.updateProgress(progress, id))
+                        }
+                    )
                 }
             }
 
@@ -135,43 +154,142 @@ fun HomeScreen(
 
 @Composable
 fun HomePageMedia(
-    media: Media
+    media: Media,
+    onEvent: (Int, String) -> Unit
 ) {
-    Row(
-        verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.Start,
-        modifier = Modifier.fillMaxWidth()
-    ) {
+    var showDialog by remember { mutableStateOf(false) }
+
+    if (showDialog) {
+        UpdateProgressDialog(
+            onDismiss = { showDialog = false },
+            onSubmit = {
+                onEvent(it, media.id_uuid)
+                showDialog = false
+            }
+        )
+    }
+
+    Column(modifier = Modifier.fillMaxWidth()) {
         Text(
             text = media.name,
             style = MaterialTheme.typography.headlineSmall,
+            modifier = Modifier.padding(bottom = 8.dp)
         )
-    }
-
-    Row(
-        verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.Start,
-        modifier = Modifier.fillMaxWidth()
-    ) {
-        AsyncImage(
-            model = media.imageUrl,
+        Row(
             modifier = Modifier
-                .size(100.dp)
-                .padding(end = 8.dp)
-            ,
-            contentDescription = media.name
-        )
+                .fillMaxWidth()
+                .padding(vertical = 8.dp),
+            verticalAlignment = Alignment.Top
+        ) {
+            Column(
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.Top
+            ) {
+                Box(
+                    modifier = Modifier
+                        .size(110.dp),
+                    contentAlignment = Alignment.TopCenter
+                ) {
+                    AsyncImage(
+                        model = media.imageUrl,
+                        contentDescription = media.name,
+                        modifier = Modifier
+                            .size(110.dp)
+                            .clip(MaterialTheme.shapes.medium),
+                        contentScale = ContentScale.Crop
+                    )
+                }
 
-        Spacer(modifier = Modifier.weight(1f))
+                Text(
+                    "Update progress",
+                    textAlign = TextAlign.Center,
+                    modifier = Modifier.padding(top = 8.dp)
+                )
+            }
 
-        CircularProgressIndicator(
-            progress = { 0.3f },
-            modifier = Modifier.size(80.dp)
-        )
+            Spacer(modifier = Modifier.weight(1f))
+
+            Column(
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.Top
+            ) {
+                Box(
+                    modifier = Modifier.size(110.dp),
+                    contentAlignment = Alignment.Center
+                ) {
+                    val fraction = remember(media.currentProgress, media.totalSize) {
+                        ((media.currentProgress.toFloat() / media.totalSize.toFloat()).coerceIn(0f, 1f))
+                    }
+
+                    val animatedProgress by animateFloatAsState(targetValue = fraction)
+
+                    Box(contentAlignment = Alignment.Center, modifier = Modifier.size(100.dp)) {
+                        CircularProgressIndicator(
+                            progress = { animatedProgress },
+                            modifier = Modifier.fillMaxSize()
+                        )
+                        Text(
+                            text = "${(animatedProgress * 100).roundToInt()}%",
+                            style = MaterialTheme.typography.bodySmall
+                        )
+                    }
+                }
+
+                Text(
+                    "Completed: ${media.currentProgress} of ${media.totalSize}",
+                    textAlign = TextAlign.Center,
+                    modifier = Modifier.padding(top = 8.dp)
+                )
+            }
+        }
+
+        HorizontalDivider(modifier = Modifier.padding(vertical = 4.dp))
     }
+}
 
-    Spacer(modifier = Modifier.padding(bottom = 16.dp))
-    HorizontalDivider(modifier = Modifier.padding(vertical = 4.dp))
+@Composable
+fun UpdateProgressDialog(
+    onDismiss: () -> Unit,
+    onSubmit: (newProgress : Int) -> Unit
+) {
+    var amount by remember { mutableStateOf("") }
+
+    Dialog(onDismissRequest = onDismiss) {
+        Surface(
+            shape = RoundedCornerShape(12.dp),
+            modifier = Modifier.padding(16.dp)
+        ) {
+            Column(
+                modifier = Modifier.padding(16.dp),
+                verticalArrangement = Arrangement.spacedBy(12.dp)
+            ) {
+                Text(
+                    text = "How much have you completed?",
+                    style = MaterialTheme.typography.titleMedium
+                )
+
+                OutlinedTextField(
+                    value = amount,
+                    onValueChange = { amount = it },
+                    label = { Text("Your new progress") },
+                    modifier = Modifier.fillMaxWidth(),
+                    maxLines = 4
+                )
+
+                Row(
+                    horizontalArrangement = Arrangement.End,
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    TextButton(onClick = onDismiss) {
+                        Text("Cancel")
+                    }
+                    Button(onClick = { onSubmit(amount.toInt()) }) {
+                        Text("Submit")
+                    }
+                }
+            }
+        }
+    }
 }
 
 @OptIn(ExperimentalMaterial3Api::class)

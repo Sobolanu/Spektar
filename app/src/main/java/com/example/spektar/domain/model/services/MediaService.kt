@@ -4,6 +4,7 @@ import com.example.spektar.data.model.edgeFunctionModels.EdgeResponse
 import com.example.spektar.data.model.media.MediaLookup
 import com.example.spektar.data.model.media.MediaPreview
 import com.example.spektar.data.remote.mediaService.FullMediaData
+import com.example.spektar.data.remote.mediaService.ReviewData
 import com.example.spektar.domain.model.SpecificMedia
 import com.example.spektar.ui.mediaScreens.Category
 
@@ -17,4 +18,6 @@ interface MediaService {
     suspend fun obtainDataByMediaId(partialMediaData: MediaPreview) : FullMediaData
     suspend fun fetchTopMediaMatches(bearerToken: String, userId: String): EdgeResponse?
     suspend fun leaveReview(userId: String, mediaId: String, review: Int, message: String)
+
+    suspend fun fetchReviews(mediaId: String) : List<ReviewData>
 }

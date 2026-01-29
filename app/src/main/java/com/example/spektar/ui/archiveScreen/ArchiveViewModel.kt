@@ -9,9 +9,12 @@ import com.example.spektar.data.local.ArchiveDatabase
 import com.example.spektar.data.local.dao.ArchiveDao
 import com.example.spektar.data.model.roomModels.Media
 import com.example.spektar.data.model.roomModels.toSpecificMedia
+import com.example.spektar.data.remote.mediaService.ReviewData
 import com.example.spektar.domain.model.SpecificMedia
 import com.example.spektar.domain.model.services.AccountService
 import com.example.spektar.domain.model.services.MediaService
+import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -31,29 +34,35 @@ data class DailyGoal(
 class ArchiveViewModel (
     private val archiveDao: ArchiveDao,
     private val mediaService: MediaService,
-    private val accountService: AccountService
+    private val accountService: AccountService,
+    private val ioDispatcher: CoroutineDispatcher = Dispatchers.IO
 ) : ViewModel() {
-    /* val archivedMedias: StateFlow<List<SpecificMedia>> = archiveDao.getAllArchivedMedia().map { list
-        -> list.map { it.toSpecificMedia() }
-    }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(), emptyList()) */
-
     val archivedMedias: StateFlow<List<Media>> = archiveDao.getAllArchivedMedia()
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(), emptyList())
 
     val _dailyGoalState = MutableStateFlow(DailyGoal())
     val dailyGoalState = _dailyGoalState.asStateFlow()
 
+    private val _mediaReviews = MutableStateFlow<List<ReviewData>>(emptyList())
+    val mediaReviews : StateFlow<List<ReviewData>> = _mediaReviews.asStateFlow()
+
     fun onEvent(event: ArchiveEvent) {
         when(event) {
+            is ArchiveEvent.updateProgress -> {
+                viewModelScope.launch(ioDispatcher) {
+                    archiveDao.updateProgress(event.newProgress, event.mediaId)
+                }
+            }
+
             is ArchiveEvent.saveMedia -> {
-                viewModelScope.launch {
+                viewModelScope.launch(ioDispatcher) {
                     archiveDao.insertMediaToArchive(event.media)
                 }
             }
 
             is ArchiveEvent.removeMedia -> {
                 viewModelScope.launch {
-                    // archiveDao.removeMediaFromArchive(event.media.toMedia())
+                    archiveDao.removeMediaFromArchive(event.media)
                 }
             }
 

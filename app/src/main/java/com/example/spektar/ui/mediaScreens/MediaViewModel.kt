@@ -2,11 +2,13 @@ package com.example.spektar.ui.mediaScreens
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
+import androidx.lifecycle.viewmodel.compose.viewModel
 import arrow.core.Either
 import com.example.spektar.data.model.media.MediaPreview
 import com.example.spektar.data.model.roomModels.Media
 import com.example.spektar.data.remote.authService.SessionFailure
 import com.example.spektar.data.remote.mediaService.FullMediaData
+import com.example.spektar.data.remote.mediaService.ReviewData
 import com.example.spektar.data.repository.globalCategoryList
 import com.example.spektar.domain.model.SpecificMedia
 import com.example.spektar.domain.model.services.AccountService
@@ -34,6 +36,7 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 @OptIn(FlowPreview::class, ExperimentalCoroutinesApi::class)
 class MediaViewModel (
@@ -50,6 +53,9 @@ class MediaViewModel (
 
     private val _query = MutableStateFlow("")
     val query: StateFlow<String> = _query.asStateFlow()
+
+    private val _reviews = MutableStateFlow<List<ReviewData>>(emptyList())
+    val reviews : StateFlow<List<ReviewData>> = _reviews.asStateFlow()
 
     fun onQueryChanged(q: String) {
         _query.value = q
@@ -84,6 +90,15 @@ class MediaViewModel (
 
             is MediaEvent.SearchForMedia -> {
                 onQueryChanged(event.name)
+            }
+
+            is MediaEvent.ReviewsForMedia -> {
+                viewModelScope.launch {
+                    val list = withContext(ioDispatcher) {
+                        mediaService.fetchReviews(event.mediaId) // suspend call
+                    }
+                    _reviews.value = list
+                }
             }
         }
     }

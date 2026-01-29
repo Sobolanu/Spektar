@@ -40,9 +40,6 @@ import com.example.spektar.R
 import com.example.spektar.ui.common.SnackbarAction
 import com.example.spektar.ui.common.SnackbarController
 import com.example.spektar.ui.common.SnackbarEvent
-import com.example.spektar.ui.notesScreen.NoteState
-import com.example.spektar.ui.notesScreen.NoteEvent
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
 @Composable

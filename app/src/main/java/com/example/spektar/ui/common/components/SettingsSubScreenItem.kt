@@ -111,7 +111,6 @@ fun SettingsSubScreenItem(
                 .fillMaxWidth()
                 .padding(horizontal = 6.dp)
                 .clip(RoundedCornerShape(15.dp))
-                .background(MaterialTheme.colorScheme.secondaryContainer)
         )
     }
 }

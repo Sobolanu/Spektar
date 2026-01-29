@@ -1,25 +1,26 @@
 package com.example.spektar.ui.mediaScreens
 
-import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.sizeIn
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.TextAutoSize
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowForwardIos
-import androidx.compose.material.icons.filled.KeyboardArrowDown
 import androidx.compose.material.icons.filled.Star
 import androidx.compose.material.icons.filled.StarBorder
 import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonColors
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -32,7 +33,6 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
-import androidx.compose.material3.TextField
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
@@ -52,10 +52,9 @@ import coil.compose.AsyncImage
 import com.example.spektar.R
 import com.example.spektar.data.model.roomModels.Media
 import com.example.spektar.data.remote.mediaService.FullMediaData
-import com.example.spektar.domain.model.SpecificMedia
-import com.example.spektar.ui.archiveScreen.ArchiveEvent
-import com.example.spektar.ui.common.components.navigationBarIcons.topProfileIcon
+import com.example.spektar.data.remote.mediaService.ReviewData
 import com.example.spektar.ui.common.components.navigationBarIcons.topBackArrowIcon
+import com.example.spektar.ui.common.components.navigationBarIcons.topProfileIcon
 
 @Composable
 fun MediaDetailsScreen(
@@ -63,13 +62,14 @@ fun MediaDetailsScreen(
     onBackClick: () -> Unit,
     leaveReview: (String, Int, String) -> Unit,
     onNoteButtonClick: (String) -> Unit,
-    //saveMedia: (SpecificMedia) -> Unit,
     saveMedia: (Media) -> Unit,
     state: FullMediaData,
-    isArchived: Boolean
+    isArchived: Boolean,
+    reviews : List<ReviewData>
 ) {
     var openDialog by remember { mutableStateOf(false) }
     var openGoalDialog by remember { mutableStateOf(false) }
+    var checkReviewsDialog by remember { mutableStateOf(false) }
 
     Scaffold(
         topBar = { DetailsPageTopBar(goToProfile, onBackClick) },
@@ -77,8 +77,7 @@ fun MediaDetailsScreen(
         LazyColumn(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(paddingValues)
-                .background(Color(0xFF110205)), // implement custom color scheme no material3 cause that shit is hot ASS.
+                .padding(paddingValues), // implement custom color scheme no material3 cause that shit is hot ASS.
 
             verticalArrangement = Arrangement.Top,
             horizontalAlignment = Alignment.CenterHorizontally
@@ -89,7 +88,17 @@ fun MediaDetailsScreen(
                         onDismiss = { openDialog = false },
                         onSubmit = { rating, message ->
                             leaveReview(state.id_uuid, rating, message)
+                            openDialog = false
                         }
+                    )
+                }
+            }
+
+            if(checkReviewsDialog) {
+                item {
+                    AllReviewsDialog(
+                        onDismiss = { checkReviewsDialog = false },
+                        reviews = reviews
                     )
                 }
             }
@@ -109,7 +118,8 @@ fun MediaDetailsScreen(
                                     release_date = state.release_date,
                                     daily_goal_set = setDailyGoal,
                                     dailyGoal = dailyGoal,
-                                    totalSize = finalGoal
+                                    totalSize = finalGoal,
+                                    currentProgress = 0
                                 )
                             )
 
@@ -237,9 +247,7 @@ fun MediaDetailsScreen(
                             contentColor = MaterialTheme.colorScheme.onBackground
                         ),
 
-                        onClick = {
-                            openGoalDialog = true
-                        }
+                        onClick = { openGoalDialog = true }
                     ) {
                         Text(
                             "Save media",
@@ -277,6 +285,30 @@ fun MediaDetailsScreen(
                             contentDescription = "Leave a review.",
                         )
                     }
+
+                    HorizontalDivider(
+                        modifier = Modifier.padding(vertical = 8.dp)
+                    )
+
+                    Button(
+                        onClick = { checkReviewsDialog = true },
+                        colors = ButtonDefaults.buttonColors(
+                            containerColor = Color.Transparent,
+                            contentColor = MaterialTheme.colorScheme.onBackground
+                        )
+                    ) {
+                        Text(
+                            "Check reviews",
+                            style = MaterialTheme.typography.bodyLarge
+                        )
+
+                        Spacer(modifier = Modifier.weight(1f))
+
+                        Icon(
+                            imageVector = Icons.AutoMirrored.Filled.ArrowForwardIos,
+                            contentDescription = "Check reviews",
+                        )
+                    }
                 }
             }
         }
@@ -297,9 +329,9 @@ fun DetailsPageTopBar(
         modifier = modifier,
 
         colors = TopAppBarDefaults.topAppBarColors(
-            containerColor = Color(0xFF7E0101),
-            titleContentColor = MaterialTheme.colorScheme.onPrimaryContainer,
-            actionIconContentColor = MaterialTheme.colorScheme.onPrimaryContainer
+            containerColor = MaterialTheme.colorScheme.secondaryContainer,
+            titleContentColor = MaterialTheme.colorScheme.onSecondaryContainer,
+            actionIconContentColor = MaterialTheme.colorScheme.onSecondaryContainer
         ),
 
         title = { Text("test") },
@@ -420,6 +452,76 @@ fun DailyGoalDialog(
         }
     }
 }
+
+@Composable
+fun AllReviewsDialog(
+    onDismiss: () -> Unit,
+    reviews: List<ReviewData>
+) {
+    Dialog(onDismissRequest = onDismiss) {
+        Surface(
+            shape = RoundedCornerShape(12.dp),
+            modifier = Modifier.padding(16.dp)
+        ) {
+            // Limit height so the list can scroll
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .sizeIn(maxHeight = 400.dp) // adjust as needed
+                    .padding(16.dp)
+            ) {
+                LazyColumn(
+                    verticalArrangement = Arrangement.spacedBy(8.dp),
+                    modifier = Modifier.fillMaxSize()
+                ) {
+                    items(reviews) { data ->
+                        Column(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(vertical = 8.dp)
+                        ) {
+                            // Header: user id + stars
+                            Row(
+                                verticalAlignment = Alignment.CenterVertically,
+                                modifier = Modifier.fillMaxWidth()
+                            ) {
+                                Text(
+                                    text = data.username,
+                                    modifier = Modifier.weight(1f)
+                                )
+
+                                Row(
+                                    verticalAlignment = Alignment.CenterVertically,
+                                    horizontalArrangement = Arrangement.spacedBy(2.dp)
+                                ) {
+                                    (1..5).forEach { star ->
+                                        Icon(
+                                            imageVector = if (star <= data.rating) Icons.Default.Star else Icons.Default.StarBorder,
+                                            contentDescription = "Rate $star stars",
+                                            tint = if (star <= data.rating) Color(0xFFFFD700) else Color.Gray,
+                                            modifier = Modifier.size(18.dp)
+                                        )
+                                    }
+                                }
+                            }
+                            Spacer(modifier = Modifier.height(6.dp))
+
+                            // Review text on its own line
+                            Text(
+                                text = data.review_text,
+                                textAlign = TextAlign.Start,
+                                modifier = Modifier.fillMaxWidth()
+                            )
+                        }
+
+                        HorizontalDivider()
+                    }
+                }
+            }
+        }
+    }
+}
+
 
 @Composable
 fun ReviewDialog(

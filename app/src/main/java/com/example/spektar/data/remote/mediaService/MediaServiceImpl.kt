@@ -57,6 +57,13 @@ data class FullMediaData(
     val rating_count: Int = 0
 )
 
+@Serializable
+data class ReviewData(
+    val rating : Int = 0,
+    val review_text: String = "",
+    val username: String = ""
+)
+
 class MediaServiceImpl : MediaService {
     override suspend fun searchByName(name: String): List<MediaPreview> {
         val data = SupabaseClientProvider.db
@@ -160,6 +167,17 @@ class MediaServiceImpl : MediaService {
             SupabaseClientProvider.db.from("ratings")
                 .insert (payload)
         }
+    }
+
+    override suspend fun fetchReviews(mediaId: String) : List<ReviewData> {
+        val reviews = SupabaseClientProvider.db.from("ratings")
+            .select(Columns.list("rating", "review_text", "username")) {
+                filter {
+                    eq("media_id", mediaId)
+                }
+            }.decodeList<ReviewData>()
+
+        return reviews
     }
 
     override suspend fun fetchTopMediaMatches(bearerToken: String, userId: String): EdgeResponse? {

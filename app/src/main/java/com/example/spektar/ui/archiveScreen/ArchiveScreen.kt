@@ -41,7 +41,6 @@ fun ArchiveScreen(
     onBottomBarItemClick : (Int) -> Unit,
     onImageClick: (MediaDetails) -> Unit,
     selectedIcon: Int,
-    // state: List<SpecificMedia>?,
     state: List<Media>
 ) {
     val scrollBehavior = enterAlwaysScrollBehavior()
@@ -56,7 +55,7 @@ fun ArchiveScreen(
             verticalArrangement = Arrangement.Center,
             horizontalArrangement = Arrangement.Center,
         ) {
-            if(state.isNullOrEmpty()) {
+            if(state.isEmpty()) {
                 item {
                     Text("Add some media to this archive!")
                 }
@@ -107,7 +106,7 @@ fun ArchivePageTopBar(
             actionIconContentColor = MaterialTheme.colorScheme.onSecondaryContainer
         ),
 
-        title = { // you can add colors
+        title = {
             Text(
                 text = "Archived media",
                 style = MaterialTheme.typography.titleLarge,
@@ -119,9 +118,9 @@ fun ArchivePageTopBar(
 
         scrollBehavior = scrollBehavior,
 
-        actions = { // profile icon basically
+        actions = {
             IconButton(
-                onClick = { goToProfile() } // figure out navigation to profile page
+                onClick = { goToProfile() }
             ) {
                 Icon(
                     imageVector = if (iconButtonPressed) {

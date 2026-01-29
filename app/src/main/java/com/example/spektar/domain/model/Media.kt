@@ -16,14 +16,3 @@ data class SpecificMedia(
     val credits: String = "",
     val release_date: String = ""
 )
-
-/*fun SpecificMedia.toMedia(): Media {
-    return Media(
-        id_uuid = this.id_uuid,
-        name = this.name,
-        imageUrl = this.imageUrl,
-        description = this.description,
-        credits = this.credits,
-        release_date = this.release_date
-    )
-} */

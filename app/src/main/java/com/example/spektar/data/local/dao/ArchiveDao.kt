@@ -17,4 +17,7 @@ interface ArchiveDao {
 
     @Query("SELECT * FROM Media")
     fun getAllArchivedMedia(): Flow<List<Media>>
+
+    @Query("UPDATE Media SET currentProgress = :newProgress WHERE id_uuid = :mediaId")
+    suspend fun updateProgress(newProgress: Int, mediaId: String)
 }

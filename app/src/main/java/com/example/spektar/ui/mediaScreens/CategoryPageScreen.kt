@@ -283,6 +283,7 @@ fun CategoryPageTopBar(
                     onEvent(MediaEvent.SearchForMedia(text))
                     onSearch()
                 },
+                shape = RoundedCornerShape(16.dp)
             )
         },
 
@@ -348,8 +349,8 @@ fun AnimatedSearchOverlay(
                     .align(Alignment.TopCenter)
                     .background(MaterialTheme.colorScheme.surface, shape = RoundedCornerShape(bottomStart = 12.dp, bottomEnd = 12.dp))
                     .padding(vertical = 8.dp)
-                    .clickable(indication = null, interactionSource = remember { MutableInteractionSource() }) { /* consume */ }
-                    .imePadding() // allow content to move with keyboard
+                    .clickable(indication = null, interactionSource = remember { MutableInteractionSource() }) {  }
+                    .imePadding()
             ) {
                 // back button
                 Row(

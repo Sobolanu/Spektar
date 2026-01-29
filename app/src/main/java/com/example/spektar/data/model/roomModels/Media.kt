@@ -19,6 +19,7 @@ data class Media (
 
     val daily_goal_set : Boolean,
     val dailyGoal : Int, // as in, amount you want to watch/read
+    val currentProgress: Int,
     val totalSize : Int // as in, num of pages or episodes
 )
 

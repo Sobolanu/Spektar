@@ -66,9 +66,6 @@ fun NavGraphBuilder.CommonGraph(
             )
         )
 
-        /*val state = archiveViewModel.archivedMedias.value
-            .filter { media -> media.daily_goal_set } */
-
         val medias = archiveViewModel.archivedMedias.collectAsStateWithLifecycle()
         val state = medias.value.filter {
             media -> media.daily_goal_set
@@ -81,7 +78,10 @@ fun NavGraphBuilder.CommonGraph(
             goToProfile = { navController.safeNavigate(ProfileScreen) },
             goToQuestionnaireScreen = {navController.safeNavigate(QuestionnaireScreen)},
             goToArchiveScreen = { navController.safeNavigate(ArchiveScreen)},
-            state = state
+            state = state,
+            onEvent = { event ->
+                archiveViewModel.onEvent(event)
+            }
         )
     }
 

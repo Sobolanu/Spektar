@@ -1,9 +1,0 @@
-TODO:
-    ### FRONT END
-        - home screen
-            - this home screen would contain pieces of media you're currently consuming, and they'd
-            have a progress counter (current progress is X, Y is max progress, optional daily goal for books)
-            only books saved in "archive"/saved would have a daily goal
-
-    TODO: ### BACK-END
-        "preporuke drugim" is message of rating

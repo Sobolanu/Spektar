@@ -18,7 +18,6 @@ import com.example.spektar.data.model.roomModels.MediaId
 import com.example.spektar.data.remote.authService.AccountServiceImpl
 import com.example.spektar.data.remote.mediaService.FullMediaData
 import com.example.spektar.data.remote.mediaService.MediaServiceImpl
-import com.example.spektar.domain.model.SpecificMedia
 import com.example.spektar.ui.archiveScreen.ArchiveEvent
 import com.example.spektar.ui.archiveScreen.ArchiveScreen
 import com.example.spektar.ui.archiveScreen.ArchiveViewModel
@@ -26,6 +25,7 @@ import com.example.spektar.ui.archiveScreen.ArchiveViewModelFactory
 import com.example.spektar.ui.mediaScreens.Category
 import com.example.spektar.ui.mediaScreens.CategoryScreen
 import com.example.spektar.ui.mediaScreens.MediaDetailsScreen
+import com.example.spektar.ui.mediaScreens.MediaEvent
 import com.example.spektar.ui.mediaScreens.MediaViewModel
 import com.example.spektar.ui.mediaScreens.MoreMedia
 import com.example.spektar.ui.navigation.graphs.common.ProfileScreen
@@ -34,7 +34,6 @@ import com.example.spektar.ui.navigation.utils.safeNavigate
 import com.example.spektar.ui.notesScreen.NoteScreen
 import com.example.spektar.ui.notesScreen.NoteViewModel
 import com.example.spektar.ui.notesScreen.NoteViewModelFactory
-import kotlinx.coroutines.flow.any
 import kotlin.reflect.typeOf
 
 fun NavGraphBuilder.CategoryGraph(
@@ -92,8 +91,14 @@ fun NavGraphBuilder.CategoryGraph(
                 )
             )
 
-            val isArchived = archiveViewModel.archivedMedias.value.any { it ->
+            val isArchived = archiveViewModel.archivedMedias.value.any {
                 it.name == state.name
+            }
+
+            val reviews = mediaViewModel.reviews.collectAsStateWithLifecycle()
+
+            LaunchedEffect(reviews) {
+                mediaViewModel.onEvent(MediaEvent.ReviewsForMedia(state.id_uuid))
             }
 
             MediaDetailsScreen(
@@ -102,6 +107,7 @@ fun NavGraphBuilder.CategoryGraph(
                 onNoteButtonClick = {
                     navController.safeNavigate(NoteScreen(it)) // pass id here
                 },
+
                 state = state,
 
                 saveMedia = { media ->
@@ -115,8 +121,8 @@ fun NavGraphBuilder.CategoryGraph(
                         message = message
                     ))
                 },
-
-                isArchived = isArchived
+                isArchived = isArchived,
+                reviews = reviews.value
             )
         }
 
